@@ -2833,46 +2833,177 @@ const FOV_POD_L = ['Inicio','Poderdante/s','Apoderado/s','Tipo de poder','Resume
 const FOV_HER_L = ['Causante','Heredero/s','Caudal','Resumen'];
 const FOV_DON_L = ['Donante','Donatario','Bien','Tipo','Resumen'];
 
-// ── ABRIR / CERRAR ────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+//  SUSTITUIR la función abrirFormulario() existente por esta
+// ══════════════════════════════════════════════════════════
+
+const BASE_URL = 'https://oficial-notarial.vercel.app';
+
+const FORM_URLS = {
+  compraventa: BASE_URL + '/compraventa.html',
+  poder:       BASE_URL + '/poder.html',
+  herencia:    BASE_URL + '/herencia.html',
+  donacion:    BASE_URL + '/donacion.html',
+  testamento:  BASE_URL + '/testamento.html',
+  renuncia:    BASE_URL + '/renuncia.html',
+  cancelacion: BASE_URL + '/cancelacion.html',
+  obranue:     BASE_URL + '/obranue.html',
+};
+
+const FORM_LABELS = {
+  compraventa: '🏠 Compraventa',
+  poder:       '✍️ Poder notarial',
+  herencia:    '📜 Herencia',
+  donacion:    '🎁 Donación',
+  testamento:  '📋 Testamento',
+  renuncia:    '🚫 Renuncia / Repudiación',
+  cancelacion: '🏦 Cancelación de hipoteca',
+  obranue:     '🏗️ Obra nueva',
+};
+
+const DISPONIBLES = ['compraventa']; // Añadir más cuando estén subidos a Vercel
+
+function detectarActo(){
+  const actoRaw = (_lastParsed?.actoNombre || '').toLowerCase();
+  if(actoRaw.includes('compraventa'))                             return 'compraventa';
+  if(actoRaw.includes('poder'))                                   return 'poder';
+  if(actoRaw.includes('herencia')||actoRaw.includes('adjudicación')) return 'herencia';
+  if(actoRaw.includes('donaci'))                                  return 'donacion';
+  if(actoRaw.includes('testamento'))                              return 'testamento';
+  if(actoRaw.includes('renuncia')||actoRaw.includes('repudiaci')) return 'renuncia';
+  if(actoRaw.includes('cancelaci'))                               return 'cancelacion';
+  if(actoRaw.includes('obra nueva'))                              return 'obranue';
+  return null;
+}
+
 function abrirFormulario(){
+  const act = detectarActo();
+  const actoNombre = _lastParsed?.actoNombre || 'No detectado';
+
+  // Construir contenido del modal
+  let contenido = '';
+
+  if(!act){
+    // No detectado — mostrar selector
+    contenido = `
+      <div style="margin-bottom:14px;font-size:13px;color:var(--ink3);">Claude no ha detectado el acto automáticamente. Seleccione el formulario manualmente:</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        ${Object.entries(FORM_LABELS).map(([k,v])=>`
+          <button onclick="seleccionarFormulario('${k}')" style="text-align:left;padding:10px 12px;border:0.5px solid var(--border2);border-radius:8px;background:var(--surface2);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink2);transition:all .15s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border2)'">${v}</button>
+        `).join('')}
+      </div>`;
+  } else {
+    contenido = construirPanelEnlace(act, actoNombre);
+  }
+
+  // Mostrar modal
+  document.getElementById('fovActLabel').textContent = actoNombre;
+  document.getElementById('fovContent').innerHTML = `
+    <div style="max-width:520px;margin:0 auto;">
+      ${contenido}
+    </div>`;
   document.getElementById('formOverlay').classList.add('open');
-  document.body.style.overflow='hidden';
-  const actoRaw=(_lastParsed?.actoNombre||'').toLowerCase();
-  let act=null;
-  if(actoRaw.includes('compraventa'))                           act='compraventa';
-  else if(actoRaw.includes('poder'))                            act='poder';
-  else if(actoRaw.includes('herencia')||actoRaw.includes('adjudicación')) act='herencia';
-  else if(actoRaw.includes('donaci'))                           act='donacion';
-  else if(actoRaw.includes('testamento'))                       act='testamento';
-  else if(actoRaw.includes('renuncia')||actoRaw.includes('repudiaci')) act='renuncia';
-  else if(actoRaw.includes('cancelaci'))                        act='cancelacion';
-  else if(actoRaw.includes('obra nueva'))                       act='obranue';
-  document.getElementById('fovActLabel').textContent=_lastParsed?.actoNombre||'No detectado';
-  fovCargarActo(act);
+  document.body.style.overflow = 'hidden';
 }
 
-function cerrarFormulario(){
-  document.getElementById('formOverlay').classList.remove('open');
-  document.body.style.overflow='';
+function seleccionarFormulario(act){
+  const actoNombre = FORM_LABELS[act] || act;
+  document.getElementById('fovActLabel').textContent = actoNombre;
+  document.getElementById('fovContent').innerHTML = `
+    <div style="max-width:520px;margin:0 auto;">
+      ${construirPanelEnlace(act, actoNombre)}
+    </div>`;
 }
 
-function fovCargarActo(act){
-  _fovAct=act;
-  const content=document.getElementById('fovContent');
-  const wordBtn=document.getElementById('fovBtnWord');
-  const actsConWord=['compraventa','poder','herencia','donacion','testamento','renuncia','cancelacion','obranue'];
-  wordBtn.style.display=actsConWord.includes(act)?'inline-block':'none';
-  if(!act){content.innerHTML=fovSelectHtml();return;}
-  if(act==='compraventa'){_fovStep=0;_fovCfg={nV:'1',nC:'1',soc:'no'};content.innerHTML=fovCvHtml();fovCvBar();return;}
-  if(act==='poder')      {_fovPodStep=0;_fovPCfg={nP:'1',nA:'1',soc:'no'};content.innerHTML=fovPodHtml();fovPodBar();return;}
-  if(act==='herencia')   {_fovHerStep=0;_fovHCfg={nH:'1',abintestato:false};content.innerHTML=fovHerHtml();fovHerBar();return;}
-  if(act==='donacion')   {_fovDonStep=0;content.innerHTML=fovDonHtml();fovDonBar();return;}
-  if(act==='testamento') {content.innerHTML=fovTestHtml();return;}
-  if(act==='renuncia')   {content.innerHTML=fovRenHtml();return;}
-  if(act==='cancelacion'){content.innerHTML=fovCancelHtml();return;}
-  if(act==='obranue')    {content.innerHTML=fovObraHtml();return;}
+function construirPanelEnlace(act, actoNombre){
+  const url = FORM_URLS[act];
+  const disponible = DISPONIBLES.includes(act);
+  const label = FORM_LABELS[act] || actoNombre;
+
+  if(!disponible){
+    return `
+      <div style="background:var(--orange-bg);border:1px solid var(--orange-border);border-radius:10px;padding:20px;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:10px;">🚧</div>
+        <div style="font-size:14px;font-weight:600;color:var(--orange);margin-bottom:6px;">${label}</div>
+        <div style="font-size:12px;color:var(--ink3);">Este formulario estará disponible próximamente.</div>
+      </div>`;
+  }
+
+  return `
+    <div style="background:var(--green-bg);border:1px solid var(--green-border);border-radius:10px;padding:16px 18px;display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+      <span style="font-size:1.4rem;">✅</span>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.06em;">Formulario disponible</div>
+        <div style="font-size:13px;color:var(--ink2);margin-top:2px;">${label}</div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px;">Enlace para enviar al cliente</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <input type="text" value="${url}" readonly
+          style="flex:1;font-size:12px;font-family:monospace;color:var(--ink2);background:var(--cream2);border:0.5px solid var(--border2);border-radius:6px;padding:9px 11px;outline:none;">
+        <button onclick="copiarEnlace('${url}',this)"
+          style="padding:9px 14px;border:none;border-radius:6px;background:var(--ink);color:#F5F0E8;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;flex-shrink:0;">
+          Copiar enlace
+        </button>
+      </div>
+    </div>
+
+    <div style="background:var(--blue-bg);border:0.5px solid var(--blue-border);border-radius:10px;padding:14px 16px;margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:700;color:var(--blue);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;">📋 Instrucciones para el email</div>
+      <div style="font-size:12px;color:var(--ink2);line-height:1.7;">
+        Pegue este enlace en su respuesta al cliente con este texto:<br><br>
+        <em style="color:var(--ink3);">"Para preparar su expediente, le rogamos que complete el siguiente formulario y nos envíe el documento Word descargado como adjunto a este email: <strong>${url}</strong>"</em>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;">
+      <button onclick="abrirEnlace('${url}')"
+        style="flex:1;padding:11px;border:0.5px solid var(--border2);border-radius:7px;background:transparent;color:var(--ink2);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">
+        👁 Ver formulario
+      </button>
+      <button onclick="seleccionarFormulario(null)"
+        style="flex:1;padding:11px;border:0.5px solid var(--border2);border-radius:7px;background:transparent;color:var(--ink2);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">
+        🔄 Cambiar acto
+      </button>
+    </div>`;
 }
 
+function seleccionarFormulario(act){
+  if(!act){
+    // Volver al selector
+    document.getElementById('fovContent').innerHTML = `
+      <div style="max-width:520px;margin:0 auto;">
+        <div style="margin-bottom:14px;font-size:13px;color:var(--ink3);">Seleccione el formulario:</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          ${Object.entries(FORM_LABELS).map(([k,v])=>`
+            <button onclick="seleccionarFormulario('${k}')" style="text-align:left;padding:10px 12px;border:0.5px solid var(--border2);border-radius:8px;background:var(--surface2);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink2);">${v}</button>
+          `).join('')}
+        </div>
+      </div>`;
+    return;
+  }
+  const actoNombre = FORM_LABELS[act] || act;
+  document.getElementById('fovActLabel').textContent = actoNombre;
+  document.getElementById('fovContent').innerHTML = `
+    <div style="max-width:520px;margin:0 auto;">
+      ${construirPanelEnlace(act, actoNombre)}
+    </div>`;
+}
+
+function copiarEnlace(url, btn){
+  navigator.clipboard.writeText(url).then(function(){
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copiado';
+    btn.style.background = 'var(--green)';
+    setTimeout(function(){ btn.textContent = orig; btn.style.background = ''; }, 2000);
+  });
+}
+
+function abrirEnlace(url){
+  window.open(url, '_blank');
+}
 // ── PANTALLA DE SELECCIÓN ─────────────────────────────────
 function fovSelectHtml(){
   return`<div class="fov-notice">Seleccione el tipo de operación que desea formalizar.</div>
