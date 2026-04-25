@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notaría · Datos Compraventa</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-height:100vh}
+.header{background:#1a3a5c;color:#fff;padding:20px 24px 18px}
+.header-inner{max-width:620px;margin:0 auto}
+.header-seal{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.seal-icon{width:38px;height:38px;border-radius:8px;border:1px solid rgba(196,168,74,0.5);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.header h1{font-family:'Lora',serif;font-size:1.15rem;font-weight:500}
+.header p{font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:3px}
+.acto-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(196,168,74,0.15);border:1px solid rgba(196,168,74,0.3);border-radius:100px;padding:4px 12px;font-size:0.78rem;color:#c9a84c;margin-top:10px}
+.wrap{max-width:620px;margin:24px auto;padding:0 16px 60px}
+.notice{background:#eef3f9;border-left:3px solid #1a3a5c;border-radius:0 8px 8px 0;padding:11px 16px;font-size:0.83rem;color:#2c4a6a;line-height:1.6;margin-bottom:18px}
+.warn{background:#fef6e4;border-left:3px solid #c9a84c;border-radius:0 8px 8px 0;padding:9px 14px;font-size:0.78rem;color:#8c6830;line-height:1.5;margin-top:6px}
+.step-bar{display:flex;align-items:center;margin-bottom:22px}
+.sdot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;transition:all .3s}
+.sdot.done{background:#1a3a5c;color:#fff}
+.sdot.active{background:#c9a84c;color:#1a1510;box-shadow:0 0 0 4px rgba(201,168,76,0.2)}
+.sdot.pend{background:#ddd;color:#999}
+.sline{flex:1;height:2px;background:#ddd}
+.sline.done{background:#1a3a5c}
+.screen{display:none}
+.screen.active{display:block}
+.card{background:#fff;border-radius:10px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.07);margin-bottom:14px;border:0.5px solid #e8e2d8}
+.card h2{font-size:0.82rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px;padding-bottom:9px;border-bottom:1.5px solid #f0ebe0}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:0.79rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6b6258;margin-bottom:5px}
+.field input,.field select{width:100%;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:#1a1510;background:#faf8f4;border:1.5px solid #ddd8ce;border-radius:7px;padding:10px 12px;outline:none;transition:border-color .15s}
+.field input:focus,.field select:focus{border-color:#1a3a5c;background:#fff}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px}
+.pill{padding:7px 15px;border-radius:20px;border:1.5px solid #ddd8ce;background:#faf8f4;font-size:0.83rem;cursor:pointer;font-weight:500;color:#6b6258;transition:all .15s;font-family:'DM Sans',sans-serif}
+.pill.on{border-color:#1a3a5c;background:#1a3a5c;color:#fff}
+.rg{display:flex;gap:14px;flex-wrap:wrap;margin-top:5px}
+.rg label{display:flex;align-items:center;gap:6px;font-size:0.88rem;cursor:pointer;color:#3d3830}
+.rg input{accent-color:#1a3a5c}
+.party{background:#f9f6f0;border:1px solid #e8e2d8;border-radius:8px;padding:15px;margin-bottom:10px;position:relative}
+.party h3{font-size:0.8rem;font-weight:600;color:#1a3a5c;margin-bottom:12px}
+.rm-btn{position:absolute;top:10px;right:10px;background:none;border:none;color:#c0392b;font-size:1rem;cursor:pointer}
+.add-btn{background:#f0ebe0;color:#1a3a5c;border:1.5px dashed #c8bfad;width:100%;padding:9px;border-radius:7px;font-size:0.83rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px;transition:all .15s}
+.add-btn:hover{background:#e8e0d0}
+.toggle-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:0.8rem;color:#6b6258}
+.toggle-row input[type=checkbox]{accent-color:#1a3a5c;width:15px;height:15px;cursor:pointer}
+.hidden{display:none}
+.nav{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap}
+.btn-p{background:#1a3a5c;color:#fff;border:none;padding:12px 22px;border-radius:7px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;flex:1;transition:opacity .15s}
+.btn-p:hover{opacity:.88}
+.btn-s{background:#f0ebe0;color:#3d3830;border:1px solid #ddd8ce;padding:12px 18px;border-radius:7px;font-size:0.88rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-s:hover{background:#e8e0d0}
+.btn-w{background:#2b579a;color:#fff;border:none;padding:12px 20px;border-radius:7px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .15s}
+.btn-w:hover{opacity:.88}
+.sg{margin-bottom:12px}
+.sg h3{font-size:0.78rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px}
+.sr{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0ebe0;font-size:0.83rem}
+.sr span:first-child{color:#6b6258}
+.sr span:last-child{font-weight:500;text-align:right;max-width:60%}
+.success{background:#e8f5e9;border:1.5px solid #81c784;border-radius:10px;padding:20px;text-align:center;color:#2e7d32;margin-top:16px}
+.success h3{font-size:1rem;margin-bottom:6px;font-family:'Lora',serif}
+.success p{font-size:0.85rem;line-height:1.5}
+.footer{text-align:center;padding:24px 16px;font-size:0.75rem;color:#a09585;border-top:1px solid #e8e2d8;margin-top:8px}
+@media(max-width:480px){.row2{grid-template-columns:1fr}.nav{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-seal">
+      <div class="seal-icon">⚖</div>
+      <div>
+        <h1>Notaría · Expediente de Compraventa</h1>
+        <p>Complete sus datos para que podamos preparar su expediente</p>
+      </div>
+    </div>
+    <div class="acto-badge">🏠 Compraventa de inmueble</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="notice">Por favor, rellene los datos con la mayor precisión posible. Al finalizar, descargue el documento Word y envíenoslo adjunto por email. El proceso le llevará aproximadamente 5 minutos.</div>
+  <div class="step-bar" id="stepBar"></div>
+
+  <!-- ═══ PASO 0 — Configurador ═══ -->
+  <div class="screen active" id="s0">
+    <div class="card">
+      <h2>¿Cuántas fincas se transmiten?</h2>
+      <div class="pills">
+        <button class="pill on" onclick="pill(this,'nF','1')">1 finca</button>
+        <button class="pill" onclick="pill(this,'nF','2')">2 fincas</button>
+        <button class="pill" onclick="pill(this,'nF','3+')">Más de 2</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>¿Alguna parte es una sociedad?</h2>
+      <div class="pills">
+        <button class="pill on" onclick="pill(this,'soc','no')">No</button>
+        <button class="pill" onclick="pill(this,'soc','vend')">Sí, el vendedor</button>
+        <button class="pill" onclick="pill(this,'soc','comp')">Sí, el comprador</button>
+        <button class="pill" onclick="pill(this,'soc','ambos')">Sí, ambos</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>¿Cuántos vendedores?</h2>
+      <div class="pills">
+        <button class="pill on" onclick="pill(this,'nV','1')">1</button>
+        <button class="pill" onclick="pill(this,'nV','2')">2</button>
+        <button class="pill" onclick="pill(this,'nV','3+')">Más de 2</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>¿Cuántos compradores?</h2>
+      <div class="pills">
+        <button class="pill on" onclick="pill(this,'nC','1')">1</button>
+        <button class="pill" onclick="pill(this,'nC','2')">2</button>
+        <button class="pill" onclick="pill(this,'nC','3+')">Más de 2</button>
+      </div>
+    </div>
+    <div class="nav"><button class="btn-p" onclick="go(1)">Continuar →</button></div>
+  </div>
+
+  <!-- ═══ PASO 1 — Fincas ═══ -->
+  <div class="screen" id="s1">
+    <div id="fincasWrap"></div>
+    <div class="card">
+      <h2>¿Será vivienda habitual del comprador?</h2>
+      <div class="rg">
+        <label><input type="radio" name="hab" value="Sí"> Sí</label>
+        <label><input type="radio" name="hab" value="No"> No</label>
+        <label><input type="radio" name="hab" value="No lo sé"> No lo sé</label>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn-s" onclick="go(0)">← Atrás</button>
+      <button class="btn-p" onclick="go(2)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ PASO 2 — Vendedores ═══ -->
+  <div class="screen" id="s2">
+    <div id="vendWrap"></div>
+    <div class="nav">
+      <button class="btn-s" onclick="go(1)">← Atrás</button>
+      <button class="btn-p" onclick="go(3)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ PASO 3 — Compradores ═══ -->
+  <div class="screen" id="s3">
+    <div id="compWrap"></div>
+    <div class="nav">
+      <button class="btn-s" onclick="go(2)">← Atrás</button>
+      <button class="btn-p" onclick="go(4)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ PASO 4 — Precio y pago ═══ -->
+  <div class="screen" id="s4">
+    <div class="card">
+      <h2>💶 Precio de compraventa</h2>
+      <div class="field">
+        <label>Precio total pactado *</label>
+        <input type="text" id="precio" placeholder="Ej: 250.000 €">
+      </div>
+      <div class="field">
+        <label>¿Se han entregado arras o señal previa?</label>
+        <div class="rg">
+          <label><input type="radio" name="arras" value="No" checked onclick="document.getElementById('arras-w').classList.add('hidden')"> No</label>
+          <label><input type="radio" name="arras" value="Sí" onclick="document.getElementById('arras-w').classList.remove('hidden')"> Sí</label>
+        </div>
+      </div>
+      <div id="arras-w" class="hidden">
+        <div class="row2">
+          <div class="field"><label>Importe de las arras</label><input type="text" id="arras-importe" placeholder="Ej: 10.000 €"></div>
+          <div class="field"><label>Fecha de entrega</label><input type="date" id="arras-fecha"></div>
+        </div>
+        <div class="field"><label>Tipo de arras</label>
+          <select id="arras-tipo">
+            <option value="">— Seleccione —</option>
+            <option>Confirmatorias (art. 1124 CC)</option>
+            <option>Penitenciales (art. 1454 CC)</option>
+            <option>No lo sé</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🏦 Forma de pago en la firma</h2>
+      <div class="field">
+        <label>Importe a pagar en el acto *</label>
+        <input type="text" id="pago-acto" placeholder="Ej: 240.000 € (precio menos arras)">
+      </div>
+      <div class="field">
+        <label>Medio de pago *</label>
+        <select id="pago-medio" onchange="var v=this.value;document.getElementById('pago-extra-w').classList.toggle('hidden',!['Combinación transferencia + cheque','Subrogación en hipoteca existente','Precio aplazado','Otro'].includes(v))">
+          <option value="">— Seleccione —</option>
+          <option>Transferencia bancaria</option>
+          <option>Cheque bancario nominativo</option>
+          <option>Combinación transferencia + cheque</option>
+          <option>Subrogación en hipoteca existente</option>
+          <option>Precio aplazado</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div id="pago-extra-w" class="hidden">
+        <div class="field"><label>Detalles del medio de pago</label><input type="text" id="pago-detalle" placeholder="Entidad bancaria, condiciones del aplazamiento..."></div>
+      </div>
+      <div class="field">
+        <label>¿El comprador financia con hipoteca?</label>
+        <div class="rg">
+          <label><input type="radio" name="hipoteca" value="No" checked onclick="document.getElementById('hipoteca-w').classList.add('hidden')"> No</label>
+          <label><input type="radio" name="hipoteca" value="Sí" onclick="document.getElementById('hipoteca-w').classList.remove('hidden')"> Sí</label>
+          <label><input type="radio" name="hipoteca" value="En trámite" onclick="document.getElementById('hipoteca-w').classList.remove('hidden')"> En trámite</label>
+        </div>
+      </div>
+      <div id="hipoteca-w" class="hidden">
+        <div class="row2">
+          <div class="field"><label>Entidad financiera</label><input type="text" id="hipoteca-banco" placeholder="Ej: CaixaBank, BBVA..."></div>
+          <div class="field"><label>Importe del préstamo</label><input type="text" id="hipoteca-importe" placeholder="Ej: 180.000 €"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-s" onclick="go(3)">← Atrás</button>
+      <button class="btn-p" onclick="go(5)">Revisar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ PASO 5 — Resumen ═══ -->
+  <div class="screen" id="s5">
+    <div class="card">
+      <h2>📋 Revise sus datos antes de descargar</h2>
+      <div id="resumen"></div>
+    </div>
+    <div class="notice">Si hay algún error, pulse "Corregir" para volver atrás.</div>
+    <div class="nav">
+      <button class="btn-s" onclick="go(4)">← Corregir</button>
+      <button class="btn-w" onclick="dlWord()">⬇️ Descargar Word y enviar a la notaría</button>
+    </div>
+    <div class="success" id="ok">
+      <h3>✅ Documento descargado</h3>
+      <p>Por favor, adjunte el archivo Word descargado en su respuesta al email de la notaría.<br>Nos pondremos en contacto para confirmar la documentación necesaria.</p>
+    </div>
+  </div>
+
+  <div class="footer">Oficial Notarial IA · Sus datos se procesan localmente y no se almacenan en ningún servidor.</div>
+</div>
+
+<script>
+var LABELS = ['Inicio','Inmueble','Vendedor/es','Comprador/es','Precio y pago','Resumen'];
+var cfg = {nF:'1', nV:'1', nC:'1', soc:'no'};
+var step = 0, uid = 0, fincaCnt = 1;
+
+// ── PILLS ────────────────────────────────────────────────
+function pill(el, k, v) {
+  el.closest('.card').querySelectorAll('.pill').forEach(function(p){ p.classList.remove('on'); });
+  el.classList.add('on');
+  cfg[k] = v;
+}
+
+// ── STEP BAR ─────────────────────────────────────────────
+function renderBar() {
+  var b = document.getElementById('stepBar');
+  b.innerHTML = '';
+  LABELS.forEach(function(l, i) {
+    var d = document.createElement('div');
+    d.className = 'sdot ' + (i < step ? 'done' : i === step ? 'active' : 'pend');
+    d.textContent = i < step ? '✓' : (i + 1);
+    d.title = l;
+    b.appendChild(d);
+    if (i < LABELS.length - 1) {
+      var ln = document.createElement('div');
+      ln.className = 'sline' + (i < step ? ' done' : '');
+      b.appendChild(ln);
+    }
+  });
+}
+
+// ── NAVIGATION ───────────────────────────────────────────
+function go(n) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  step = n;
+  if (n === 1) buildFincas();
+  if (n === 2) buildParties('vendWrap', 'Vendedor', cfg.nV, cfg.soc === 'vend' || cfg.soc === 'ambos');
+  if (n === 3) buildParties('compWrap', 'Comprador', cfg.nC, cfg.soc === 'comp' || cfg.soc === 'ambos');
+  if (n === 5) buildRes();
+  document.getElementById('s' + n).classList.add('active');
+  renderBar();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// ── FINCAS ───────────────────────────────────────────────
+function fincaHtml(n, rm) {
+  var r = rm ? '<button class="rm-btn" onclick="this.closest(\'.party\').remove()">✕</button>' : '';
+  return '<div class="party"><h3>Finca ' + n + '</h3>' + r +
+    '<div class="field"><label>Tipo de inmueble *</label>' +
+    '<select><option value="">— Seleccione —</option><option>Piso</option><option>Casa / Chalet</option>' +
+    '<option>Local comercial</option><option>Solar / Terreno</option><option>Plaza de garaje</option>' +
+    '<option>Trastero</option><option>Otro</option></select></div>' +
+    '<div class="field"><label>Dirección completa *</label><input type="text" placeholder="Calle, número, piso, municipio"></div>' +
+    '<div class="row2">' +
+      '<div class="field"><label>Referencia catastral</label><input type="text" placeholder="1234567AB1234A0001AB"></div>' +
+      '<div class="field"><label>CRU (Código Registral Único)</label><input type="text" placeholder="07001000123456"></div>' +
+    '</div>' +
+    '<div class="field"><label>Número de inscripción registral</label><input type="text" placeholder="Ej: Finca 12345, Tomo 100, Libro 50, Folio 200"></div>' +
+    '<div class="field"><label>Registro de la Propiedad</label><input type="text" placeholder="Ej: Registro nº 1 de Palma"></div>' +
+  '</div>';
+}
+
+function buildFincas() {
+  var n = cfg.nF === '3+' ? 3 : parseInt(cfg.nF);
+  fincaCnt = n;
+  var w = document.getElementById('fincasWrap');
+  w.innerHTML = '';
+  var card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = '<h2>🏠 Finca' + (n > 1 ? 's' : '') + '</h2>';
+  for (var i = 1; i <= n; i++) card.innerHTML += fincaHtml(i, i > 1);
+  if (cfg.nF === '3+') {
+    var ab = document.createElement('button');
+    ab.className = 'add-btn';
+    ab.textContent = '+ Añadir finca';
+    ab.onclick = function() {
+      fincaCnt++;
+      var d = document.createElement('div');
+      d.innerHTML = fincaHtml(fincaCnt, true);
+      card.insertBefore(d.firstElementChild, ab);
+    };
+    card.appendChild(ab);
+  }
+  w.appendChild(card);
+}
+
+// ── PARTIES ──────────────────────────────────────────────
+function partyHtml(label, n, isSoc, rm) {
+  uid++;
+  var u = uid;
+  var r = rm ? '<button class="rm-btn" onclick="this.closest(\'.party\').remove()">✕</button>' : '';
+
+  if (isSoc) {
+    return '<div class="party"><h3>' + label + ' ' + n + ' — Sociedad</h3>' + r +
+      '<div class="field"><label>Nombre de la sociedad *</label><input type="text" placeholder="Ej: Inmuebles XYZ S.L."></div>' +
+      '<div class="row2"><div class="field"><label>CIF *</label><input type="text" placeholder="B12345678"></div>' +
+      '<div class="field"><label>Cargo del representante *</label><input type="text" placeholder="Administrador único"></div></div>' +
+      '<div class="field"><label>Nombre del representante legal *</label><input type="text" placeholder="Nombre y apellidos completos"></div>' +
+      '<div class="field"><label>DNI / NIE del representante *</label><input type="text" placeholder="12345678A"></div>' +
+      '<div class="field"><label>Cuota de participación *</label><input type="text" placeholder="Ej: 50% (mitad indivisa), 100%, 1/3..."></div>' +
+    '</div>';
+  }
+
+  return '<div class="party"><h3>' + label + ' ' + n + '</h3>' + r +
+    '<div class="toggle-row"><input type="checkbox" id="soc' + u + '" onchange="document.getElementById(\'socx' + u + '\').classList.toggle(\'hidden\',!this.checked)">' +
+    '<label for="soc' + u + '">Es una sociedad (S.L., S.A., etc.)</label></div>' +
+    '<div id="socx' + u + '" class="hidden">' +
+      '<div class="field"><label>Razón social *</label><input type="text" placeholder="Ej: Inmuebles XYZ S.L."></div>' +
+      '<div class="row2"><div class="field"><label>CIF *</label><input type="text" placeholder="B12345678"></div>' +
+      '<div class="field"><label>Cargo representante *</label><input type="text" placeholder="Administrador único"></div></div>' +
+      '<div class="field"><label>Nombre del representante *</label><input type="text" placeholder="Nombre y apellidos"></div>' +
+      '<div class="field"><label>DNI representante *</label><input type="text" placeholder="12345678A"></div>' +
+    '</div>' +
+    '<div class="row2"><div class="field"><label>Nombre y apellidos *</label><input type="text" placeholder="Nombre completo"></div>' +
+    '<div class="field"><label>DNI / NIE *</label><input type="text" placeholder="12345678A"></div></div>' +
+    '<div class="row2"><div class="field"><label>Estado civil</label><select><option value="">—</option>' +
+    '<option>Soltero/a</option><option>Casado/a</option><option>Viudo/a</option><option>Divorciado/a</option></select></div>' +
+    '<div class="field"><label>Profesión</label><input type="text" placeholder="Ej: Médico, Empresario..."></div></div>' +
+    '<div class="field"><label>Domicilio completo</label><input type="text" placeholder="Calle, número, piso, municipio"></div>' +
+    '<div class="field"><label>Cuota de participación *</label><input type="text" placeholder="Ej: 50% (mitad indivisa), 100%, 1/3..."></div>' +
+    '<div class="toggle-row"><input type="checkbox" id="pow' + u + '" onchange="document.getElementById(\'powx' + u + '\').classList.toggle(\'hidden\',!this.checked)">' +
+    '<label for="pow' + u + '">Actúa mediante poder notarial (representado por abogado u otra persona)</label></div>' +
+    '<div id="powx' + u + '" class="hidden">' +
+      '<div class="field"><label>Nombre del representante (apoderado) *</label><input type="text" placeholder="Nombre y apellidos completos"></div>' +
+      '<div class="field"><label>DNI / NIE del representante *</label><input type="text" placeholder="12345678A"></div>' +
+      '<div class="row2">' +
+        '<div class="field"><label>Notario autorizante del poder</label><input type="text" placeholder="Nombre del notario"></div>' +
+        '<div class="field"><label>Fecha del poder</label><input type="date"></div>' +
+      '</div>' +
+      '<div class="field"><label>Número de protocolo</label><input type="text" placeholder="Ej: 1234/2024"></div>' +
+    '</div>' +
+    '<div class="toggle-row"><input type="checkbox" id="ext' + u + '" onchange="document.getElementById(\'extx' + u + '\').classList.toggle(\'hidden\',!this.checked)">' +
+    '<label for="ext' + u + '">Es extranjero/a (nacionalidad no española)</label></div>' +
+    '<div id="extx' + u + '" class="hidden">' +
+      '<div class="field"><label>¿Es residente fiscal en España? *</label>' +
+        '<div class="rg">' +
+          '<label><input type="radio" name="res' + u + '" value="Sí, residente fiscal en España"> Sí, residente fiscal</label>' +
+          '<label><input type="radio" name="res' + u + '" value="No, no residente fiscal"> No, no residente fiscal</label>' +
+          '<label><input type="radio" name="res' + u + '" value="No lo sé"> No lo sé</label>' +
+        '</div>' +
+      '</div>' +
+      '<div class="warn">⚠ Si el <strong>vendedor</strong> es no residente fiscal, el comprador deberá retener el 3% del precio e ingresarlo en Hacienda (Modelo 211).</div>' +
+      '<div class="field" style="margin-top:10px"><label>País de residencia habitual</label><input type="text" placeholder="Ej: Alemania, Reino Unido, Francia..."></div>' +
+    '</div>' +
+  '</div>';
+}
+
+function buildParties(cId, label, nStr, isSoc) {
+  var n = nStr === '3+' ? 3 : parseInt(nStr);
+  var c = document.getElementById(cId);
+  c.innerHTML = '';
+  var card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = '<h2>👤 ' + label + (n > 1 ? 's' : '') + '</h2>';
+  for (var i = 1; i <= n; i++) card.innerHTML += partyHtml(label, i, isSoc, i > 1);
+  if (nStr === '3+') {
+    var cnt = n;
+    var ab = document.createElement('button');
+    ab.className = 'add-btn';
+    ab.textContent = '+ Añadir ' + label.toLowerCase();
+    ab.onclick = function() {
+      cnt++;
+      var d = document.createElement('div');
+      d.innerHTML = partyHtml(label, cnt, isSoc, true);
+      card.insertBefore(d.firstElementChild, ab);
+    };
+    card.appendChild(ab);
+  }
+  c.appendChild(card);
+}
+
+// ── COLLECT ──────────────────────────────────────────────
+function collectBlock(cId) {
+  var out = [];
+  document.querySelectorAll('#' + cId + ' .party').forEach(function(p) {
+    var rows = [];
+    p.querySelectorAll('input[type=text], select').forEach(function(inp) {
+      var f = inp.closest('.field');
+      if (!f) return;
+      var lbl = f.querySelector('label');
+      if (lbl && inp.value.trim()) {
+        rows.push({lbl: lbl.textContent.replace(' *','').trim(), val: inp.value.trim()});
+      }
+    });
+    p.querySelectorAll('input[type=radio]:checked').forEach(function(r) {
+      var f = r.closest('.field');
+      if (!f) return;
+      var lbl = f.querySelector('label');
+      if (lbl) rows.push({lbl: lbl.textContent.replace(' *','').trim(), val: r.value});
+    });
+    if (rows.length) out.push(rows);
+  });
+  return out;
+}
+
+function gv(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function gr(name) { var el = document.querySelector('input[name=' + name + ']:checked'); return el ? el.value : ''; }
+
+// ── RESUMEN ──────────────────────────────────────────────
+function buildRes() {
+  var h = '';
+
+  // Fincas
+  var fincas = collectBlock('fincasWrap');
+  fincas.forEach(function(rows, i) {
+    h += '<div class="sg"><h3>🏠 Finca ' + (fincas.length > 1 ? i+1 : '') + '</h3>';
+    rows.forEach(function(r){ h += '<div class="sr"><span>' + r.lbl + '</span><span>' + r.val + '</span></div>'; });
+    h += '</div>';
+  });
+  var hab = gr('hab');
+  if (hab) h += '<div class="sg"><h3>Vivienda habitual</h3><div class="sr"><span>¿Vivienda habitual del comprador?</span><span>' + hab + '</span></div></div>';
+
+  // Partes
+  function addParties(label, parties) {
+    parties.forEach(function(rows, i) {
+      h += '<div class="sg"><h3>👤 ' + label + (parties.length > 1 ? ' ' + (i+1) : '') + '</h3>';
+      rows.forEach(function(r){ h += '<div class="sr"><span>' + r.lbl + '</span><span>' + r.val + '</span></div>'; });
+      h += '</div>';
+    });
+  }
+  addParties('Vendedor', collectBlock('vendWrap'));
+  addParties('Comprador', collectBlock('compWrap'));
+
+  // Precio
+  h += '<div class="sg"><h3>💶 Precio y pago</h3>' +
+    (gv('precio') ? '<div class="sr"><span>Precio total</span><span>' + gv('precio') + '</span></div>' : '') +
+    '<div class="sr"><span>Arras previas</span><span>' + (gr('arras')||'—') + '</span></div>';
+  if (gr('arras') === 'Sí') {
+    if (gv('arras-importe')) h += '<div class="sr"><span>Importe arras</span><span>' + gv('arras-importe') + '</span></div>';
+    if (gv('arras-tipo'))    h += '<div class="sr"><span>Tipo arras</span><span>' + gv('arras-tipo') + '</span></div>';
+    if (gv('arras-fecha'))   h += '<div class="sr"><span>Fecha arras</span><span>' + gv('arras-fecha') + '</span></div>';
+  }
+  if (gv('pago-acto'))   h += '<div class="sr"><span>Importe en el acto</span><span>' + gv('pago-acto') + '</span></div>';
+  if (gv('pago-medio'))  h += '<div class="sr"><span>Medio de pago</span><span>' + gv('pago-medio') + '</span></div>';
+  if (gv('pago-detalle'))h += '<div class="sr"><span>Detalles pago</span><span>' + gv('pago-detalle') + '</span></div>';
+  h += '<div class="sr"><span>Hipoteca</span><span>' + (gr('hipoteca')||'No') + '</span></div>';
+  if (gr('hipoteca') === 'Sí' || gr('hipoteca') === 'En trámite') {
+    if (gv('hipoteca-banco'))  h += '<div class="sr"><span>Entidad</span><span>' + gv('hipoteca-banco') + '</span></div>';
+    if (gv('hipoteca-importe'))h += '<div class="sr"><span>Importe préstamo</span><span>' + gv('hipoteca-importe') + '</span></div>';
+  }
+  h += '</div>';
+
+  document.getElementById('resumen').innerHTML = h;
+}
+
+// ── WORD ─────────────────────────────────────────────────
+function dlWord() {
+  function wBlock(title, parties) {
+    if (!parties.length) return '';
+    var h = '<h2>' + title + '</h2>';
+    parties.forEach(function(rows, i) {
+      if (parties.length > 1) h += '<p><strong>Parte ' + (i+1) + ':</strong></p>';
+      rows.forEach(function(r){ h += '<p>' + r.lbl + ': <strong>' + r.val + '</strong></p>'; });
+      h += '<br>';
+    });
+    return h;
+  }
+
+  var fincas = collectBlock('fincasWrap');
+  var fBody = '<h2>INMUEBLE/S</h2>';
+  fincas.forEach(function(rows, i) {
+    if (fincas.length > 1) fBody += '<p><strong>Finca ' + (i+1) + ':</strong></p>';
+    rows.forEach(function(r){ fBody += '<p>' + r.lbl + ': <strong>' + r.val + '</strong></p>'; });
+    fBody += '<br>';
+  });
+  fBody += '<p>¿Vivienda habitual del comprador?: <strong>' + (gr('hab')||'—') + '</strong></p><br>';
+
+  var pBody = '<h2>PRECIO Y FORMA DE PAGO</h2>' +
+    '<p>Precio total: <strong>' + (gv('precio')||'—') + '</strong></p>' +
+    '<p>Arras previas: <strong>' + (gr('arras')||'—') + '</strong></p>';
+  if (gr('arras') === 'Sí') {
+    pBody += '<p>Importe arras: <strong>' + gv('arras-importe') + '</strong></p>' +
+             '<p>Tipo de arras: <strong>' + gv('arras-tipo') + '</strong></p>' +
+             '<p>Fecha entrega arras: <strong>' + gv('arras-fecha') + '</strong></p>';
+  }
+  pBody += '<p>Importe en el acto: <strong>' + (gv('pago-acto')||'—') + '</strong></p>' +
+           '<p>Medio de pago: <strong>' + (gv('pago-medio')||'—') + '</strong></p>';
+  if (gv('pago-detalle')) pBody += '<p>Detalles: <strong>' + gv('pago-detalle') + '</strong></p>';
+  pBody += '<p>¿Financia con hipoteca?: <strong>' + (gr('hipoteca')||'No') + '</strong></p>';
+  if (gr('hipoteca') === 'Sí' || gr('hipoteca') === 'En trámite') {
+    pBody += '<p>Entidad financiera: <strong>' + gv('hipoteca-banco') + '</strong></p>' +
+             '<p>Importe préstamo: <strong>' + gv('hipoteca-importe') + '</strong></p>';
+  }
+  pBody += '<br>';
+
+  var body = fBody +
+    wBlock('VENDEDOR/ES', collectBlock('vendWrap')) +
+    wBlock('COMPRADOR/ES', collectBlock('compWrap')) +
+    pBody +
+    '<p style="font-size:10pt;color:#777">Documento generado por Oficial Notarial IA · ' + new Date().toLocaleDateString('es-ES') + '</p>';
+
+  var w = '<html xmlns:o=\'urn:schemas-microsoft-com:office:office\' xmlns:w=\'urn:schemas-microsoft-com:office:word\'>' +
+    '<head><meta charset=\'utf-8\'><style>body{font-family:\'Times New Roman\',serif;font-size:12pt;line-height:1.9;margin:3cm}' +
+    'h1{text-align:center;font-size:14pt;margin-bottom:20pt}h2{font-size:12pt;margin-top:16pt;border-bottom:1px solid #aaa;padding-bottom:3pt}p{margin:3pt 0}' +
+    '</style></head><body><h1>NOTARÍA<br>DATOS PARA ESCRITURA DE COMPRAVENTA</h1>' + body + '</body></html>';
+
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([w], {type: 'application/msword'}));
+  a.download = 'Datos_Compraventa_Notaria.doc';
+  a.click();
+
+  document.getElementById('ok').style.display = 'block';
+  document.getElementById('ok').scrollIntoView({behavior: 'smooth'});
+}
+
+renderBar();
+</script>
+</body>
+</html>
