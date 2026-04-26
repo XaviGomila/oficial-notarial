@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notaría · Datos Poder Notarial</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-height:100vh}
+.header{background:#1a3a5c;color:#fff;padding:20px 24px 18px}
+.header-inner{max-width:620px;margin:0 auto}
+.header-seal{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.seal-icon{width:38px;height:38px;border-radius:8px;border:1px solid rgba(196,168,74,0.5);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.header h1{font-family:'Lora',serif;font-size:1.15rem;font-weight:500}
+.header p{font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:3px}
+.acto-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(196,168,74,0.15);border:1px solid rgba(196,168,74,0.3);border-radius:100px;padding:4px 12px;font-size:0.78rem;color:#c9a84c;margin-top:10px}
+.wrap{max-width:620px;margin:24px auto;padding:0 16px 60px}
+.notice{background:#eef3f9;border-left:3px solid #1a3a5c;border-radius:0 8px 8px 0;padding:11px 16px;font-size:0.83rem;color:#2c4a6a;line-height:1.6;margin-bottom:18px}
+.warn{background:#fef6e4;border-left:3px solid #c9a84c;border-radius:0 8px 8px 0;padding:9px 14px;font-size:0.78rem;color:#8c6830;line-height:1.5;margin-top:6px}
+.step-bar{display:flex;align-items:center;margin-bottom:22px}
+.sdot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;transition:all .3s}
+.sdot.done{background:#1a3a5c;color:#fff}
+.sdot.active{background:#c9a84c;color:#1a1510;box-shadow:0 0 0 4px rgba(201,168,76,0.2)}
+.sdot.pend{background:#ddd;color:#999}
+.sline{flex:1;height:2px;background:#ddd}
+.sline.done{background:#1a3a5c}
+.screen{display:none}
+.screen.active{display:block}
+.card{background:#fff;border-radius:10px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.07);margin-bottom:14px;border:0.5px solid #e8e2d8}
+.card h2{font-size:0.82rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px;padding-bottom:9px;border-bottom:1.5px solid #f0ebe0}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:0.79rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6b6258;margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:#1a1510;background:#faf8f4;border:1.5px solid #ddd8ce;border-radius:7px;padding:10px 12px;outline:none;transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#1a3a5c;background:#fff}
+.field textarea{resize:vertical;min-height:80px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px}
+.pill{padding:7px 15px;border-radius:20px;border:1.5px solid #ddd8ce;background:#faf8f4;font-size:0.83rem;cursor:pointer;font-weight:500;color:#6b6258;transition:all .15s;font-family:'DM Sans',sans-serif}
+.pill.on{border-color:#1a3a5c;background:#1a3a5c;color:#fff}
+.rg{display:flex;gap:14px;flex-wrap:wrap;margin-top:5px}
+.rg label{display:flex;align-items:center;gap:6px;font-size:0.88rem;cursor:pointer;color:#3d3830}
+.rg input{accent-color:#1a3a5c}
+.party{background:#f9f6f0;border:1px solid #e8e2d8;border-radius:8px;padding:15px;margin-bottom:10px;position:relative}
+.party h3{font-size:0.8rem;font-weight:600;color:#1a3a5c;margin-bottom:12px}
+.rm-btn{position:absolute;top:10px;right:10px;background:none;border:none;color:#c0392b;font-size:1rem;cursor:pointer}
+.add-btn{background:#f0ebe0;color:#1a3a5c;border:1.5px dashed #c8bfad;width:100%;padding:9px;border-radius:7px;font-size:0.83rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px;transition:all .15s}
+.add-btn:hover{background:#e8e0d0}
+.toggle-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:0.8rem;color:#6b6258}
+.toggle-row input[type=checkbox]{accent-color:#1a3a5c;width:15px;height:15px;cursor:pointer}
+.hidden{display:none}
+.nav{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap}
+.btn-p{background:#1a3a5c;color:#fff;border:none;padding:12px 22px;border-radius:7px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;flex:1;transition:opacity .15s}
+.btn-p:hover{opacity:.88}
+.btn-s{background:#f0ebe0;color:#3d3830;border:1px solid #ddd8ce;padding:12px 18px;border-radius:7px;font-size:0.88rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-s:hover{background:#e8e0d0}
+.btn-w{background:#2b579a;color:#fff;border:none;padding:12px 20px;border-radius:7px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .15s}
+.btn-w:hover{opacity:.88}
+.sg{margin-bottom:12px}
+.sg h3{font-size:0.78rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px}
+.sr{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0ebe0;font-size:0.83rem}
+.sr span:first-child{color:#6b6258}
+.sr span:last-child{font-weight:500;text-align:right;max-width:60%}
+.success{background:#e8f5e9;border:1.5px solid #81c784;border-radius:10px;padding:20px;text-align:center;color:#2e7d32;margin-top:16px}
+.success h3{font-size:1rem;margin-bottom:6px;font-family:'Lora',serif}
+.success p{font-size:0.85rem;line-height:1.5}
+.footer{text-align:center;padding:24px 16px;font-size:0.75rem;color:#a09585;border-top:1px solid #e8e2d8;margin-top:8px}
+@media(max-width:480px){.row2{grid-template-columns:1fr}.nav{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-seal">
+      <div class="seal-icon">⚖</div>
+      <div>
+        <h1>Notaría · Poder Notarial</h1>
+        <p>Complete sus datos para que podamos preparar su expediente</p>
+      </div>
+    </div>
+    <div class="acto-badge">✍️ Poder notarial</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="notice">Por favor, rellene los datos con la mayor precisión posible. Al finalizar, descargue el documento Word y envíenoslo adjunto por email. El proceso le llevará aproximadamente 3 minutos.</div>
+  <div class="step-bar" id="stepBar"></div>
+
+  <!-- PASO 0 — Configurador -->
+  <div class="screen active" id="s0">
+    <div class="card">
+      <h2>¿Alguna parte es una sociedad?</h2>
+      <div class="pills">
+        <button class="pill on" onclick="pill(this,'soc','no')">No</button>
+        <button class="pill" onclick="pill(this,'soc','pod')">Sí, el poderdante</button>
+        <button class="pill" onclick="pill(this,'soc','apo')">Sí, el apoderado</button>
+        <button class="pill" onclick="pill(this,'soc','ambos')">Sí, ambos</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>¿Cuántos poderdantes?</h2>
+      <div class="pills">
+        <button class="pill on" onclick="pill(this,'nP','1')">1</button>
+        <button class="pill" onclick="pill(this,'nP','2')">2</button>
+        <button class="pill" onclick="pill(this,'nP','3+')">Más de 2</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>¿Cuántos apoderados?</h2>
+      <div class="pills">
+        <button class="pill on" onclick="pill(this,'nA','1')">1</button>
+        <button class="pill" onclick="pill(this,'nA','2')">2</button>
+        <button class="pill" onclick="pill(this,'nA','3+')">Más de 2</button>
+      </div>
+    </div>
+    <div class="nav"><button class="btn-p" onclick="go(1)">Continuar →</button></div>
+  </div>
+
+  <!-- PASO 1 — Poderdantes -->
+  <div class="screen" id="s1">
+    <div id="podWrap"></div>
+    <div class="nav">
+      <button class="btn-s" onclick="go(0)">← Atrás</button>
+      <button class="btn-p" onclick="go(2)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- PASO 2 — Apoderados -->
+  <div class="screen" id="s2">
+    <div id="apoWrap"></div>
+    <div class="notice" style="margin-top:0">El apoderado <strong>no necesita estar presente</strong> en la firma. Solo necesitamos sus datos completos.</div>
+    <div class="nav">
+      <button class="btn-s" onclick="go(1)">← Atrás</button>
+      <button class="btn-p" onclick="go(3)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- PASO 3 — Tipo de poder -->
+  <div class="screen" id="s3">
+    <div class="card">
+      <h2>✍️ Tipo de poder y facultades</h2>
+      <div class="field">
+        <label>Tipo de poder *</label>
+        <select id="tipo-poder" onchange="toggleTipoPoder()">
+          <option value="">— Seleccione —</option>
+          <option value="general">Poder general (todos los actos)</option>
+          <option value="venta">Poder para venta de inmueble</option>
+          <option value="compra">Poder para compra de inmueble</option>
+          <option value="banco">Poder para gestiones bancarias</option>
+          <option value="judicial">Poder para representación judicial</option>
+          <option value="herencia">Poder para aceptar herencia</option>
+          <option value="admin">Poder para gestiones administrativas</option>
+          <option value="preventivo">Poder preventivo (Ley 8/2021)</option>
+          <option value="empresa">Poder orgánico (representación de sociedad)</option>
+          <option value="extranjero">Poder para trámites en el extranjero</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Descripción de las facultades</label>
+        <textarea id="facultades" placeholder="Explique con sus palabras para qué necesita el poder y qué quiere que haga el apoderado. El notario lo redactará con precisión jurídica."></textarea>
+      </div>
+
+      <!-- Poder preventivo -->
+      <div id="bloque-preventivo" class="hidden">
+        <div class="warn">⚠ El poder preventivo mantiene su vigencia si el poderdante pierde capacidad. Es la medida de apoyo voluntaria más eficaz. El notario le informará en detalle.</div>
+        <div class="field" style="margin-top:10px">
+          <label>¿Cuándo quiere que sea eficaz?</label>
+          <div class="rg">
+            <label><input type="radio" name="prev-eficacia" value="Desde ahora"> Desde ahora</label>
+            <label><input type="radio" name="prev-eficacia" value="Solo si pierdo capacidad"> Solo si pierdo capacidad</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>¿Incluye decisiones sobre salud y cuidados personales?</label>
+          <div class="rg">
+            <label><input type="radio" name="prev-salud" value="Sí"> Sí</label>
+            <label><input type="radio" name="prev-salud" value="No, solo patrimoniales"> No, solo patrimoniales</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Poder para extranjero -->
+      <div id="bloque-extranjero" class="hidden">
+        <div class="field">
+          <label>País donde se usará el poder *</label>
+          <input type="text" id="pais-destino" placeholder="Ej: Alemania, Reino Unido, Francia...">
+        </div>
+        <div class="field">
+          <label>Organismo o entidad ante quien se presentará</label>
+          <input type="text" id="organismo-destino" placeholder="Ej: Registro Civil de Berlín, Notaría en Londres...">
+        </div>
+        <div class="warn">⚠ Si el país es signatario del Convenio de La Haya, se necesitará Apostilla. Si no lo es, legalización consular. Puede que también sea necesaria traducción jurada.</div>
+      </div>
+
+      <!-- Poder empresa -->
+      <div id="bloque-empresa" class="hidden">
+        <div class="field" style="margin-top:10px">
+          <label>¿Tiene la escritura de constitución de la sociedad a mano?</label>
+          <div class="rg">
+            <label><input type="radio" name="empresa-escritura" value="Sí"> Sí</label>
+            <label><input type="radio" name="empresa-escritura" value="No"> No</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📅 Vigencia</h2>
+      <div class="field">
+        <label>¿Tiene fecha de vencimiento?</label>
+        <div class="rg">
+          <label><input type="radio" name="vencimiento" value="No (indefinido)" checked onclick="document.getElementById('fecha-venc-w').classList.add('hidden')"> No (indefinido)</label>
+          <label><input type="radio" name="vencimiento" value="Sí" onclick="document.getElementById('fecha-venc-w').classList.remove('hidden')"> Sí</label>
+        </div>
+      </div>
+      <div id="fecha-venc-w" class="hidden">
+        <div class="field"><label>Fecha de vencimiento</label><input type="date" id="fecha-venc"></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-s" onclick="go(2)">← Atrás</button>
+      <button class="btn-p" onclick="go(4)">Revisar →</button>
+    </div>
+  </div>
+
+  <!-- PASO 4 — Resumen -->
+  <div class="screen" id="s4">
+    <div class="card">
+      <h2>📋 Revise sus datos antes de descargar</h2>
+      <div id="resumen"></div>
+    </div>
+    <div class="notice">Si hay algún error, pulse "Corregir" para volver atrás.</div>
+    <div class="nav">
+      <button class="btn-s" onclick="go(3)">← Corregir</button>
+      <button class="btn-w" onclick="dlWord()">⬇️ Descargar Word y enviar a la notaría</button>
+    </div>
+    <div class="success" id="ok">
+      <h3>✅ Documento descargado</h3>
+      <p>Por favor, adjunte el archivo Word descargado en su respuesta al email de la notaría.<br>Nos pondremos en contacto para confirmar la documentación necesaria.</p>
+    </div>
+  </div>
+
+  <div class="footer">Oficial Notarial IA · Sus datos se procesan localmente y no se almacenan en ningún servidor.</div>
+</div>
+
+<script>
+var LABELS = ['Inicio','Poderdante/s','Apoderado/s','Tipo de poder','Resumen'];
+var cfg = {nP:'1', nA:'1', soc:'no'};
+var step = 0, uid = 0;
+
+function pill(el, k, v){
+  el.closest('.card').querySelectorAll('.pill').forEach(function(p){ p.classList.remove('on'); });
+  el.classList.add('on');
+  cfg[k] = v;
+}
+
+function renderBar(){
+  var b = document.getElementById('stepBar'); b.innerHTML = '';
+  LABELS.forEach(function(l, i){
+    var d = document.createElement('div');
+    d.className = 'sdot ' + (i < step ? 'done' : i === step ? 'active' : 'pend');
+    d.textContent = i < step ? '✓' : (i + 1); d.title = l; b.appendChild(d);
+    if(i < LABELS.length - 1){ var ln = document.createElement('div'); ln.className = 'sline' + (i < step ? ' done' : ''); b.appendChild(ln); }
+  });
+}
+
+function go(n){
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  step = n;
+  if(n === 1) buildParties('podWrap', 'Poderdante', cfg.nP, cfg.soc === 'pod' || cfg.soc === 'ambos', true);
+  if(n === 2) buildParties('apoWrap', 'Apoderado',  cfg.nA, cfg.soc === 'apo' || cfg.soc === 'ambos', false);
+  if(n === 4) buildRes();
+  document.getElementById('s' + n).classList.add('active');
+  renderBar();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function toggleTipoPoder(){
+  var v = document.getElementById('tipo-poder').value;
+  document.getElementById('bloque-preventivo').classList.toggle('hidden', v !== 'preventivo');
+  document.getElementById('bloque-extranjero').classList.toggle('hidden', v !== 'extranjero');
+  document.getElementById('bloque-empresa').classList.toggle('hidden', v !== 'empresa');
+}
+
+// ── PARTY BLOCKS ─────────────────────────────────────
+function partyHtml(label, n, isSoc, rm, esPoderdante){
+  uid++;
+  var u = uid;
+  var r = rm ? '<button class="rm-btn" onclick="this.closest(\'.party\').remove()">✕</button>' : '';
+
+  if(isSoc){
+    return '<div class="party"><h3>' + label + ' ' + n + ' — Sociedad</h3>' + r +
+      '<div class="field"><label>Nombre de la sociedad *</label><input type="text" placeholder="Ej: Inmuebles XYZ S.L."></div>' +
+      '<div class="row2"><div class="field"><label>CIF *</label><input type="text" placeholder="B12345678"></div>' +
+      '<div class="field"><label>Cargo del representante *</label><input type="text" placeholder="Administrador único"></div></div>' +
+      '<div class="field"><label>Nombre del representante *</label><input type="text" placeholder="Nombre y apellidos completos"></div>' +
+      '<div class="field"><label>DNI / NIE del representante *</label><input type="text" placeholder="12345678A"></div>' +
+      '<div class="field"><label>Domicilio de la sociedad</label><input type="text" placeholder="Dirección completa"></div>' +
+    '</div>';
+  }
+
+  var camposPersona =
+    '<div class="row2"><div class="field"><label>Nombre y apellidos *</label><input type="text" placeholder="Nombre completo"></div>' +
+    '<div class="field"><label>DNI / NIE *</label><input type="text" placeholder="12345678A"></div></div>' +
+    '<div class="row2"><div class="field"><label>Estado civil</label><select><option value="">—</option><option>Soltero/a</option><option>Casado/a</option><option>Viudo/a</option><option>Divorciado/a</option></select></div>' +
+    '<div class="field"><label>Profesión</label><input type="text" placeholder="Ej: Empresario, Médico..."></div></div>' +
+    '<div class="field"><label>Domicilio completo</label><input type="text" placeholder="Calle, número, piso, municipio"></div>';
+
+  // Solo el poderdante necesita datos de extranjero y poder previo
+  var camposExtra = '';
+  if(esPoderdante){
+    camposExtra +=
+      '<div class="toggle-row"><input type="checkbox" id="ext' + u + '" onchange="document.getElementById(\'extx' + u + '\').classList.toggle(\'hidden\',!this.checked)">' +
+      '<label for="ext' + u + '">Es extranjero/a</label></div>' +
+      '<div id="extx' + u + '" class="hidden">' +
+        '<div class="field"><label>¿Es residente fiscal en España?</label>' +
+          '<div class="rg"><label><input type="radio" name="res' + u + '" value="Sí, residente fiscal en España"> Sí</label>' +
+          '<label><input type="radio" name="res' + u + '" value="No, no residente fiscal"> No</label>' +
+          '<label><input type="radio" name="res' + u + '" value="No lo sé"> No lo sé</label></div>' +
+        '</div>' +
+        '<div class="field"><label>País de residencia habitual</label><input type="text" placeholder="Ej: Alemania, Reino Unido..."></div>' +
+      '</div>' +
+      '<div class="toggle-row"><input type="checkbox" id="pow' + u + '" onchange="document.getElementById(\'powx' + u + '\').classList.toggle(\'hidden\',!this.checked)">' +
+      '<label for="pow' + u + '">Actúa mediante poder notarial previo</label></div>' +
+      '<div id="powx' + u + '" class="hidden">' +
+        '<div class="field"><label>Nombre del representante *</label><input type="text" placeholder="Nombre y apellidos completos"></div>' +
+        '<div class="field"><label>DNI / NIE del representante *</label><input type="text" placeholder="12345678A"></div>' +
+        '<div class="row2"><div class="field"><label>Notario autorizante</label><input type="text" placeholder="Nombre del notario"></div>' +
+        '<div class="field"><label>Fecha del poder</label><input type="date"></div></div>' +
+        '<div class="field"><label>Número de protocolo</label><input type="text" placeholder="Ej: 1234/2024"></div>' +
+      '</div>';
+  }
+
+  return '<div class="party"><h3>' + label + ' ' + n + '</h3>' + r + camposPersona + camposExtra + '</div>';
+}
+
+function buildParties(cId, label, nStr, isSoc, esPoderdante){
+  var n = nStr === '3+' ? 3 : parseInt(nStr);
+  var c = document.getElementById(cId); c.innerHTML = '';
+  var card = document.createElement('div'); card.className = 'card';
+  card.innerHTML = '<h2>👤 ' + label + (n > 1 ? 's' : '') + '</h2>';
+  for(var i = 1; i <= n; i++) card.innerHTML += partyHtml(label, i, isSoc, i > 1, esPoderdante);
+  if(nStr === '3+'){
+    var cnt = n;
+    var ab = document.createElement('button'); ab.className = 'add-btn';
+    ab.textContent = '+ Añadir ' + label.toLowerCase();
+    ab.onclick = (function(lbl, soc, esPod){ return function(){
+      cnt++;
+      var d = document.createElement('div');
+      d.innerHTML = partyHtml(lbl, cnt, soc, true, esPod);
+      card.insertBefore(d.firstElementChild, ab);
+    }; })(label, isSoc, esPoderdante);
+    card.appendChild(ab);
+  }
+  c.appendChild(card);
+}
+
+// ── COLLECT ──────────────────────────────────────────
+function collectBlock(cId){
+  var out = [];
+  document.querySelectorAll('#' + cId + ' .party').forEach(function(p){
+    var rows = [];
+    p.querySelectorAll('input[type=text], input[type=date], select').forEach(function(inp){
+      var f = inp.closest('.field'); if(!f) return;
+      var lbl = f.querySelector('label');
+      if(lbl && inp.value.trim()) rows.push({lbl: lbl.textContent.replace(' *','').trim(), val: inp.value.trim()});
+    });
+    p.querySelectorAll('input[type=radio]:checked').forEach(function(r){
+      var f = r.closest('.field'); if(!f) return;
+      var lbl = f.querySelector('label');
+      if(lbl) rows.push({lbl: lbl.textContent.replace(' *','').trim(), val: r.value});
+    });
+    if(rows.length) out.push(rows);
+  });
+  return out;
+}
+
+function gv(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function gr(name){ var el = document.querySelector('input[name=' + name + ']:checked'); return el ? el.value : ''; }
+
+// ── RESUMEN ──────────────────────────────────────────
+function buildRes(){
+  var h = '';
+  function addParties(label, parties){
+    parties.forEach(function(rows, i){
+      h += '<div class="sg"><h3>' + label + (parties.length > 1 ? ' ' + (i+1) : '') + '</h3>';
+      rows.forEach(function(r){ h += '<div class="sr"><span>' + r.lbl + '</span><span>' + r.val + '</span></div>'; });
+      h += '</div>';
+    });
+  }
+  addParties('Poderdante', collectBlock('podWrap'));
+  addParties('Apoderado',  collectBlock('apoWrap'));
+
+  h += '<div class="sg"><h3>✍️ Tipo de poder</h3>' +
+    (gv('tipo-poder') ? '<div class="sr"><span>Tipo</span><span>' + document.getElementById('tipo-poder').options[document.getElementById('tipo-poder').selectedIndex].text + '</span></div>' : '') +
+    (gv('facultades') ? '<div class="sr"><span>Facultades</span><span>' + gv('facultades').substring(0,80) + (gv('facultades').length > 80 ? '…' : '') + '</span></div>' : '') +
+    '<div class="sr"><span>Vencimiento</span><span>' + (gr('vencimiento') || '—') + (gv('fecha-venc') ? ' — ' + gv('fecha-venc') : '') + '</span></div>' +
+    (gv('pais-destino') ? '<div class="sr"><span>País destino</span><span>' + gv('pais-destino') + '</span></div>' : '') +
+  '</div>';
+
+  document.getElementById('resumen').innerHTML = h;
+}
+
+// ── WORD ─────────────────────────────────────────────
+function dlWord(){
+  function wBlock(title, parties){
+    if(!parties.length) return '';
+    var h = '<h2>' + title + '</h2>';
+    parties.forEach(function(rows, i){
+      if(parties.length > 1) h += '<p><strong>Parte ' + (i+1) + ':</strong></p>';
+      rows.forEach(function(r){ h += '<p>' + r.lbl + ': <strong>' + r.val + '</strong></p>'; });
+      h += '<br>';
+    });
+    return h;
+  }
+
+  var tipoTexto = document.getElementById('tipo-poder').options[document.getElementById('tipo-poder').selectedIndex].text || '—';
+  var venc = gr('vencimiento') || '—';
+  if(gv('fecha-venc')) venc += ' — ' + gv('fecha-venc');
+
+  var body = wBlock('PODERDANTE/S', collectBlock('podWrap')) +
+    wBlock('APODERADO/S', collectBlock('apoWrap')) +
+    '<h2>TIPO DE PODER Y FACULTADES</h2>' +
+    '<p>Tipo: <strong>' + tipoTexto + '</strong></p>' +
+    (gv('facultades') ? '<p>Facultades: <strong>' + gv('facultades') + '</strong></p>' : '') +
+    '<p>Vencimiento: <strong>' + venc + '</strong></p>' +
+    (gv('pais-destino') ? '<p>País de destino: <strong>' + gv('pais-destino') + '</strong></p>' : '') +
+    (gv('organismo-destino') ? '<p>Organismo: <strong>' + gv('organismo-destino') + '</strong></p>' : '') +
+    '<br><p style="font-size:10pt;color:#777">Documento generado por Oficial Notarial IA · ' + new Date().toLocaleDateString('es-ES') + '</p>';
+
+  var w = '<html xmlns:o=\'urn:schemas-microsoft-com:office:office\' xmlns:w=\'urn:schemas-microsoft-com:office:word\'>' +
+    '<head><meta charset=\'utf-8\'><style>body{font-family:\'Times New Roman\',serif;font-size:12pt;line-height:1.9;margin:3cm}' +
+    'h1{text-align:center;font-size:14pt;margin-bottom:20pt}h2{font-size:12pt;margin-top:16pt;border-bottom:1px solid #aaa;padding-bottom:3pt}p{margin:3pt 0}' +
+    '</style></head><body><h1>NOTARÍA<br>DATOS PARA PODER NOTARIAL</h1>' + body + '</body></html>';
+
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([w], {type: 'application/msword'}));
+  a.download = 'Datos_Poder_Notarial.doc';
+  a.click();
+  document.getElementById('ok').style.display = 'block';
+  document.getElementById('ok').scrollIntoView({behavior: 'smooth'});
+}
+
+renderBar();
+</script>
+</body>
+</html>
