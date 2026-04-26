@@ -2877,7 +2877,8 @@ const FORM_LABELS = {
   obranue:     '🏗️ Obra nueva',
 };
 
-const DISPONIBLES = ['compraventa', 'poder' 'testamento' 'donación' 'renuncia' 'herencia' 'cancelación de hipoteca' 'cancelación' 'cancelacion' 'obra nueva']; // Añadir más cuando estén subidos a Vercel
+const DISPONIBLES = ['compraventa', 'poder', 'testamento', 'cancelacion'];
+// Añadir más cuando estén subidos a Vercel
 
 function detectarActo(){
   const actoRaw = (_lastParsed?.actoNombre || '').toLowerCase();
