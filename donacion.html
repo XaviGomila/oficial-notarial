@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notaría — Datos para Donación</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --ink:#0d1b2e; --gold:#c9a84c; --goldd:#a8872e; --bg:#f5f0e8;
+      --card:#ffffff; --ink2:#2c2c2c; --ink3:#888; --red:#c0392b;
+      --green:#1e8449; --amber:#d4820a; --border:#e0d8cc;
+      --shadow:0 2px 10px rgba(0,0,0,.07);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink2);min-height:100vh}
+
+    .hdr{background:var(--ink);padding:22px 20px 18px;text-align:center}
+    .hdr h1{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold);letter-spacing:.02em}
+    .hdr p{font-size:12px;color:rgba(255,255,255,.45);margin-top:5px}
+
+    .step-bar{background:var(--ink);padding:10px 20px 16px;display:flex;align-items:center;overflow-x:auto;gap:0;border-top:1px solid rgba(255,255,255,.08)}
+    .sdot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;transition:all .25s}
+    .sdot.done{background:var(--gold);color:var(--ink)}
+    .sdot.active{background:#fff;color:var(--ink);box-shadow:0 0 0 3px rgba(201,168,76,.4)}
+    .sdot.pend{background:rgba(255,255,255,.12);color:rgba(255,255,255,.4)}
+    .sline{flex:1;height:2px;background:rgba(255,255,255,.15);min-width:8px;transition:background .25s}
+    .sline.done{background:var(--gold)}
+
+    .wrap{max-width:700px;margin:0 auto;padding:22px 16px 90px}
+
+    .card{background:var(--card);border-radius:12px;padding:22px;margin-bottom:16px;border:1px solid var(--border);box-shadow:var(--shadow)}
+    .card h2{font-family:'Playfair Display',serif;font-size:16px;color:var(--ink);margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--gold);display:flex;align-items:center;gap:8px}
+
+    .field{margin-bottom:15px}
+    .field label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px}
+    .field input[type=text],.field input[type=date],.field input[type=number],.field select,.field textarea{
+      width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;
+      font-size:14px;font-family:inherit;background:#fafaf8;color:var(--ink2);transition:border-color .15s}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);outline:none;background:#fffdf7}
+    .field textarea{resize:vertical;min-height:90px;line-height:1.55}
+    .field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+
+    .rg{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+    .rg label{display:flex;align-items:center;gap:7px;font-size:13.5px;font-weight:400;cursor:pointer;padding:7px 13px;border:1.5px solid var(--border);border-radius:8px;transition:all .15s;line-height:1.3}
+    .rg label:hover{border-color:var(--gold);background:#fffdf7}
+    .rg input[type=radio]{accent-color:var(--gold);width:15px;height:15px;flex-shrink:0}
+    .rg label:has(input:checked){border-color:var(--gold);background:#fff8ec;font-weight:600}
+
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+    @media(max-width:540px){.two-col,.three-col{grid-template-columns:1fr}}
+
+    .notice{border-radius:9px;padding:13px 16px;font-size:13px;line-height:1.55;margin-bottom:15px}
+    .notice strong{display:block;margin-bottom:3px;font-size:13.5px}
+    .notice.amber{background:#fff8e8;border:1px solid #e8c878}
+    .notice.red{background:#fff0ee;border:1px solid #e8a090}
+    .notice.blue{background:#e8f0ff;border:1px solid #90a8e8}
+    .notice.green{background:#efffee;border:1px solid #88c888}
+    .notice ul{padding-left:18px;margin-top:7px}
+    .notice li{margin-bottom:4px}
+
+    .tag{display:inline-block;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:700;margin-left:5px;vertical-align:middle;letter-spacing:.03em}
+    .tag.imp{background:var(--red);color:#fff}
+    .tag.rec{background:var(--amber);color:#fff}
+
+    .item-block{border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:14px;background:#fafaf8;position:relative}
+    .item-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .item-num{font-size:12px;font-weight:700;background:var(--gold);color:var(--ink);padding:3px 12px;border-radius:12px;letter-spacing:.03em}
+    .btn-del{background:none;border:1px solid #f0b0a0;color:var(--red);font-size:12px;cursor:pointer;padding:4px 10px;border-radius:6px;transition:background .15s}
+    .btn-del:hover{background:#fff0ee}
+    .btn-add{background:transparent;color:var(--gold);border:1.5px dashed var(--gold);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;width:100%;margin-top:6px;transition:background .15s;font-family:inherit}
+    .btn-add:hover{background:#fff8ec}
+
+    .nav{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
+    .btn-p{background:var(--ink);color:#fff;border:none;padding:12px 28px;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .15s}
+    .btn-p:hover{opacity:.85}
+    .btn-s{background:transparent;color:var(--ink);border:1.5px solid var(--ink);padding:11px 22px;border-radius:9px;font-size:14px;cursor:pointer;font-family:inherit}
+    .btn-w{background:var(--gold);color:var(--ink);border:none;padding:12px 28px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s}
+    .btn-w:hover{opacity:.85}
+
+    .screen{display:none}
+    .screen.active{display:block}
+    .hidden{display:none!important}
+
+    /* Selector tipo bien */
+    .tipo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+    .tipo-card{border:2px solid var(--border);border-radius:10px;padding:16px;cursor:pointer;text-align:center;transition:all .2s;background:#fafaf8}
+    .tipo-card:hover{border-color:var(--gold);background:#fffdf7}
+    .tipo-card.selected{border-color:var(--gold);background:#fff8ec;box-shadow:0 0 0 3px rgba(201,168,76,.15)}
+    .tipo-card .tipo-ico{font-size:28px;margin-bottom:6px}
+    .tipo-card .tipo-lbl{font-size:13px;font-weight:700;color:var(--ink)}
+    .tipo-card .tipo-sub{font-size:11px;color:var(--ink3);margin-top:3px}
+    @media(max-width:540px){.tipo-grid{grid-template-columns:1fr 1fr}}
+
+    /* ISD plazo */
+    .isd-box{background:#fff0ee;border:2px solid var(--red);border-radius:10px;padding:18px 22px;margin-bottom:16px}
+    .isd-box .isd-label{font-size:12px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+    .isd-box .isd-date{font-family:'Playfair Display',serif;font-size:24px;color:var(--red);margin-bottom:4px;font-weight:600}
+    .isd-box .isd-sub{font-size:12px;color:var(--ink3);line-height:1.5}
+
+    /* Resumen */
+    .res-block{margin-bottom:20px}
+    .res-block h3{font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;padding:6px 0;border-bottom:1.5px solid var(--gold);margin-bottom:10px}
+    .res-row{display:flex;gap:12px;margin-bottom:7px;font-size:13px;line-height:1.4}
+    .res-lbl{font-weight:600;color:var(--ink);min-width:175px;flex-shrink:0}
+    .res-val{color:var(--ink2)}
+
+    .doc-list{list-style:none;padding:0}
+    .doc-list li{padding:8px 0;font-size:13px;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid var(--border);line-height:1.4}
+    .doc-list li:last-child{border-bottom:none}
+    .di{font-size:15px;line-height:1;flex-shrink:0;margin-top:1px}
+    .di.imp{color:var(--red)}
+    .di.rec{color:var(--amber)}
+
+    .success{display:none;background:#efffee;border:1px solid #88c888;border-radius:10px;padding:26px;text-align:center;margin-top:20px}
+    .success h3{color:var(--green);margin-bottom:8px;font-size:16px}
+    .success p{font-size:13px;color:var(--ink3);line-height:1.6}
+
+    .footer{text-align:center;font-size:11px;color:var(--ink3);padding:20px;border-top:1px solid var(--border)}
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>Donación — Datos para la notaría</h1>
+  <p>Complete el formulario para que preparemos su expediente. Sus datos se procesan localmente.</p>
+</div>
+<div class="step-bar" id="stepBar"></div>
+
+<div class="wrap">
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 0 — DONANTE                                   -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen active" id="s0">
+
+  <div class="notice amber">
+    <strong>¿Para qué sirve este formulario?</strong>
+    Permite a su notaría preparar la escritura de donación con toda la información necesaria. Sus datos se procesan localmente y no se envían a ningún servidor.
+  </div>
+
+  <div class="card">
+    <h2>🤲 Donante (quien entrega el bien)</h2>
+
+    <div class="two-col">
+      <div class="field">
+        <label>Nombre y apellidos completos <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="dn-nombre" placeholder="Ej: María Sánchez Ruiz">
+      </div>
+      <div class="field">
+        <label>DNI / NIE / Pasaporte <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="dn-dni" placeholder="Ej: 12345678A">
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label>Domicilio completo <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="dn-dom" placeholder="Calle, número, piso, localidad, código postal">
+      </div>
+      <div class="field">
+        <label>Profesión <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="dn-prof" placeholder="Profesión u ocupación actual">
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label>Fecha de nacimiento <span class="tag rec">Recomendable</span></label>
+        <input type="date" id="dn-nacimiento" onchange="checkEdadDonante()">
+      </div>
+      <div class="field">
+        <label>Nacionalidad</label>
+        <input type="text" id="dn-nac" placeholder="Ej: Española">
+      </div>
+    </div>
+
+    <div id="alerta-edad" class="notice red hidden">
+      <strong>⚠️ Donante de edad avanzada — Verificar capacidad</strong>
+      Cuando el donante es mayor de 80 años, su notaría verificará con especial cuidado su capacidad de obrar plena para realizar la donación. En caso de duda, puede ser necesario informe médico previo.
+    </div>
+
+    <div class="field">
+      <label>Estado civil <span class="tag imp">Imprescindible</span></label>
+      <div class="rg">
+        <label><input type="radio" name="dn-ecivil" value="soltero" onclick="toggleConyugeDonante(false)"> Soltero/a</label>
+        <label><input type="radio" name="dn-ecivil" value="casado" onclick="toggleConyugeDonante(true)"> Casado/a</label>
+        <label><input type="radio" name="dn-ecivil" value="divorciado" onclick="toggleConyugeDonante(false)"> Divorciado/a</label>
+        <label><input type="radio" name="dn-ecivil" value="viudo" onclick="toggleConyugeDonante(false)"> Viudo/a</label>
+        <label><input type="radio" name="dn-ecivil" value="separado" onclick="toggleConyugeDonante(false)"> Separado/a</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- CÓNYUGE DEL DONANTE (si casado) -->
+  <div id="bloque-conyuge-donante" class="card hidden">
+    <h2>💑 Cónyuge del donante</h2>
+
+    <div class="field">
+      <label>Régimen económico matrimonial <span class="tag imp">Imprescindible</span></label>
+      <div class="rg">
+        <label><input type="radio" name="dn-regimen" value="Gananciales" onclick="setGananciales(true)"> Gananciales</label>
+        <label><input type="radio" name="dn-regimen" value="Separación de bienes" onclick="setGananciales(false)"> Separación de bienes</label>
+        <label><input type="radio" name="dn-regimen" value="Participación" onclick="setGananciales(false)"> Participación</label>
+        <label><input type="radio" name="dn-regimen" value="No sé" onclick="setGananciales(false)"> No sé</label>
+      </div>
+    </div>
+
+    <div id="alerta-gananciales" class="notice amber hidden">
+      <strong>⚠️ Régimen de gananciales — Posible consentimiento del cónyuge</strong>
+      Si el bien que se dona es ganancial (adquirido durante el matrimonio con dinero común), el cónyuge del donante deberá comparecer en la escritura para prestar su consentimiento. Su notaría verificará la naturaleza del bien. Si el bien es privativo del donante, no es necesario.
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label>Nombre completo del cónyuge <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="dn-cny-nombre" placeholder="Nombre y apellidos completos">
+      </div>
+      <div class="field">
+        <label>DNI / NIE del cónyuge <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="dn-cny-dni" placeholder="Ej: 87654321B">
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="field">
+        <label>Domicilio del cónyuge</label>
+        <input type="text" id="dn-cny-dom" placeholder="Si es diferente al del donante">
+      </div>
+      <div class="field">
+        <label>Profesión del cónyuge <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="dn-cny-prof" placeholder="Profesión u ocupación">
+      </div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="btn-p" onclick="go(1)">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 1 — DONATARIO/S                               -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen" id="s1">
+
+  <div class="card">
+    <h2>🎁 Donatario/s (quien recibe el bien)</h2>
+    <p style="font-size:13px;color:var(--ink3);margin-bottom:18px;line-height:1.5">
+      Incluya los datos de todas las personas que van a recibir el bien donado.
+      Si hay varios donatarios, añádalos con el botón inferior.
+    </p>
+
+    <div class="notice blue">
+      <strong>ℹ️ La relación con el donante tiene gran importancia fiscal</strong>
+      El Impuesto de Sucesiones y Donaciones varía significativamente según el grado de parentesco. En Baleares existen reducciones específicas para donaciones entre padres e hijos en determinados supuestos (primera vivienda, empresa familiar). Su notaría le asesorará.
+    </div>
+
+    <div id="donatarios-container"></div>
+    <button class="btn-add" onclick="addDonatario()">＋ Añadir donatario</button>
+  </div>
+
+  <div class="nav">
+    <button class="btn-s" onclick="go(0)">← Atrás</button>
+    <button class="btn-p" onclick="go(2)">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 2 — BIEN DONADO                               -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen" id="s2">
+
+  <div class="card">
+    <h2>📦 ¿Qué se va a donar?</h2>
+
+    <div class="field">
+      <label>Tipo de bien donado <span class="tag imp">Imprescindible</span></label>
+      <div class="tipo-grid">
+        <div class="tipo-card" id="tc-inmueble" onclick="setTipoBien('inmueble')">
+          <div class="tipo-ico">🏠</div>
+          <div class="tipo-lbl">Inmueble</div>
+          <div class="tipo-sub">Piso, casa, local, garaje...</div>
+        </div>
+        <div class="tipo-card" id="tc-dinero" onclick="setTipoBien('dinero')">
+          <div class="tipo-ico">💶</div>
+          <div class="tipo-lbl">Dinero (metálico)</div>
+          <div class="tipo-sub">Transferencia, ingreso, efectivo</div>
+        </div>
+        <div class="tipo-card" id="tc-vehiculo" onclick="setTipoBien('vehiculo')">
+          <div class="tipo-ico">🚗</div>
+          <div class="tipo-lbl">Vehículo</div>
+          <div class="tipo-sub">Coche, moto, embarcación...</div>
+        </div>
+        <div class="tipo-card" id="tc-otro" onclick="setTipoBien('otro')">
+          <div class="tipo-ico">📋</div>
+          <div class="tipo-lbl">Otros bienes</div>
+          <div class="tipo-sub">Participaciones, derechos, joyas...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ INMUEBLE ═══ -->
+  <div id="bien-inmueble" class="card hidden">
+    <h2>🏠 Datos del inmueble</h2>
+
+    <div class="notice blue">
+      <strong>ℹ️ Escritura pública obligatoria</strong>
+      La donación de bienes inmuebles debe formalizarse necesariamente en escritura pública (art. 633 del Código Civil). Sin escritura notarial, la donación es nula.
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label>Tipo de inmueble</label>
+        <select id="i-tipo">
+          <option>Piso / Apartamento</option><option>Casa / Chalet</option>
+          <option>Local comercial</option><option>Plaza de garaje</option>
+          <option>Trastero</option><option>Finca rústica</option>
+          <option>Solar</option><option>Otro</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Referencia catastral <span class="tag rec">Recomendable</span></label>
+        <input type="text" id="i-cat" placeholder="Ej: 7837298CF3473N0001WT">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Dirección completa <span class="tag imp">Imprescindible</span></label>
+      <input type="text" id="i-dir" placeholder="Calle, número, piso, localidad, código postal">
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label>Número de finca registral (si la conoce)</label>
+        <input type="text" id="i-finca" placeholder="Ej: Finca 12345, Registro de Palma">
+      </div>
+      <div class="field">
+        <label>Valor estimado del inmueble <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="i-valor" placeholder="Ej: 250.000 €">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>¿Cómo adquirió el donante este inmueble?</label>
+      <select id="i-titulo">
+        <option value="">— Seleccione —</option>
+        <option>Compraventa</option>
+        <option>Herencia / Legado</option>
+        <option>Donación</option>
+        <option>Nueva construcción / Autopromoción</option>
+        <option>No sé</option>
+      </select>
+    </div>
+
+    <div class="field" id="i-ganancial-field">
+      <label>¿Es un bien ganancial (adquirido con dinero del matrimonio)?</label>
+      <div class="rg">
+        <label><input type="radio" name="i-gan" value="Sí, bien ganancial"> Sí</label>
+        <label><input type="radio" name="i-gan" value="No, bien privativo del donante"> No (privativo)</label>
+        <label><input type="radio" name="i-gan" value="No sé"> No sé</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>¿Tiene cargas o hipoteca actualmente?</label>
+      <div class="rg">
+        <label><input type="radio" name="i-hip" value="No tiene cargas" onclick="toggleHipotecaBlock(false)"> No</label>
+        <label><input type="radio" name="i-hip" value="Sí, tiene hipoteca" onclick="toggleHipotecaBlock(true)"> Sí, tiene hipoteca</label>
+        <label><input type="radio" name="i-hip" value="No sé"> No sé</label>
+      </div>
+    </div>
+
+    <div id="hipoteca-block" class="hidden">
+      <div class="notice red">
+        <strong>⚠️ Inmueble con hipoteca — Consulta fiscal necesaria</strong>
+        Si el donatario asume la deuda hipotecaria, la operación tiene una parte a título oneroso (lo que asume de la hipoteca) y una parte gratuita (el valor restante). Esto modifica la tributación. Su notaría le explicará el tratamiento fiscal antes de firmar.
+      </div>
+      <div class="two-col">
+        <div class="field">
+          <label>Entidad bancaria acreedora</label>
+          <input type="text" id="i-banco" placeholder="Nombre del banco">
+        </div>
+        <div class="field">
+          <label>Capital pendiente aproximado</label>
+          <input type="text" id="i-hipoteca-val" placeholder="Ej: 80.000 €">
+        </div>
+      </div>
+      <div class="field">
+        <label>¿Quién asumirá la deuda hipotecaria?</label>
+        <div class="rg">
+          <label><input type="radio" name="i-asume" value="El donante la cancela antes de la donación"> Donante la cancela antes</label>
+          <label><input type="radio" name="i-asume" value="El donatario asume la deuda"> Donatario la asume</label>
+          <label><input type="radio" name="i-asume" value="No lo hemos decidido todavía"> Sin decidir</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DINERO ═══ -->
+  <div id="bien-dinero" class="card hidden">
+    <h2>💶 Datos de la donación en metálico</h2>
+
+    <div class="field">
+      <label>Importe a donar <span class="tag imp">Imprescindible</span></label>
+      <input type="text" id="d-importe" placeholder="Ej: 50.000 €" oninput="checkPBC()">
+    </div>
+
+    <div id="alerta-pbc" class="notice red hidden">
+      <strong>⚠️ Importe elevado — Obligaciones de prevención del blanqueo</strong>
+      Las donaciones en metálico de importes significativos activan protocolos de Prevención de Blanqueo de Capitales (PBC). Su notaría solicitará documentación sobre el origen lícito de los fondos (extractos bancarios, declaración IRPF, etc.).
+    </div>
+
+    <div class="field">
+      <label>Forma de entrega <span class="tag imp">Imprescindible</span></label>
+      <div class="rg">
+        <label><input type="radio" name="d-forma" value="Transferencia bancaria"> Transferencia bancaria</label>
+        <label><input type="radio" name="d-forma" value="Ingreso en cuenta"> Ingreso en cuenta</label>
+        <label><input type="radio" name="d-forma" value="Cheque bancario"> Cheque bancario</label>
+        <label><input type="radio" name="d-forma" value="Efectivo (metálico)"> Efectivo</label>
+      </div>
+    </div>
+
+    <div id="alerta-efectivo" class="notice red hidden">
+      <strong>⚠️ Donación en efectivo</strong>
+      Los pagos en efectivo superiores a 1.000 € entre particulares están sujetos a restricciones legales. Si la donación supera este importe, debe realizarse mediante transferencia bancaria, ingreso en cuenta o cheque bancario. Su notaría le informará.
+    </div>
+
+    <div class="field">
+      <label>¿Cuál es el destino previsto del dinero donado? <span class="tag rec">Recomendable</span></label>
+      <div class="rg">
+        <label><input type="radio" name="d-destino" value="Adquisición de primera vivienda habitual" onclick="checkReduccionBalear()"> Adquisición de primera vivienda</label>
+        <label><input type="radio" name="d-destino" value="Adquisición de vivienda (no primera)" onclick="checkReduccionBalear()"> Adquisición de vivienda (no primera)</label>
+        <label><input type="radio" name="d-destino" value="Constitución o ampliación de empresa o negocio" onclick="checkReduccionBalear()"> Constitución de empresa / negocio</label>
+        <label><input type="radio" name="d-destino" value="Uso libre / sin destino específico" onclick="checkReduccionBalear()"> Uso libre</label>
+      </div>
+    </div>
+
+    <div id="alerta-reduccion-balear" class="notice green hidden">
+      <strong>✓ Posible reducción fiscal en Baleares</strong>
+      Las donaciones de metálico de padres a hijos para adquisición de primera vivienda habitual pueden beneficiarse de reducciones fiscales significativas en el ISD en las Illes Balears. Su notaría verificará si concurren los requisitos. Es importante que el donatario aún no sea propietario de otra vivienda.
+    </div>
+
+    <div class="field">
+      <label>¿El dinero ya se ha entregado o se entregará en el acto notarial?</label>
+      <div class="rg">
+        <label><input type="radio" name="d-momento" value="Se entrega en el acto ante el notario"> Se entrega en el acto</label>
+        <label><input type="radio" name="d-momento" value="Ya se entregó anteriormente"> Ya se entregó antes</label>
+        <label><input type="radio" name="d-momento" value="Se entregará después de la firma"> Se entregará después</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ VEHÍCULO ═══ -->
+  <div id="bien-vehiculo" class="card hidden">
+    <h2>🚗 Datos del vehículo</h2>
+
+    <div class="notice amber">
+      <strong>⚠️ Importante</strong>
+      Además de la escritura de donación, el cambio de titularidad del vehículo debe tramitarse en la Jefatura Provincial de Tráfico en el plazo de 30 días desde la firma. Asegúrese de tener el ITV al corriente.
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label>Matrícula <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="v-mat" placeholder="Ej: 1234 ABC">
+      </div>
+      <div class="field">
+        <label>Marca y modelo <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="v-modelo" placeholder="Ej: Seat Ibiza 2018">
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="field">
+        <label>Número de bastidor (VIN) <span class="tag rec">Recomendable</span></label>
+        <input type="text" id="v-bastidor" placeholder="Figura en el permiso de circulación">
+      </div>
+      <div class="field">
+        <label>Valor estimado del vehículo</label>
+        <input type="text" id="v-valor" placeholder="Ej: 8.000 €">
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ OTRO BIEN ═══ -->
+  <div id="bien-otro" class="card hidden">
+    <h2>📋 Otros bienes o derechos</h2>
+    <div class="field">
+      <label>Descripción del bien o derecho donado <span class="tag imp">Imprescindible</span></label>
+      <textarea id="o-descripcion" placeholder="Describa con detalle el bien o derecho que se quiere donar: participaciones sociales (indicar sociedad y número), derechos de crédito, joyas u objetos de valor, derechos de propiedad intelectual, etc."></textarea>
+    </div>
+    <div class="field">
+      <label>Valor estimado <span class="tag imp">Imprescindible</span></label>
+      <input type="text" id="o-valor" placeholder="Ej: 15.000 €">
+    </div>
+  </div>
+
+  <!-- ISD plazo donaciones -->
+  <div id="isd-donacion-box" class="hidden">
+    <div class="isd-box">
+      <div class="isd-label">⏰ Plazo Impuesto de Donaciones (ISD)</div>
+      <div class="isd-date">30 días hábiles desde la firma</div>
+      <div class="isd-sub">El donatario (quien recibe) debe autoliquidar el ISD en un plazo de <strong>30 días hábiles</strong> desde la fecha de la escritura.<br>
+      ⚠️ Este plazo es mucho más corto que en herencias. No lo confunda con los 6 meses.<br>
+      El donante, si el bien ha aumentado de valor, deberá declarar la ganancia patrimonial en su IRPF del ejercicio.</div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="btn-s" onclick="go(1)">← Atrás</button>
+    <button class="btn-p" onclick="go(3)">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 3 — CONDICIONES Y OBSERVACIONES               -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen" id="s3">
+
+  <div class="card">
+    <h2>⚙️ Condiciones especiales de la donación</h2>
+
+    <!-- RESERVA DE USUFRUCTO -->
+    <div class="field">
+      <label>¿El donante desea reservarse el usufructo vitalicio del bien?</label>
+      <p style="font-size:12px;color:var(--ink3);margin-bottom:8px;margin-top:2px">
+        El usufructo permite al donante seguir usando y disfrutando del bien (vivir en el inmueble, cobrar las rentas...) durante toda su vida. El donatario recibe la "nuda propiedad" y será propietario pleno cuando el usufructuario fallezca.
+      </p>
+      <div class="rg">
+        <label><input type="radio" name="usufructo" value="no"> No — Donación plena</label>
+        <label><input type="radio" name="usufructo" value="si" onclick="showUsufructo(true)"> Sí — Con reserva de usufructo vitalicio</label>
+        <label><input type="radio" name="usufructo" value="ns"> No lo hemos decidido</label>
+      </div>
+    </div>
+
+    <div id="bloque-usufructo" class="hidden">
+      <div class="notice green">
+        <strong>✓ Reserva de usufructo — Datos necesarios</strong>
+        Para calcular el valor del usufructo a efectos fiscales, la notaría necesita la fecha de nacimiento del donante (ya facilitada). Si son varios usufructuarios, indíquelo en las observaciones.
+      </div>
+      <div class="field">
+        <label>¿Quién/es se reservan el usufructo?</label>
+        <div class="rg">
+          <label><input type="radio" name="usu-quien" value="Solo el donante"> Solo el donante</label>
+          <label><input type="radio" name="usu-quien" value="El donante y su cónyuge conjuntamente"> Donante y cónyuge conjuntamente</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONDICIÓN SUSPENSIVA O RESOLUTORIA -->
+    <div class="field" style="margin-top:20px">
+      <label>¿La donación está sujeta a alguna condición?</label>
+      <div class="rg">
+        <label><input type="radio" name="condicion" value="No"> No — Donación pura</label>
+        <label><input type="radio" name="condicion" value="Sí, con condición suspensiva" onclick="showCondicion(true)"> Sí, con condición</label>
+      </div>
+    </div>
+
+    <div id="bloque-condicion" class="hidden">
+      <div class="notice amber">
+        <strong>📋 Detalle de la condición</strong>
+        Explique la condición a la que queda sujeta la donación (ej: "la donación queda supeditada a que el donatario use el inmueble como vivienda habitual durante al menos 5 años").
+      </div>
+      <div class="field">
+        <label>Descripción de la condición</label>
+        <textarea id="condicion-texto" placeholder="Describa con precisión la condición..."></textarea>
+      </div>
+    </div>
+
+    <!-- MODO O CARGA -->
+    <div class="field" style="margin-top:20px">
+      <label>¿La donación impone algún modo o carga al donatario?</label>
+      <p style="font-size:12px;color:var(--ink3);margin-bottom:8px;margin-top:2px">
+        Por ejemplo: obligación de cuidar al donante, mantener el bien, destinar el dinero a un fin concreto...
+      </p>
+      <div class="rg">
+        <label><input type="radio" name="modo" value="No"> No</label>
+        <label><input type="radio" name="modo" value="Sí" onclick="showModo(true)"> Sí, con modo/carga</label>
+      </div>
+    </div>
+
+    <div id="bloque-modo" class="hidden">
+      <div class="field">
+        <label>Descripción del modo o carga</label>
+        <textarea id="modo-texto" placeholder="Describa con precisión la obligación que asume el donatario..."></textarea>
+      </div>
+    </div>
+
+    <!-- DONACIÓN A MENOR -->
+    <div id="aviso-menor-resumen" class="notice amber hidden" style="margin-top:16px">
+      <strong>👶 Donatario menor de edad — Representación legal</strong>
+      Ha indicado que algún donatario es menor de edad. Los padres actúan como representantes legales. Sin embargo, si los propios padres son los donantes, existe un conflicto de interés: el juez nombrará un defensor judicial al menor o se utilizará poder de representación según los casos. Su notaría le explicará el procedimiento aplicable.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📝 Observaciones</h2>
+    <div class="field">
+      <label>Información adicional relevante</label>
+      <textarea id="observaciones" style="min-height:110px" placeholder="Cualquier detalle adicional: si la donación es en el contexto de capítulos matrimoniales o planificación sucesorial, si hay otros herederos que deban ser informados (posible inoficiosidad), si el donatario tiene deudas o embargo, contexto familiar relevante, etc."></textarea>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="btn-s" onclick="go(2)">← Atrás</button>
+    <button class="btn-p" onclick="go(4)">Revisar →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 4 — RESUMEN + DESCARGA                        -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen" id="s4">
+
+  <!-- ISD plazo banner -->
+  <div class="isd-box">
+    <div class="isd-label">⏰ Plazo Impuesto de Donaciones (ISD)</div>
+    <div class="isd-date">30 días hábiles desde la firma</div>
+    <div class="isd-sub">El donatario debe autoliquidar el ISD en 30 días hábiles desde la escritura.<br>
+    El donante declara la posible ganancia patrimonial en su IRPF del ejercicio.</div>
+  </div>
+
+  <div class="card">
+    <h2>📋 Resumen del expediente</h2>
+    <div id="resumen-contenido"></div>
+  </div>
+
+  <div class="card">
+    <h2>📎 Documentación que deberá aportar</h2>
+    <ul class="doc-list" id="doc-checklist"></ul>
+  </div>
+
+  <div class="notice amber">Si hay algún error, pulse "Corregir" para volver atrás.</div>
+
+  <div class="nav">
+    <button class="btn-s" onclick="go(3)">← Corregir</button>
+    <button class="btn-w" onclick="dlWord()">⬇️ Descargar Word y enviar a la notaría</button>
+  </div>
+
+  <div class="success" id="ok">
+    <h3>✅ Documento descargado</h3>
+    <p>Adjunte el archivo Word en su respuesta al email de la notaría.<br>
+    Nos pondremos en contacto para confirmar la documentación y coordinar la cita.</p>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+<div class="footer">Oficial Notarial IA · Sus datos se procesan localmente y no se almacenan en ningún servidor.</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  ESTADO
+// ═══════════════════════════════════════════════════════
+const LABELS=['Donante','Donatario/s','Bien donado','Condiciones','Resumen'];
+let step=0, donatarioCount=0;
+let hayConyugeDonante=false, hayGananciales=false;
+let tipoBien=null;
+let hayMenor=false;
+
+// ═══════════════════════════════════════════════════════
+//  STEP BAR
+// ═══════════════════════════════════════════════════════
+function renderBar(){
+  const bar=document.getElementById('stepBar');
+  bar.innerHTML='';
+  LABELS.forEach((l,i)=>{
+    const d=document.createElement('div');
+    d.className='sdot '+(i<step?'done':i===step?'active':'pend');
+    d.textContent=i<step?'✓':(i+1); d.title=l;
+    bar.appendChild(d);
+    if(i<LABELS.length-1){
+      const ln=document.createElement('div');
+      ln.className='sline'+(i<step?' done':'');
+      bar.appendChild(ln);
+    }
+  });
+}
+
+function go(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  step=n;
+  if(n===4) buildResumen();
+  document.getElementById('s'+n).classList.add('active');
+  renderBar();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════════
+function gv(id){const e=document.getElementById(id);return e?e.value.trim():''}
+function gr(name){const e=document.querySelector(`input[name="${name}"]:checked`);return e?e.value:''}
+function sv(id){const e=document.getElementById(id);return e?e.value:''}
+
+// ═══════════════════════════════════════════════════════
+//  DONANTE LÓGICA
+// ═══════════════════════════════════════════════════════
+function checkEdadDonante(){
+  const f=gv('dn-nacimiento');
+  if(!f) return;
+  const edad=Math.floor((new Date()-new Date(f))/(365.25*24*3600*1000));
+  document.getElementById('alerta-edad').classList.toggle('hidden', edad<80);
+}
+
+function toggleConyugeDonante(show){
+  hayConyugeDonante=show;
+  document.getElementById('bloque-conyuge-donante').classList.toggle('hidden',!show);
+  if(!show) hayGananciales=false;
+}
+
+function setGananciales(show){
+  hayGananciales=show;
+  document.getElementById('alerta-gananciales').classList.toggle('hidden',!show);
+}
+
+// ═══════════════════════════════════════════════════════
+//  DONATARIOS DINÁMICOS
+// ═══════════════════════════════════════════════════════
+function addDonatario(){
+  donatarioCount++;
+  const id=donatarioCount;
+  const c=document.getElementById('donatarios-container');
+  const div=document.createElement('div');
+  div.className='item-block'; div.id='donatario-'+id;
+  div.innerHTML=`
+    <div class="item-hdr">
+      <span class="item-num">Donatario ${id}</span>
+      ${id>1?`<button class="btn-del" onclick="removeItem('donatario-${id}')">✕ Eliminar</button>`:''}
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Nombre y apellidos completos <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="dt${id}-nombre" placeholder="Nombre y apellidos"></div>
+      <div class="field"><label>DNI / NIE <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="dt${id}-dni" placeholder="Ej: 12345678A"></div>
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Relación con el donante <span class="tag imp">Imprescindible</span></label>
+        <select id="dt${id}-relacion" onchange="checkMenores()">
+          <option value="">— Seleccione —</option>
+          <option>Hijo/a</option><option>Nieto/a</option><option>Hermano/a</option>
+          <option>Padre / Madre</option><option>Cónyuge / Pareja</option>
+          <option>Sobrino/a</option><option>Sin parentesco (tercero)</option><option>Otro</option>
+        </select></div>
+      <div class="field"><label>Estado civil</label>
+        <select id="dt${id}-ecivil">
+          <option value="">— Seleccione —</option>
+          <option>Soltero/a</option><option>Casado/a</option><option>Viudo/a</option>
+          <option>Divorciado/a</option><option>Separado/a</option>
+          <option>Menor de edad</option>
+        </select></div>
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Régimen económico matrimonial (si casado/a)</label>
+        <select id="dt${id}-regimen">
+          <option value="">— No aplica / No sé —</option>
+          <option>Gananciales</option><option>Separación de bienes</option>
+          <option>Participación</option><option>Otro</option>
+        </select></div>
+      <div class="field"><label>Profesión <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="dt${id}-prof" placeholder="Profesión u ocupación"></div>
+    </div>
+    <div class="field"><label>Domicilio completo <span class="tag imp">Imprescindible</span></label>
+      <input type="text" id="dt${id}-dom" placeholder="Calle, número, piso, localidad, código postal"></div>
+    <div class="field"><label>Porcentaje que recibe (si hay varios donatarios)</label>
+      <input type="text" id="dt${id}-pct" placeholder="Ej: 50% — Déjelo en blanco si es el único donatario"></div>`;
+  c.appendChild(div);
+}
+
+function removeItem(id){ const e=document.getElementById(id); if(e){e.remove();checkMenores();} }
+
+function checkMenores(){
+  // Detect if any donatario is marked as minor
+  const selects=document.querySelectorAll('[id^="dt"][id$="-ecivil"]');
+  hayMenor=false;
+  selects.forEach(s=>{ if(s.value==='Menor de edad') hayMenor=true; });
+  document.getElementById('aviso-menor-resumen').classList.toggle('hidden',!hayMenor);
+}
+
+// ═══════════════════════════════════════════════════════
+//  TIPO DE BIEN
+// ═══════════════════════════════════════════════════════
+function setTipoBien(tipo){
+  tipoBien=tipo;
+  document.querySelectorAll('.tipo-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('tc-'+tipo).classList.add('selected');
+  ['inmueble','dinero','vehiculo','otro'].forEach(t=>{
+    document.getElementById('bien-'+t).classList.toggle('hidden', t!==tipo);
+  });
+  document.getElementById('isd-donacion-box').classList.remove('hidden');
+}
+
+function toggleHipotecaBlock(show){
+  document.getElementById('hipoteca-block').classList.toggle('hidden',!show);
+}
+
+function checkPBC(){
+  const raw=gv('d-importe').replace(/[^\d,\.]/g,'').replace(',','.');
+  const val=parseFloat(raw)||0;
+  document.getElementById('alerta-pbc').classList.toggle('hidden', val<50000);
+}
+
+function checkReduccionBalear(){
+  const destino=gr('d-destino');
+  const esVivienda=destino.includes('primera vivienda');
+  // Check if any donatario is hijo/nieto
+  const relaciones=document.querySelectorAll('[id^="dt"][id$="-relacion"]');
+  let esHijoNieto=false;
+  relaciones.forEach(r=>{ if(r.value==='Hijo/a'||r.value==='Nieto/a') esHijoNieto=true; });
+  document.getElementById('alerta-reduccion-balear').classList.toggle('hidden', !(esVivienda&&esHijoNieto));
+}
+
+document.addEventListener('change', function(e){
+  if(e.target.name==='d-forma'){
+    document.getElementById('alerta-efectivo').classList.toggle('hidden', e.target.value!=='Efectivo (metálico)');
+  }
+});
+
+// ═══════════════════════════════════════════════════════
+//  CONDICIONES
+// ═══════════════════════════════════════════════════════
+function showUsufructo(show){ document.getElementById('bloque-usufructo').classList.toggle('hidden',!show); }
+function showCondicion(show){ document.getElementById('bloque-condicion').classList.toggle('hidden',!show); }
+function showModo(show){ document.getElementById('bloque-modo').classList.toggle('hidden',!show); }
+
+// ═══════════════════════════════════════════════════════
+//  RESUMEN
+// ═══════════════════════════════════════════════════════
+function row(lbl,val){ if(!val||val==='—'||val==='') return ''; return `<div class="res-row"><span class="res-lbl">${lbl}</span><span class="res-val">${val}</span></div>`; }
+
+function buildResumen(){
+  buildResumenContenido();
+  buildChecklist();
+}
+
+function buildResumenContenido(){
+  let h='';
+
+  // DONANTE
+  h+=`<div class="res-block"><h3>Donante</h3>`;
+  h+=row('Nombre',gv('dn-nombre')); h+=row('DNI/NIE',gv('dn-dni'));
+  h+=row('Domicilio',gv('dn-dom')); h+=row('Profesión',gv('dn-prof'));
+  h+=row('Estado civil',gr('dn-ecivil'));
+  if(hayConyugeDonante){ h+=row('Régimen matrimonial',gr('dn-regimen')); h+=row('Nombre del cónyuge',gv('dn-cny-nombre')); h+=row('DNI cónyuge',gv('dn-cny-dni')); }
+  h+='</div>';
+
+  // DONATARIOS
+  const dBlocks=document.querySelectorAll('[id^="donatario-"]');
+  if(dBlocks.length){
+    h+=`<div class="res-block"><h3>Donatario/s (${dBlocks.length})</h3>`;
+    dBlocks.forEach((b,idx)=>{
+      const i=b.id.split('-')[1];
+      h+=`<div style="margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed var(--border)">`;
+      h+=`<div style="font-weight:700;font-size:12px;margin-bottom:5px">Donatario ${idx+1}</div>`;
+      h+=row('Nombre',gv('dt'+i+'-nombre')); h+=row('DNI/NIE',gv('dt'+i+'-dni'));
+      h+=row('Relación',sv('dt'+i+'-relacion')); h+=row('Estado civil',sv('dt'+i+'-ecivil'));
+      h+=row('Domicilio',gv('dt'+i+'-dom')); h+=row('Participación',gv('dt'+i+'-pct'));
+      h+=`</div>`;
+    });
+    h+='</div>';
+  }
+
+  // BIEN DONADO
+  h+=`<div class="res-block"><h3>Bien donado</h3>`;
+  h+=row('Tipo',{inmueble:'Inmueble',dinero:'Donación en metálico',vehiculo:'Vehículo',otro:'Otros bienes'}[tipoBien]||'—');
+  if(tipoBien==='inmueble'){
+    h+=row('Tipo inmueble',sv('i-tipo')); h+=row('Dirección',gv('i-dir'));
+    h+=row('Ref. catastral',gv('i-cat')); h+=row('Finca registral',gv('i-finca'));
+    h+=row('Valor estimado',gv('i-valor')); h+=row('Bien ganancial',gr('i-gan'));
+    h+=row('Cargas/Hipoteca',gr('i-hip'));
+  } else if(tipoBien==='dinero'){
+    h+=row('Importe',gv('d-importe')); h+=row('Forma de entrega',gr('d-forma'));
+    h+=row('Destino',gr('d-destino')); h+=row('Momento de entrega',gr('d-momento'));
+  } else if(tipoBien==='vehiculo'){
+    h+=row('Matrícula',gv('v-mat')); h+=row('Marca y modelo',gv('v-modelo'));
+    h+=row('Bastidor',gv('v-bastidor')); h+=row('Valor estimado',gv('v-valor'));
+  } else if(tipoBien==='otro'){
+    h+=row('Descripción',gv('o-descripcion')); h+=row('Valor estimado',gv('o-valor'));
+  }
+  h+='</div>';
+
+  // CONDICIONES
+  const condi=[]; const usuf=gr('usufructo');
+  if(usuf==='si') condi.push('Reserva de usufructo vitalicio: '+gr('usu-quien'));
+  const cond=gr('condicion'); if(cond&&cond!=='No') condi.push('Con condición: '+(gv('condicion-texto')||'pendiente de detallar'));
+  const modo=gr('modo'); if(modo==='Sí') condi.push('Con modo/carga: '+(gv('modo-texto')||'pendiente de detallar'));
+  if(condi.length){
+    h+=`<div class="res-block"><h3>Condiciones especiales</h3>`;
+    condi.forEach(c=>{ h+=`<div class="res-row"><span class="res-val">• ${c}</span></div>`; });
+    h+='</div>';
+  }
+
+  if(gv('observaciones')){ h+=`<div class="res-block"><h3>Observaciones</h3><div style="font-size:13px;line-height:1.55">${gv('observaciones')}</div></div>`; }
+
+  document.getElementById('resumen-contenido').innerHTML=h;
+}
+
+function buildChecklist(){
+  const items=[];
+  // Siempre
+  items.push({t:'imp',txt:'DNI/NIE original y en vigor del donante'});
+  if(hayConyugeDonante) items.push({t:'imp',txt:'DNI/NIE original y en vigor del cónyuge del donante'});
+  const dBlocks=document.querySelectorAll('[id^="donatario-"]');
+  dBlocks.forEach((b,idx)=>{ items.push({t:'imp',txt:`DNI/NIE original del donatario ${idx+1}: ${gv('dt'+b.id.split('-')[1]+'-nombre')||'(nombre pendiente)'}` }); });
+
+  // Por tipo de bien
+  if(tipoBien==='inmueble'){
+    items.push({t:'imp',txt:'Nota simple registral actualizada del inmueble'});
+    items.push({t:'imp',txt:'Título de propiedad del donante (escritura por la que adquirió el inmueble)'});
+    items.push({t:'rec',txt:'Recibo del IBI del último ejercicio'});
+    if(gr('i-hip')==='Sí, tiene hipoteca') items.push({t:'imp',txt:'Certificado de deuda pendiente de la hipoteca emitido por el banco'});
+  }
+  if(tipoBien==='dinero'){
+    const raw=gv('d-importe').replace(/[^\d,\.]/g,'').replace(',','.');
+    const val=parseFloat(raw)||0;
+    if(val>0) items.push({t:'imp',txt:'Justificante de disponibilidad o transferencia de los fondos (extracto bancario, certificado de saldo...)'});
+    if(val>=50000) items.push({t:'imp',txt:'Documentación de origen de los fondos (declaración IRPF, escrituras de venta previa, extractos bancarios) — obligatorio por prevención de blanqueo'});
+    if(gr('d-destino').includes('vivienda')) items.push({t:'rec',txt:'Nota simple del Registro de la Propiedad a nombre del donatario (para verificar que es primera vivienda)'});
+  }
+  if(tipoBien==='vehiculo'){
+    items.push({t:'imp',txt:'Permiso de circulación del vehículo'});
+    items.push({t:'imp',txt:'Ficha técnica / Tarjeta de inspección técnica (ITV al corriente)'});
+    items.push({t:'rec',txt:'Tasación o justificante del valor actual del vehículo'});
+  }
+  if(tipoBien==='otro'){
+    items.push({t:'imp',txt:'Documentación acreditativa del bien o derecho (escritura, certificado de acciones, inventario valorado...)'});
+  }
+
+  // Si hay menor
+  if(hayMenor){
+    items.push({t:'imp',txt:'DNI de ambos padres del donatario menor de edad'});
+    items.push({t:'imp',txt:'Libro de familia o certificado de nacimiento del menor'});
+  }
+
+  // Fiscal
+  items.push({t:'rec',txt:'Asesor fiscal para la autoliquidación del ISD en el plazo de 30 días hábiles desde la escritura (el donatario es el sujeto pasivo)'});
+  items.push({t:'rec',txt:'Consultar con asesor fiscal la ganancia patrimonial del donante a declarar en IRPF del ejercicio'});
+
+  const ul=document.getElementById('doc-checklist');
+  ul.innerHTML=items.map(it=>`<li><span class="di ${it.t}">●</span><span>${it.txt} <span class="tag ${it.t}">${it.t==='imp'?'Imprescindible':'Recomendable'}</span></span></li>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+//  WORD DOWNLOAD
+// ═══════════════════════════════════════════════════════
+function dlWord(){
+  const now=new Date();
+  function p(lbl,val){ if(!val||val==='—'||val==='') return ''; return `<p style="margin:3pt 0"><span style="font-weight:bold;color:#0d1b2e">${lbl}:</span>&nbsp;${val}</p>`; }
+  function sec(t){ return `<h2 style="font-size:12pt;color:#0d1b2e;border-bottom:2pt solid #c9a84c;padding-bottom:3pt;margin-top:18pt;margin-bottom:8pt">${t}</h2>`; }
+  function alerta(t){ return `<div style="background:#fff0ee;border-left:4pt solid #c0392b;padding:8pt 12pt;margin:8pt 0;font-size:10.5pt;line-height:1.5">${t}</div>`; }
+  function aviso(t){ return `<div style="background:#fff8e8;border-left:4pt solid #c9a84c;padding:8pt 12pt;margin:8pt 0;font-size:10.5pt;line-height:1.5">${t}</div>`; }
+  function info(t){ return `<div style="background:#efffee;border-left:4pt solid #88c888;padding:8pt 12pt;margin:8pt 0;font-size:10.5pt;line-height:1.5">${t}</div>`; }
+
+  let body='';
+
+  // ── ALERTAS JURÍDICAS ──
+  body+=sec('⚠ ALERTAS JURÍDICAS — LEER ANTES DE PREPARAR EL EXPEDIENTE');
+  body+=alerta(`<strong>🔴 PLAZO ISD DONACIONES: 30 días hábiles desde la escritura.</strong><br>
+    El donatario (sujeto pasivo) debe autoliquidar el ISD en 30 días hábiles desde la fecha de la escritura. Este plazo es IRRENUNCIABLE y mucho más corto que el de herencias. Advertir al cliente en el momento de la firma.`);
+  body+=aviso(`<strong>⚠️ IRPF DONANTE:</strong> Si el bien donado ha experimentado una plusvalía desde su adquisición, el donante deberá declarar la ganancia patrimonial en su IRPF del ejercicio en que se formaliza la donación. Recordar al donante que consulte con asesor fiscal.`);
+
+  if(hayConyugeDonante&&hayGananciales) body+=alerta('<strong>⚠️ GANANCIALES:</strong> Verificar si el bien donado es ganancial o privativo. Si es ganancial, el cónyuge del donante debe comparecer en la escritura para prestar su consentimiento (art. 1377 CC). Si no puede comparecer presencialmente, necesitará poder notarial suficiente.');
+  if(hayMenor) body+=alerta('<strong>👶 DONATARIO MENOR DE EDAD:</strong> Verificar representación legal. Si los propios padres son los donantes, puede existir conflicto de interés. Valorar si es necesaria la intervención del Ministerio Fiscal o el nombramiento de defensor judicial. Consultar con el coordinador.');
+
+  const edadDonante=gv('dn-nacimiento')?Math.floor((new Date()-new Date(gv('dn-nacimiento')))/(365.25*24*3600*1000)):0;
+  if(edadDonante>=80) body+=alerta('<strong>⚠️ CAPACIDAD DEL DONANTE:</strong> El donante es mayor de 80 años. Verificar con especial cuidado su capacidad de obrar plena para el acto. Valorar si es necesario informe médico previo. Aplicar protocolo habitual de esta notaría.');
+  if(tipoBien==='dinero'){
+    const raw=gv('d-importe').replace(/[^\d,\.]/g,'').replace(',','.');
+    const val=parseFloat(raw)||0;
+    if(val>=50000) body+=alerta('<strong>⚠️ PBC — PREVENCIÓN DE BLANQUEO DE CAPITALES:</strong> Importe elevado. Solicitar y verificar documentación de origen lícito de los fondos (IRPF, extractos, escrituras previas). Cumplimentar diligencias PBC habituales.');
+    if(gr('d-forma')==='Efectivo (metálico)') body+=alerta('<strong>⚠️ PAGO EN EFECTIVO:</strong> La donación en metálico mediante efectivo puede incumplir las restricciones de pagos en efectivo (>1.000 € entre particulares). Advertir al cliente y verificar el canal de pago.');
+  }
+  if(tipoBien==='inmueble'&&gr('i-hip')==='Sí, tiene hipoteca') body+=aviso('<strong>⚠️ INMUEBLE CON HIPOTECA:</strong> Si el donatario asume la deuda, la operación es parcialmente onerosa. Verificar la tributación combinada ISD + ITP y AJD. Consultar si el banco acepta el cambio de deudor antes de la firma.');
+  if(gr('usufructo')==='si') body+=aviso('<strong>ℹ️ RESERVA DE USUFRUCTO:</strong> Calcular el valor del usufructo vitalicio mediante la fórmula fiscal (89 - edad del donante, con mínimo 10% y máximo 70%). La base imponible del donatario se reduce en el valor del usufructo. El usufructuario tributará por el pleno dominio cuando consolide.');
+
+  const reduccion=tipoBien==='dinero'&&gr('d-destino').includes('primera vivienda');
+  if(reduccion) info('<strong>✓ POSIBLE REDUCCIÓN FISCAL BALEAR (VERIFICAR):</strong> Donación de metálico de ascendiente a descendiente para adquisición de primera vivienda habitual. Verificar que concurren todos los requisitos: (1) el donatario no sea propietario de otra vivienda, (2) el inmueble se adquiera en el plazo que marque la normativa, (3) la donación se formalice en escritura pública. Consultar la normativa vigente de la CAIB.');
+
+  // ── 1. DONANTE ──
+  body+=sec('1. DATOS DEL DONANTE');
+  body+=p('Nombre y apellidos',gv('dn-nombre')); body+=p('DNI / NIE / Pasaporte',gv('dn-dni'));
+  body+=p('Fecha de nacimiento',gv('dn-nacimiento')?new Date(gv('dn-nacimiento')).toLocaleDateString('es-ES'):'');
+  if(edadDonante>0) body+=p('Edad',edadDonante+' años');
+  body+=p('Domicilio',gv('dn-dom')); body+=p('Profesión',gv('dn-prof'));
+  body+=p('Nacionalidad',gv('dn-nac')); body+=p('Estado civil',gr('dn-ecivil'));
+  if(hayConyugeDonante) body+=p('Régimen matrimonial',gr('dn-regimen'));
+
+  // ── 2. CÓNYUGE DONANTE ──
+  if(hayConyugeDonante){
+    body+=sec('2. CÓNYUGE DEL DONANTE');
+    body+=p('Nombre y apellidos',gv('dn-cny-nombre')); body+=p('DNI / NIE',gv('dn-cny-dni'));
+    body+=p('Domicilio',gv('dn-cny-dom')||'Mismo que el donante'); body+=p('Profesión',gv('dn-cny-prof'));
+    body+=p('Régimen matrimonial',gr('dn-regimen'));
+    if(hayGananciales) body+=aviso('Si el bien es ganancial: este cónyuge debe comparecer o aportar poder notarial suficiente para prestar el consentimiento del art. 1377 CC.');
+  }
+
+  // ── 3. DONATARIO/S ──
+  const dBlocks=document.querySelectorAll('[id^="donatario-"]');
+  body+=sec('3. DONATARIO/S');
+  if(!dBlocks.length){ body+='<p style="color:#888;font-style:italic">No se han introducido datos de donatarios.</p>'; }
+  else {
+    dBlocks.forEach((b,idx)=>{
+      const i=b.id.split('-')[1];
+      body+=`<h3 style="font-size:11pt;color:#0d1b2e;margin-top:12pt;border-left:3pt solid #c9a84c;padding-left:8pt">DONATARIO ${idx+1}${gv('dt'+i+'-nombre')?' — '+gv('dt'+i+'-nombre'):''}</h3>`;
+      body+=p('Nombre y apellidos',gv('dt'+i+'-nombre')); body+=p('DNI / NIE',gv('dt'+i+'-dni'));
+      body+=p('Relación con el donante',sv('dt'+i+'-relacion')); body+=p('Estado civil',sv('dt'+i+'-ecivil'));
+      body+=p('Régimen matrimonial',sv('dt'+i+'-regimen')); body+=p('Profesión',gv('dt'+i+'-prof'));
+      body+=p('Domicilio completo',gv('dt'+i+'-dom')); body+=p('Participación',gv('dt'+i+'-pct'));
+      if(sv('dt'+i+'-ecivil')==='Menor de edad') body+=alerta('MENOR DE EDAD: Verificar representación legal y posible conflicto de interés si los padres son los donantes.');
+    });
+  }
+
+  // ── 4. BIEN DONADO ──
+  body+=sec('4. BIEN DONADO');
+  body+=p('Tipo de bien',{inmueble:'Inmueble',dinero:'Donación en metálico',vehiculo:'Vehículo',otro:'Otros bienes'}[tipoBien]||'—');
+  if(tipoBien==='inmueble'){
+    body+=`<h3 style="font-size:11pt;color:#0d1b2e;margin-top:10pt">Datos del inmueble</h3>`;
+    body+=p('Tipo de inmueble',sv('i-tipo')); body+=p('Dirección completa',gv('i-dir'));
+    body+=p('Referencia catastral',gv('i-cat')); body+=p('Número de finca registral',gv('i-finca'));
+    body+=p('Valor estimado',gv('i-valor')); body+=p('Título de adquisición',sv('i-titulo'));
+    body+=p('Naturaleza del bien',gr('i-gan')); body+=p('Cargas / Hipoteca',gr('i-hip'));
+    if(gr('i-hip')==='Sí, tiene hipoteca'){
+      body+=p('Entidad hipotecaria',gv('i-banco')); body+=p('Capital pendiente',gv('i-hipoteca-val'));
+      body+=p('¿Quién asume la deuda?',gr('i-asume'));
+    }
+  } else if(tipoBien==='dinero'){
+    body+=p('Importe a donar',gv('d-importe')); body+=p('Forma de entrega',gr('d-forma'));
+    body+=p('Destino declarado',gr('d-destino')); body+=p('Momento de entrega',gr('d-momento'));
+  } else if(tipoBien==='vehiculo'){
+    body+=p('Matrícula',gv('v-mat')); body+=p('Marca y modelo',gv('v-modelo'));
+    body+=p('Bastidor (VIN)',gv('v-bastidor')); body+=p('Valor estimado',gv('v-valor'));
+  } else if(tipoBien==='otro'){
+    body+=p('Descripción del bien',gv('o-descripcion')); body+=p('Valor estimado',gv('o-valor'));
+  }
+
+  // ── 5. CONDICIONES ──
+  const usuf=gr('usufructo'), cond=gr('condicion'), modo=gr('modo');
+  if(usuf||cond||modo){
+    body+=sec('5. CONDICIONES ESPECIALES');
+    if(usuf==='si'){ body+=p('Reserva de usufructo',gr('usu-quien')); }
+    if(usuf==='no') body+=p('Reserva de usufructo','No — Donación plena');
+    if(cond&&cond!=='No'){ body+=p('Condición',cond); body+=p('Descripción condición',gv('condicion-texto')||'Pendiente de detallar'); }
+    if(modo==='Sí'){ body+=p('Modo / Carga','Sí'); body+=p('Descripción del modo',gv('modo-texto')||'Pendiente de detallar'); }
+  }
+
+  // ── 6. OBSERVACIONES ──
+  if(gv('observaciones')){ body+=sec('6. OBSERVACIONES'); body+=`<p style="font-size:11pt;line-height:1.65">${gv('observaciones')}</p>`; }
+
+  // ── 7. DOCUMENTACIÓN ──
+  body+=sec('7. DOCUMENTACIÓN QUE EL CLIENTE DEBE APORTAR');
+  body+=`<p style="font-size:10.5pt;font-weight:bold;color:#c0392b;margin-bottom:6pt">🔴 IMPRESCINDIBLE:</p><ul style="font-size:11pt;line-height:2;padding-left:20pt">`;
+  body+=`<li>DNI/NIE original del donante${hayConyugeDonante?' y del cónyuge':''}</li>`;
+  dBlocks.forEach((b,idx)=>{ body+=`<li>DNI/NIE original del donatario ${idx+1}</li>`; });
+  if(tipoBien==='inmueble'){ body+=`<li>Nota simple registral actualizada del inmueble</li>`; body+=`<li>Título de propiedad del donante (escritura de adquisición)</li>`; if(gr('i-hip')==='Sí, tiene hipoteca') body+=`<li>Certificado de deuda pendiente de hipoteca (banco)</li>`; }
+  if(tipoBien==='dinero'){ body+=`<li>Justificante de disponibilidad o transferencia de los fondos</li>`; const raw=gv('d-importe').replace(/[^\d,\.]/g,'').replace(',','.'); if((parseFloat(raw)||0)>=50000) body+=`<li>Documentación de origen de los fondos (obligatorio PBC)</li>`; }
+  if(tipoBien==='vehiculo'){ body+=`<li>Permiso de circulación del vehículo</li>`; body+=`<li>Ficha técnica / ITV al corriente</li>`; }
+  if(tipoBien==='otro') body+=`<li>Documentación acreditativa del bien o derecho</li>`;
+  if(hayMenor){ body+=`<li>DNI de ambos padres del menor</li>`; body+=`<li>Libro de familia o certificado de nacimiento del menor</li>`; }
+  body+=`</ul>`;
+  body+=`<p style="font-size:10.5pt;font-weight:bold;color:#d4820a;margin-top:10pt;margin-bottom:6pt">🟡 RECOMENDABLE:</p><ul style="font-size:11pt;line-height:2;padding-left:20pt">`;
+  if(tipoBien==='inmueble') body+=`<li>Recibo del IBI del último ejercicio</li>`;
+  if(tipoBien==='vehiculo') body+=`<li>Tasación actualizada del vehículo</li>`;
+  body+=`<li>Asesor fiscal del donatario para autoliquidación del ISD (30 días hábiles desde escritura)</li>`;
+  body+=`<li>Asesor fiscal del donante para declaración de ganancia patrimonial en IRPF</li>`;
+  body+=`</ul>`;
+
+  // Generar documento
+  const nombre=gv('dn-nombre').split(' ')[0]||'Donante';
+  const w=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>
+<head><meta charset='utf-8'><style>
+body{font-family:'Times New Roman',serif;font-size:11pt;line-height:1.6;margin:2cm 2cm 2.5cm;color:#1a1a1a}
+h1{text-align:center;font-size:14pt;color:#0d1b2e;margin-bottom:4pt}
+h2{font-size:12pt;color:#0d1b2e;border-bottom:2pt solid #c9a84c;padding-bottom:3pt;margin-top:18pt;margin-bottom:8pt}
+h3{font-size:11pt;color:#0d1b2e;margin-top:12pt;margin-bottom:4pt}
+p{margin:3pt 0}ul{margin:0}
+.ftr{font-size:9pt;color:#aaa;text-align:center;margin-top:30pt;border-top:1pt solid #eee;padding-top:8pt}
+</style></head>
+<body>
+<h1>NOTARÍA<br>EXPEDIENTE DE DONACIÓN</h1>
+<p style="text-align:center;font-size:10pt;color:#888;margin-bottom:16pt">
+  Generado: ${now.toLocaleDateString('es-ES')} ${now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}
+  ${gv('dn-nombre')?' · Donante: '+gv('dn-nombre'):''}
+</p>
+${body}
+<div class="ftr">Documento generado por Oficial Notarial IA · ${now.toLocaleDateString('es-ES')}<br>Sus datos se han procesado localmente y no han sido almacenados en ningún servidor.</div>
+</body></html>`;
+
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([w],{type:'application/msword'}));
+  a.download=`Datos_Donacion_${nombre}_${now.toISOString().slice(0,10)}.doc`;
+  a.click();
+  document.getElementById('ok').style.display='block';
+  document.getElementById('ok').scrollIntoView({behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+(function init(){
+  renderBar();
+  addDonatario();
+})();
+</script>
+</body>
+</html>
