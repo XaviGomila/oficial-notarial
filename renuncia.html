@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notaría · Renuncia / Repudiación de Herencia</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-height:100vh}
+.header{background:#1a3a5c;color:#fff;padding:20px 24px 18px}
+.header-inner{max-width:620px;margin:0 auto}
+.header-seal{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.seal-icon{width:38px;height:38px;border-radius:8px;border:1px solid rgba(196,168,74,0.5);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.header h1{font-family:'Lora',serif;font-size:1.15rem;font-weight:500}
+.header p{font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:3px}
+.acto-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(196,168,74,0.15);border:1px solid rgba(196,168,74,0.3);border-radius:100px;padding:4px 12px;font-size:0.78rem;color:#c9a84c;margin-top:10px}
+.wrap{max-width:620px;margin:24px auto;padding:0 16px 60px}
+.notice{background:#eef3f9;border-left:3px solid #1a3a5c;border-radius:0 8px 8px 0;padding:11px 16px;font-size:0.83rem;color:#2c4a6a;line-height:1.6;margin-bottom:18px}
+.warn{background:#fef6e4;border-left:3px solid #c9a84c;border-radius:0 8px 8px 0;padding:9px 14px;font-size:0.78rem;color:#8c6830;line-height:1.5;margin-bottom:10px}
+.alert{background:#fdf0ee;border-left:3px solid #b02820;border-radius:0 8px 8px 0;padding:9px 14px;font-size:0.78rem;color:#b02820;line-height:1.5;margin-bottom:10px}
+.step-bar{display:flex;align-items:center;margin-bottom:22px}
+.sdot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;transition:all .3s}
+.sdot.done{background:#1a3a5c;color:#fff}
+.sdot.active{background:#c9a84c;color:#1a1510;box-shadow:0 0 0 4px rgba(201,168,76,0.2)}
+.sdot.pend{background:#ddd;color:#999}
+.sline{flex:1;height:2px;background:#ddd}
+.sline.done{background:#1a3a5c}
+.screen{display:none}
+.screen.active{display:block}
+.card{background:#fff;border-radius:10px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.07);margin-bottom:14px;border:0.5px solid #e8e2d8}
+.card h2{font-size:0.82rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px;padding-bottom:9px;border-bottom:1.5px solid #f0ebe0}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:0.79rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6b6258;margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:#1a1510;background:#faf8f4;border:1.5px solid #ddd8ce;border-radius:7px;padding:10px 12px;outline:none;transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#1a3a5c;background:#fff}
+.field .hint{font-size:0.75rem;color:#8c6830;margin-top:4px;font-style:italic}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.rg{display:flex;gap:14px;flex-wrap:wrap;margin-top:5px}
+.rg label{display:flex;align-items:center;gap:6px;font-size:0.88rem;cursor:pointer;color:#3d3830}
+.rg input{accent-color:#1a3a5c}
+.hidden{display:none}
+.nav{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap}
+.btn-p{background:#1a3a5c;color:#fff;border:none;padding:12px 22px;border-radius:7px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;flex:1;transition:opacity .15s}
+.btn-p:hover{opacity:.88}
+.btn-s{background:#f0ebe0;color:#3d3830;border:1px solid #ddd8ce;padding:12px 18px;border-radius:7px;font-size:0.88rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-s:hover{background:#e8e0d0}
+.btn-w{background:#2b579a;color:#fff;border:none;padding:12px 20px;border-radius:7px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .15s}
+.btn-w:hover{opacity:.88}
+.sg{margin-bottom:12px}
+.sg h3{font-size:0.78rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px}
+.sr{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0ebe0;font-size:0.83rem}
+.sr span:first-child{color:#6b6258}
+.sr span:last-child{font-weight:500;text-align:right;max-width:65%}
+.success{background:#e8f5e9;border:1.5px solid #81c784;border-radius:10px;padding:20px;text-align:center;color:#2e7d32;margin-top:16px}
+.success h3{font-size:1rem;margin-bottom:6px;font-family:'Lora',serif}
+.success p{font-size:0.85rem;line-height:1.5}
+.footer{text-align:center;padding:24px 16px;font-size:0.75rem;color:#a09585;border-top:1px solid #e8e2d8;margin-top:8px}
+@media(max-width:480px){.row2{grid-template-columns:1fr}.nav{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-seal">
+      <div class="seal-icon">⚖</div>
+      <div>
+        <h1>Notaría · Renuncia / Repudiación de Herencia</h1>
+        <p>Complete sus datos para que podamos preparar su expediente</p>
+      </div>
+    </div>
+    <div class="acto-badge">🚫 Renuncia o repudiación de herencia</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="alert">
+    ⚠ <strong>Atención:</strong> La renuncia a una herencia es un acto irreversible. Una vez firmada ante notario, no puede deshacerse. Le recomendamos que consulte con la notaría antes de tomar esta decisión, especialmente si la herencia tiene deudas o si no conoce bien su composición.
+  </div>
+  <div class="step-bar" id="stepBar"></div>
+
+  <!-- PASO 0 — Renunciante -->
+  <div class="screen active" id="s0">
+    <div class="card">
+      <h2>👤 Sus datos personales</h2>
+      <div class="row2">
+        <div class="field"><label>Nombre y apellidos *</label><input type="text" id="nombre" placeholder="Nombre completo"></div>
+        <div class="field"><label>DNI / NIE *</label><input type="text" id="dni" placeholder="12345678A"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Estado civil</label>
+          <select id="estado-civil">
+            <option value="">— Seleccione —</option>
+            <option>Soltero/a</option><option>Casado/a</option>
+            <option>Viudo/a</option><option>Divorciado/a</option>
+          </select>
+        </div>
+        <div class="field"><label>Domicilio completo</label><input type="text" id="domicilio" placeholder="Calle, número, municipio"></div>
+      </div>
+      <div class="field"><label>¿Es menor de edad o tiene medidas de apoyo judiciales?</label>
+        <div class="rg">
+          <label><input type="radio" name="menor" value="No"> No</label>
+          <label><input type="radio" name="menor" value="Sí" onclick="document.getElementById('bloque-menor').classList.remove('hidden')"> Sí</label>
+        </div>
+      </div>
+      <div id="bloque-menor" class="hidden">
+        <div class="alert">⚠ Si es menor de edad o tiene medidas de apoyo judiciales, la renuncia requiere <strong>autorización judicial previa</strong>. La notaría no puede autorizar la renuncia sin ese documento. Consúltenos antes de continuar.</div>
+      </div>
+    </div>
+
+    <div class="nav"><button class="btn-p" onclick="go(1)">Continuar →</button></div>
+  </div>
+
+  <!-- PASO 1 — Causante -->
+  <div class="screen" id="s1">
+    <div class="card">
+      <h2>⚰️ Datos del fallecido (causante)</h2>
+      <div class="row2">
+        <div class="field"><label>Nombre y apellidos *</label><input type="text" id="causante-nombre" placeholder="Nombre completo"></div>
+        <div class="field"><label>Fecha de fallecimiento *</label><input type="date" id="causante-fecha"></div>
+      </div>
+      <div class="field"><label>Relación con el fallecido *</label>
+        <select id="relacion">
+          <option value="">— Seleccione —</option>
+          <option>Hijo/a</option>
+          <option>Cónyuge / Pareja de hecho</option>
+          <option>Nieto/a</option>
+          <option>Hermano/a</option>
+          <option>Sobrino/a</option>
+          <option>Otro familiar</option>
+          <option>Otra relación</option>
+        </select>
+      </div>
+      <div class="field"><label>¿Hay testamento?</label>
+        <div class="rg">
+          <label><input type="radio" name="testamento" value="Sí"> Sí</label>
+          <label><input type="radio" name="testamento" value="No"> No</label>
+          <label><input type="radio" name="testamento" value="No sé"> No sé</label>
+        </div>
+        <div class="hint">Si no lo sabe, nosotros lo verificaremos mediante el Certificado de Últimas Voluntades.</div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-s" onclick="go(0)">← Atrás</button>
+      <button class="btn-p" onclick="go(2)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- PASO 2 — Tipo de renuncia -->
+  <div class="screen" id="s2">
+    <div class="card">
+      <h2>⚙️ Tipo de renuncia</h2>
+      <div class="field"><label>¿Qué tipo de renuncia desea hacer? *</label>
+        <select id="tipo-renuncia" onchange="toggleTipo()">
+          <option value="">— Seleccione —</option>
+          <option value="pura">Renuncia pura — renuncio sin designar a nadie</option>
+          <option value="favor">Renuncia a favor de una persona concreta</option>
+          <option value="compensacion">Renuncia con compensación económica (me pagan por renunciar)</option>
+          <option value="nosé">No lo sé / Necesito asesoramiento</option>
+        </select>
+      </div>
+
+      <div id="bloque-favor" class="hidden">
+        <div class="warn">⚠ La renuncia a favor de una persona concreta tiene consecuencias fiscales distintas a la renuncia pura. Puede estar sujeta al Impuesto de Donaciones. Consúltelo con su asesor fiscal antes de la firma.</div>
+        <div class="field"><label>Nombre del beneficiario *</label><input type="text" id="benef-nombre" placeholder="Nombre y apellidos completos"></div>
+        <div class="field"><label>DNI / NIE del beneficiario *</label><input type="text" id="benef-dni" placeholder="12345678A"></div>
+        <div class="field"><label>Relación con el beneficiario</label><input type="text" id="benef-relacion" placeholder="Ej: mi hermano, mi hijo..."></div>
+      </div>
+
+      <div id="bloque-compensacion" class="hidden">
+        <div class="warn">⚠ La renuncia con compensación económica tiene naturaleza de transmisión onerosa y puede estar sujeta a ITP e IRPF. Es imprescindible consultar con asesor fiscal antes de la firma.</div>
+        <div class="field"><label>Importe de la compensación *</label><input type="text" id="comp-importe" placeholder="Ej: 30.000 €"></div>
+        <div class="field"><label>Forma de pago</label>
+          <select id="comp-pago">
+            <option value="">— Seleccione —</option>
+            <option>Transferencia bancaria</option>
+            <option>Cheque bancario</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="field"><label>¿Quién le paga la compensación?</label><input type="text" id="comp-quien" placeholder="Nombre y apellidos de quien paga"></div>
+      </div>
+    </div>
+
+    <div class="field" style="margin-bottom:14px">
+      <label>Observaciones adicionales</label>
+      <textarea id="observaciones" placeholder="Cualquier detalle adicional que considere relevante..."></textarea>
+    </div>
+
+    <div class="nav">
+      <button class="btn-s" onclick="go(1)">← Atrás</button>
+      <button class="btn-p" onclick="go(3)">Revisar →</button>
+    </div>
+  </div>
+
+  <!-- PASO 3 — Resumen -->
+  <div class="screen" id="s3">
+    <div class="card">
+      <h2>📋 Revise sus datos antes de descargar</h2>
+      <div id="resumen"></div>
+    </div>
+    <div class="notice">Si hay algún error, pulse "Corregir" para volver atrás.</div>
+    <div class="nav">
+      <button class="btn-s" onclick="go(2)">← Corregir</button>
+      <button class="btn-w" onclick="dlWord()">⬇️ Descargar Word y enviar a la notaría</button>
+    </div>
+    <div class="success" id="ok">
+      <h3>✅ Documento descargado</h3>
+      <p>Por favor, adjunte el archivo Word descargado en su respuesta al email de la notaría.<br>Nos pondremos en contacto para confirmar la documentación necesaria.</p>
+    </div>
+  </div>
+
+  <div class="footer">Oficial Notarial IA · Sus datos se procesan localmente y no se almacenan en ningún servidor.</div>
+</div>
+
+<script>
+var LABELS = ['Renunciante','Causante','Tipo de renuncia','Resumen'];
+var step = 0;
+
+function renderBar(){
+  var b = document.getElementById('stepBar'); b.innerHTML = '';
+  LABELS.forEach(function(l, i){
+    var d = document.createElement('div');
+    d.className = 'sdot ' + (i < step ? 'done' : i === step ? 'active' : 'pend');
+    d.textContent = i < step ? '✓' : (i + 1); d.title = l; b.appendChild(d);
+    if(i < LABELS.length - 1){ var ln = document.createElement('div'); ln.className = 'sline' + (i < step ? ' done' : ''); b.appendChild(ln); }
+  });
+}
+
+function go(n){
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  step = n;
+  if(n === 3) buildRes();
+  document.getElementById('s' + n).classList.add('active');
+  renderBar();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function toggleTipo(){
+  var v = document.getElementById('tipo-renuncia').value;
+  document.getElementById('bloque-favor').classList.toggle('hidden', v !== 'favor');
+  document.getElementById('bloque-compensacion').classList.toggle('hidden', v !== 'compensacion');
+}
+
+function gv(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function gr(name){ var el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ''; }
+function addRow(h, lbl, val){ if(val) h += '<div class="sr"><span>' + lbl + '</span><span>' + val + '</span></div>'; return h; }
+
+function getTipoTexto(){
+  var sel = document.getElementById('tipo-renuncia');
+  return sel.selectedIndex > 0 ? sel.options[sel.selectedIndex].text : '';
+}
+
+function buildRes(){
+  var h = '<div class="sg"><h3>👤 Renunciante</h3>';
+  h = addRow(h, 'Nombre', gv('nombre'));
+  h = addRow(h, 'DNI / NIE', gv('dni'));
+  h = addRow(h, 'Estado civil', gv('estado-civil'));
+  h = addRow(h, 'Domicilio', gv('domicilio'));
+  h = addRow(h, 'Menor / medidas apoyo', gr('menor'));
+  h += '</div>';
+
+  h += '<div class="sg"><h3>⚰️ Causante</h3>';
+  h = addRow(h, 'Nombre', gv('causante-nombre'));
+  h = addRow(h, 'Fecha fallecimiento', gv('causante-fecha'));
+  h = addRow(h, 'Relación', gv('relacion'));
+  h = addRow(h, 'Testamento', gr('testamento'));
+  h += '</div>';
+
+  h += '<div class="sg"><h3>⚙️ Tipo de renuncia</h3>';
+  h = addRow(h, 'Tipo', getTipoTexto());
+  h = addRow(h, 'Beneficiario', gv('benef-nombre'));
+  h = addRow(h, 'DNI beneficiario', gv('benef-dni'));
+  h = addRow(h, 'Compensación', gv('comp-importe'));
+  h = addRow(h, 'Forma de pago', gv('comp-pago'));
+  h = addRow(h, 'Quién paga', gv('comp-quien'));
+  h = addRow(h, 'Observaciones', gv('observaciones'));
+  h += '</div>';
+
+  document.getElementById('resumen').innerHTML = h;
+}
+
+function dlWord(){
+  function p(lbl, val){ return val ? '<p>' + lbl + ': <strong>' + val + '</strong></p>' : ''; }
+
+  var body =
+    '<h2>DATOS DEL RENUNCIANTE</h2>' +
+    p('Nombre y apellidos', gv('nombre')) +
+    p('DNI / NIE', gv('dni')) +
+    p('Estado civil', gv('estado-civil')) +
+    p('Domicilio', gv('domicilio')) +
+    p('¿Menor o medidas de apoyo?', gr('menor')) +
+    '<br>' +
+    '<h2>DATOS DEL CAUSANTE (FALLECIDO)</h2>' +
+    p('Nombre y apellidos', gv('causante-nombre')) +
+    p('Fecha de fallecimiento', gv('causante-fecha')) +
+    p('Relación del renunciante con el causante', gv('relacion')) +
+    p('¿Hay testamento?', gr('testamento')) +
+    '<br>' +
+    '<h2>TIPO DE RENUNCIA</h2>' +
+    p('Tipo', getTipoTexto()) +
+    p('Beneficiario', gv('benef-nombre')) +
+    p('DNI del beneficiario', gv('benef-dni')) +
+    p('Relación con el beneficiario', gv('benef-relacion')) +
+    p('Importe compensación', gv('comp-importe')) +
+    p('Forma de pago', gv('comp-pago')) +
+    p('Quién paga la compensación', gv('comp-quien')) +
+    p('Observaciones', gv('observaciones')) +
+    '<br><p style="font-size:10pt;color:#777">Documento generado por Oficial Notarial IA · ' + new Date().toLocaleDateString('es-ES') + '</p>';
+
+  var w = '<html xmlns:o=\'urn:schemas-microsoft-com:office:office\' xmlns:w=\'urn:schemas-microsoft-com:office:word\'>' +
+    '<head><meta charset=\'utf-8\'><style>' +
+    'body{font-family:\'Times New Roman\',serif;font-size:12pt;line-height:1.7;margin:2cm 1.5cm}' +
+    'h1{text-align:center;font-size:14pt;margin-bottom:20pt}' +
+    'h2{font-size:12pt;margin-top:16pt;border-bottom:1px solid #aaa;padding-bottom:3pt}' +
+    'p{margin:3pt 0}' +
+    '</style></head><body>' +
+    '<h1>NOTARÍA<br>DATOS PARA RENUNCIA / REPUDIACIÓN DE HERENCIA</h1>' + body + '</body></html>';
+
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([w], {type: 'application/msword'}));
+  a.download = 'Datos_Renuncia_Herencia.doc';
+  a.click();
+  document.getElementById('ok').style.display = 'block';
+  document.getElementById('ok').scrollIntoView({behavior: 'smooth'});
+}
+
+renderBar();
+</script>
+</body>
+</html>
