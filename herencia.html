@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notaría — Datos para Herencia</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink:    #0d1b2e;
+      --gold:   #c9a84c;
+      --goldd:  #a8872e;
+      --bg:     #f5f0e8;
+      --card:   #ffffff;
+      --ink2:   #2c2c2c;
+      --ink3:   #888888;
+      --red:    #c0392b;
+      --green:  #1e8449;
+      --amber:  #d4820a;
+      --border: #e0d8cc;
+      --shadow: 0 2px 10px rgba(0,0,0,0.07);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink2);min-height:100vh}
+
+    /* ── HEADER ── */
+    .hdr{background:var(--ink);padding:22px 20px 18px;text-align:center}
+    .hdr h1{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold);letter-spacing:.02em}
+    .hdr p{font-size:12px;color:rgba(255,255,255,.45);margin-top:5px}
+
+    /* ── STEP BAR ── */
+    .step-bar{background:var(--ink);padding:10px 20px 16px;display:flex;align-items:center;overflow-x:auto;gap:0;border-top:1px solid rgba(255,255,255,.08)}
+    .sdot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;transition:all .25s}
+    .sdot.done{background:var(--gold);color:var(--ink)}
+    .sdot.active{background:#fff;color:var(--ink);box-shadow:0 0 0 3px rgba(201,168,76,.4)}
+    .sdot.pend{background:rgba(255,255,255,.12);color:rgba(255,255,255,.4)}
+    .sline{flex:1;height:2px;background:rgba(255,255,255,.15);min-width:8px;transition:background .25s}
+    .sline.done{background:var(--gold)}
+
+    /* ── WRAP ── */
+    .wrap{max-width:700px;margin:0 auto;padding:22px 16px 90px}
+
+    /* ── CARDS ── */
+    .card{background:var(--card);border-radius:12px;padding:22px;margin-bottom:16px;border:1px solid var(--border);box-shadow:var(--shadow)}
+    .card h2{font-family:'Playfair Display',serif;font-size:16px;color:var(--ink);margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--gold);display:flex;align-items:center;gap:8px}
+
+    /* ── FORM FIELDS ── */
+    .field{margin-bottom:15px}
+    .field label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px}
+    .field input[type=text],.field input[type=date],.field select,.field textarea{
+      width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;
+      font-size:14px;font-family:inherit;background:#fafaf8;color:var(--ink2);
+      transition:border-color .15s}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);outline:none;background:#fffdf7}
+    .field textarea{resize:vertical;min-height:90px;line-height:1.55}
+    .field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+
+    /* ── RADIO GROUPS ── */
+    .rg{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+    .rg label{display:flex;align-items:center;gap:7px;font-size:13.5px;font-weight:400;cursor:pointer;padding:7px 13px;border:1.5px solid var(--border);border-radius:8px;transition:all .15s;line-height:1.3}
+    .rg label:hover{border-color:var(--gold);background:#fffdf7}
+    .rg input[type=radio]{accent-color:var(--gold);width:15px;height:15px;flex-shrink:0}
+    .rg label:has(input:checked){border-color:var(--gold);background:#fff8ec;font-weight:600}
+
+    /* ── TWO COLUMNS ── */
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+    @media(max-width:540px){.two-col,.three-col{grid-template-columns:1fr}}
+
+    /* ── NOTICES ── */
+    .notice{border-radius:9px;padding:13px 16px;font-size:13px;line-height:1.55;margin-bottom:15px}
+    .notice strong{display:block;margin-bottom:3px;font-size:13.5px}
+    .notice.amber{background:#fff8e8;border:1px solid #e8c878}
+    .notice.red{background:#fff0ee;border:1px solid #e8a090}
+    .notice.blue{background:#e8f0ff;border:1px solid #90a8e8}
+    .notice.green{background:#efffee;border:1px solid #88c888}
+    .notice ul{padding-left:18px;margin-top:7px}
+    .notice li{margin-bottom:4px}
+
+    /* ── TAGS ── */
+    .tag{display:inline-block;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:700;margin-left:5px;vertical-align:middle;letter-spacing:.03em}
+    .tag.imp{background:var(--red);color:#fff}
+    .tag.rec{background:var(--amber);color:#fff}
+
+    /* ── DYNAMIC ITEM BLOCKS ── */
+    .item-block{border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:14px;background:#fafaf8;position:relative}
+    .item-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .item-num{font-size:12px;font-weight:700;background:var(--gold);color:var(--ink);padding:3px 12px;border-radius:12px;letter-spacing:.03em}
+    .btn-del{background:none;border:1px solid #f0b0a0;color:var(--red);font-size:12px;cursor:pointer;padding:4px 10px;border-radius:6px;transition:background .15s}
+    .btn-del:hover{background:#fff0ee}
+    .btn-add{background:transparent;color:var(--gold);border:1.5px dashed var(--gold);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;width:100%;margin-top:6px;transition:background .15s;font-family:inherit}
+    .btn-add:hover{background:#fff8ec}
+
+    /* ── NAVIGATION BUTTONS ── */
+    .nav{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
+    .btn-p{background:var(--ink);color:#fff;border:none;padding:12px 28px;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .15s}
+    .btn-p:hover{opacity:.85}
+    .btn-s{background:transparent;color:var(--ink);border:1.5px solid var(--ink);padding:11px 22px;border-radius:9px;font-size:14px;cursor:pointer;font-family:inherit;transition:background .15s}
+    .btn-s:hover{background:rgba(13,27,46,.05)}
+    .btn-w{background:var(--gold);color:var(--ink);border:none;padding:12px 28px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s}
+    .btn-w:hover{opacity:.85}
+
+    /* ── SCREENS ── */
+    .screen{display:none}
+    .screen.active{display:block}
+    .hidden{display:none!important}
+
+    /* ── ALERT BOXES ── */
+    .isd-box{background:#fff0ee;border:2px solid var(--red);border-radius:10px;padding:18px 22px;margin-bottom:16px}
+    .isd-box .isd-label{font-size:12px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+    .isd-box .isd-date{font-family:'Playfair Display',serif;font-size:28px;color:var(--red);margin-bottom:4px;font-weight:600}
+    .isd-box .isd-sub{font-size:12px;color:var(--ink3);line-height:1.5}
+
+    .cuv-box{background:#fff8e8;border:1.5px solid var(--gold);border-radius:9px;padding:14px 16px;margin-bottom:14px}
+    .cuv-box .cuv-title{font-size:13px;font-weight:700;color:var(--goldd);margin-bottom:4px}
+
+    /* ── RESUMEN ── */
+    .res-block{margin-bottom:20px}
+    .res-block h3{font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;padding:6px 0;border-bottom:1.5px solid var(--gold);margin-bottom:10px}
+    .res-row{display:flex;gap:12px;margin-bottom:7px;font-size:13px;line-height:1.4}
+    .res-lbl{font-weight:600;color:var(--ink);min-width:165px;flex-shrink:0}
+    .res-val{color:var(--ink2)}
+
+    /* ── DOC CHECKLIST ── */
+    .doc-list{list-style:none;padding:0}
+    .doc-list li{padding:8px 0;font-size:13px;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid var(--border);line-height:1.4}
+    .doc-list li:last-child{border-bottom:none}
+    .di{font-size:15px;line-height:1;flex-shrink:0;margin-top:1px}
+    .di.imp{color:var(--red)}
+    .di.rec{color:var(--amber)}
+
+    /* ── SUBSECTION HEADER ── */
+    .sub-hdr{font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;margin:18px 0 10px;border-top:1px solid var(--border);padding-top:14px}
+
+    /* ── SUCCESS ── */
+    .success{display:none;background:#efffee;border:1px solid #88c888;border-radius:10px;padding:26px;text-align:center;margin-top:20px}
+    .success h3{color:var(--green);margin-bottom:8px;font-size:16px}
+    .success p{font-size:13px;color:var(--ink3);line-height:1.6}
+
+    /* ── FOOTER ── */
+    .footer{text-align:center;font-size:11px;color:var(--ink3);padding:20px;border-top:1px solid var(--border);margin-top:10px}
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>Herencia — Datos para la notaría</h1>
+  <p>Complete el formulario para que preparemos su expediente. Sus datos se procesan localmente.</p>
+</div>
+<div class="step-bar" id="stepBar"></div>
+
+<div class="wrap">
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 0 — CAUSANTE                                  -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen active" id="s0">
+
+  <div class="notice amber">
+    <strong>¿Para qué sirve este formulario?</strong>
+    Ayuda a su notaría a preparar la escritura de herencia con toda la información necesaria.
+    Rellénelo con los datos que tenga disponibles. Recibirá confirmación con la documentación que debe aportar.
+  </div>
+
+  <div class="card">
+    <h2>📋 Datos del fallecido</h2>
+
+    <div class="two-col">
+      <div class="field">
+        <label>Nombre y apellidos completos <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="c-nombre" placeholder="Ej: Juan García López">
+      </div>
+      <div class="field">
+        <label>DNI / NIE / Pasaporte <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="c-dni" placeholder="Ej: 12345678A">
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label>Fecha de fallecimiento <span class="tag imp">Imprescindible</span></label>
+        <input type="date" id="c-fecha" onchange="actualizarAlertas()">
+      </div>
+      <div class="field">
+        <label>Municipio de fallecimiento</label>
+        <input type="text" id="c-lugar" placeholder="Ej: Palma de Mallorca">
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label>Nacionalidad</label>
+        <input type="text" id="c-nac" placeholder="Ej: Española">
+      </div>
+      <div class="field">
+        <label>Vecindad civil <span class="tag imp">Imprescindible</span></label>
+        <select id="c-vecindad" onchange="actualizarVecindad()">
+          <option value="">— Seleccione —</option>
+          <option value="balear-mm">Balear — Mallorca / Menorca</option>
+          <option value="balear-if">Balear — Ibiza / Formentera</option>
+          <option value="comun">Común (resto de España)</option>
+          <option value="extranjero">Extranjero</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="alert-mm" class="notice amber hidden">
+      <strong>⚖ Derecho foral: Mallorca / Menorca</strong>
+      La legítima es de <strong>un tercio</strong> del caudal hereditario (art. 41 CDCIB), distinta del régimen común. Su notaría aplicará el Compilació de Dret Civil de les Illes Balears, Llibre I.
+    </div>
+    <div id="alert-if" class="notice amber hidden">
+      <strong>⚖ Derecho foral: Ibiza / Formentera</strong>
+      La legítima es de <strong>un cuarto</strong> del caudal (pars valoris, Llibre IV CDCIB). Si el testamento no instituyó heredero universal (<em>hereu</em>), puede haberse abierto sucesión intestada aunque exista testamento.
+    </div>
+    <div id="alert-ext" class="notice blue hidden">
+      <strong>🌐 Elemento internacional</strong>
+      Se aplica el Reglamento UE 650/2012. La ley aplicable es, en principio, la del Estado de residencia habitual del causante. Su notaría le informará sobre la ley que rige la sucesión.
+    </div>
+
+    <div class="field">
+      <label>Estado civil al fallecimiento <span class="tag imp">Imprescindible</span></label>
+      <div class="rg">
+        <label><input type="radio" name="c-ecivil" value="casado" onclick="toggleConyuge(true)"> Casado/a</label>
+        <label><input type="radio" name="c-ecivil" value="soltero" onclick="toggleConyuge(false)"> Soltero/a</label>
+        <label><input type="radio" name="c-ecivil" value="viudo" onclick="toggleConyuge(false)"> Viudo/a</label>
+        <label><input type="radio" name="c-ecivil" value="divorciado" onclick="toggleConyuge(false)"> Divorciado/a</label>
+        <label><input type="radio" name="c-ecivil" value="separado" onclick="toggleConyuge(false)"> Separado/a</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- CÓNYUGE SUPERVIVIENTE -->
+  <div id="bloque-conyuge" class="card hidden">
+    <h2>💑 Cónyuge superviviente</h2>
+
+    <div class="field">
+      <label>Régimen económico matrimonial <span class="tag imp">Imprescindible</span></label>
+      <div class="rg">
+        <label><input type="radio" name="c-regimen" value="Gananciales" onclick="toggleGananciales(true)"> Gananciales</label>
+        <label><input type="radio" name="c-regimen" value="Separación de bienes" onclick="toggleGananciales(false)"> Separación de bienes</label>
+        <label><input type="radio" name="c-regimen" value="Participación" onclick="toggleGananciales(false)"> Participación</label>
+        <label><input type="radio" name="c-regimen" value="No sé" onclick="toggleGananciales(false)"> No sé</label>
+      </div>
+    </div>
+
+    <div id="alert-gananciales" class="notice red hidden">
+      <strong>⚠️ Liquidación de la sociedad de gananciales — Requerida</strong>
+      Antes de repartir la herencia es necesario liquidar la sociedad de gananciales para determinar qué bienes pertenecían al fallecido y cuáles corresponden al cónyuge superviviente. Su notaría le informará del procedimiento, que puede formalizarse en la misma escritura de herencia.
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label>Nombre completo del cónyuge <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="cny-nombre" placeholder="Nombre y apellidos completos">
+      </div>
+      <div class="field">
+        <label>DNI / NIE del cónyuge <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="cny-dni" placeholder="Ej: 87654321B">
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="field">
+        <label>Estado civil del cónyuge</label>
+        <select id="cny-ecivil">
+          <option value="">— Seleccione —</option>
+          <option value="Viudo/a">Viudo/a</option>
+          <option value="Soltero/a">Soltero/a</option>
+          <option value="Casado/a (en segundas nupcias)">Casado/a (en segundas nupcias)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Profesión del cónyuge</label>
+        <input type="text" id="cny-prof" placeholder="Ej: Empleada de hogar">
+      </div>
+    </div>
+    <div class="field">
+      <label>Domicilio completo del cónyuge <span class="tag imp">Imprescindible</span></label>
+      <input type="text" id="cny-dom" placeholder="Calle, número, piso, localidad, código postal">
+    </div>
+  </div>
+
+  <!-- ISD ALERT (auto-generado) -->
+  <div id="isd-box" class="hidden">
+    <div class="isd-box">
+      <div class="isd-label">⏰ Plazo — Impuesto de Sucesiones (ISD)</div>
+      <div class="isd-date" id="isd-fecha">—</div>
+      <div class="isd-sub">Fecha límite para la autoliquidación (6 meses desde el fallecimiento).<br>
+      Es posible solicitar prórroga de otros 6 meses antes de que venza el plazo original.</div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="btn-p" onclick="go(1)">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 1 — TÍTULO SUCESORIO                          -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen" id="s1">
+
+  <div class="card">
+    <h2>📜 Certificado de Últimas Voluntades (CUV)</h2>
+
+    <div id="cuv-plazo-alerta" class="cuv-box hidden">
+      <div class="cuv-title">⏳ Atención — Todavía no se puede solicitar el CUV</div>
+      <p style="font-size:13px;line-height:1.55">El CUV no puede solicitarse hasta que hayan transcurrido al menos <strong>15 días hábiles</strong> desde la inscripción del fallecimiento en el Registro Civil. Basándose en la fecha indicada, es posible que todavía no sea posible obtenerlo. Su notaría le confirmará el momento exacto.</p>
+    </div>
+
+    <div class="notice blue">
+      <strong>ℹ️ ¿Qué es el CUV?</strong>
+      El Certificado de Últimas Voluntades es el documento oficial del Ministerio de Justicia que acredita si el fallecido otorgó testamento y, en ese caso, cuál fue el último. Es imprescindible para tramitar cualquier herencia.
+    </div>
+
+    <div class="field">
+      <label>¿Se ha obtenido ya el Certificado de Últimas Voluntades? <span class="tag imp">Imprescindible</span></label>
+      <div class="rg">
+        <label><input type="radio" name="cuv" value="si"> Sí, ya lo tenemos</label>
+        <label><input type="radio" name="cuv" value="tramitando"> Estamos tramitándolo</label>
+        <label><input type="radio" name="cuv" value="no"> Todavía no</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📋 Testamento</h2>
+
+    <div class="field">
+      <label>¿Existe testamento? <span class="tag imp">Imprescindible</span></label>
+      <div class="rg">
+        <label><input type="radio" name="testamento" value="si" onclick="setTestamento(true)"> Sí, hay testamento</label>
+        <label><input type="radio" name="testamento" value="no" onclick="setTestamento(false)"> No hay testamento (abintestato)</label>
+        <label><input type="radio" name="testamento" value="ns" onclick="setTestamento(null)"> Lo sabremos cuando obtengamos el CUV</label>
+      </div>
+    </div>
+
+    <!-- Con testamento -->
+    <div id="bloque-testamento" class="hidden">
+      <div class="notice green">
+        <strong>✓ Herencia con testamento</strong>
+        Deberá aportar una copia autorizada del último testamento, que quedará identificado por el CUV. Si tiene información sobre el notario que lo autorizó, facilítela para agilizar el trámite.
+      </div>
+      <div class="two-col" style="margin-top:12px">
+        <div class="field">
+          <label>Notario autorizante (si lo conoce)</label>
+          <input type="text" id="t-notario" placeholder="Nombre y apellidos del notario">
+        </div>
+        <div class="field">
+          <label>Fecha del testamento (si la conoce)</label>
+          <input type="date" id="t-fecha">
+        </div>
+      </div>
+      <div class="field">
+        <label>Número de protocolo (si lo conoce)</label>
+        <input type="text" id="t-protocolo" placeholder="Ej: 1234/2019">
+      </div>
+    </div>
+
+    <!-- Sin testamento -->
+    <div id="bloque-abintestato" class="hidden">
+      <div class="notice amber">
+        <strong>📌 Sin testamento — Sucesión abintestato</strong>
+        Su notaría tramitará el <strong>Acta de Notoriedad de Declaración de Herederos</strong>. No es un documento que usted deba conseguir: lo elabora la notaría. Para ello necesitará:
+        <ul>
+          <li>Documentación que acredite el parentesco (libro de familia, certificados de nacimiento)</li>
+          <li>Comparecencia de <strong>dos testigos</strong> que conozcan a la familia. Sus datos se solicitarán en el siguiente paso.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="btn-s" onclick="go(0)">← Atrás</button>
+    <button class="btn-p" onclick="go(2)">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 2 — HEREDEROS                                 -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen" id="s2">
+
+  <div class="card">
+    <h2>👥 Herederos</h2>
+    <p style="font-size:13px;color:var(--ink3);margin-bottom:18px;line-height:1.5">
+      Incluya los datos de todas las personas llamadas a la herencia. Todos deberán comparecer ante el notario o aportar poder notarial suficiente.
+    </p>
+    <div id="herederos-container"></div>
+    <button class="btn-add" onclick="addHeredero()">＋ Añadir heredero</button>
+  </div>
+
+  <!-- Testigos — solo si abintestato -->
+  <div id="bloque-testigos" class="card hidden">
+    <h2>👤 Testigos para el Acta de Notoriedad</h2>
+    <div class="notice amber">
+      <strong>⚠️ Requisito de esta notaría</strong>
+      Al no haber testamento, su notaría tramitará el Acta de Notoriedad de Declaración de Herederos. Para ello son necesarios <strong>dos testigos</strong> mayores de edad que conozcan a la familia y puedan declarar sobre el parentesco y la ausencia de otros herederos con mejor derecho.
+    </div>
+
+    <div class="item-block">
+      <div class="item-hdr"><span class="item-num">Testigo 1</span></div>
+      <div class="two-col">
+        <div class="field">
+          <label>Nombre y apellidos <span class="tag imp">Imprescindible</span></label>
+          <input type="text" id="t1-nombre" placeholder="Nombre y apellidos completos">
+        </div>
+        <div class="field">
+          <label>DNI / NIE <span class="tag imp">Imprescindible</span></label>
+          <input type="text" id="t1-dni" placeholder="Ej: 12345678A">
+        </div>
+      </div>
+    </div>
+
+    <div class="item-block">
+      <div class="item-hdr"><span class="item-num">Testigo 2</span></div>
+      <div class="two-col">
+        <div class="field">
+          <label>Nombre y apellidos <span class="tag imp">Imprescindible</span></label>
+          <input type="text" id="t2-nombre" placeholder="Nombre y apellidos completos">
+        </div>
+        <div class="field">
+          <label>DNI / NIE <span class="tag imp">Imprescindible</span></label>
+          <input type="text" id="t2-dni" placeholder="Ej: 87654321B">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="btn-s" onclick="go(1)">← Atrás</button>
+    <button class="btn-p" onclick="go(3)">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 3 — BIENES DEL CAUDAL                         -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen" id="s3">
+
+  <!-- INMUEBLES -->
+  <div class="card">
+    <h2>🏠 Inmuebles</h2>
+    <div class="notice blue">
+      <strong>ℹ️ Nota simple registral</strong>
+      Por cada inmueble, su notaría solicitará una nota simple actualizada del Registro de la Propiedad. Si dispone del número de finca registral o la referencia catastral, facilítelos para agilizar el trámite.
+    </div>
+    <div id="inmuebles-container"></div>
+    <button class="btn-add" onclick="addInmueble()">＋ Añadir inmueble</button>
+  </div>
+
+  <!-- CUENTAS BANCARIAS -->
+  <div class="card">
+    <h2>🏦 Cuentas bancarias y productos financieros</h2>
+    <div class="notice amber">
+      <strong>⚠️ Certificado de saldo — Acción requerida</strong>
+      Por cada cuenta o producto (depósitos, fondos de inversión, etc.) deberá solicitar al banco un <strong>certificado de saldo a fecha de fallecimiento</strong>. Lo emite gratuitamente la entidad y es imprescindible para valorar el caudal.
+    </div>
+    <div id="cuentas-container"></div>
+    <button class="btn-add" onclick="addCuenta()">＋ Añadir cuenta / producto financiero</button>
+  </div>
+
+  <!-- VEHÍCULOS -->
+  <div class="card">
+    <h2>🚗 Vehículos</h2>
+    <div id="vehiculos-container"></div>
+    <button class="btn-add" onclick="addVehiculo()">＋ Añadir vehículo</button>
+  </div>
+
+  <!-- PLANES DE PENSIONES -->
+  <div class="card">
+    <h2>📌 Planes de pensiones y seguros de vida</h2>
+    <div class="notice green">
+      <strong>✓ Información importante — Léala antes de continuar</strong>
+      Los planes de pensiones y los seguros de vida con beneficiario designado <strong>NO forman parte del caudal hereditario</strong>. El beneficiario los percibe directamente por derecho propio, al margen de la herencia y sin necesidad de escritura. Solo integran la herencia si el beneficiario designado es "la herencia" o "los herederos legales".
+    </div>
+    <div class="field">
+      <label>¿El fallecido tenía planes de pensiones o seguros de vida?</label>
+      <div class="rg">
+        <label><input type="radio" name="pensiones" value="si"> Sí</label>
+        <label><input type="radio" name="pensiones" value="no"> No</label>
+        <label><input type="radio" name="pensiones" value="ns"> No sé</label>
+      </div>
+    </div>
+    <div class="field">
+      <label>Otros bienes o derechos <span class="tag rec">Recomendable</span></label>
+      <textarea id="otros-bienes" placeholder="Participaciones en empresas, derechos de crédito, joyas, obras de arte, propiedad intelectual, bienes en el extranjero, etc. Describa brevemente cualquier otro bien o derecho que pueda formar parte de la herencia..."></textarea>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="btn-s" onclick="go(2)">← Atrás</button>
+    <button class="btn-p" onclick="go(4)">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 4 — OBSERVACIONES                             -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen" id="s4">
+  <div class="card">
+    <h2>📝 Información adicional</h2>
+    <p style="font-size:13px;color:var(--ink3);margin-bottom:18px;line-height:1.5">
+      Cualquier detalle que considere relevante para que su notaría pueda preparar el expediente correctamente.
+    </p>
+    <div class="field">
+      <label>Observaciones</label>
+      <textarea id="observaciones" style="min-height:130px" placeholder="Ejemplos: conflictos entre herederos conocidos, deudas del fallecido, bienes en el extranjero, herederos menores de edad o con medidas de apoyo, renuncias que algún heredero está contemplando, discapacidades, situaciones de insolvencia, deudas significativas del causante..."></textarea>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="btn-s" onclick="go(3)">← Atrás</button>
+    <button class="btn-p" onclick="go(5)">Revisar →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 5 — RESUMEN + DESCARGA                        -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen" id="s5">
+
+  <div id="isd-resumen"></div>
+
+  <div class="card">
+    <h2>📋 Resumen del expediente</h2>
+    <div id="resumen-contenido"></div>
+  </div>
+
+  <div class="card">
+    <h2>📎 Documentación que deberá aportar</h2>
+    <ul class="doc-list" id="doc-checklist"></ul>
+  </div>
+
+  <div class="notice amber">Si hay algún error, pulse "Corregir" para volver atrás.</div>
+
+  <div class="nav">
+    <button class="btn-s" onclick="go(4)">← Corregir</button>
+    <button class="btn-w" onclick="dlWord()">⬇️ Descargar Word y enviar a la notaría</button>
+  </div>
+
+  <div class="success" id="ok">
+    <h3>✅ Documento descargado</h3>
+    <p>Adjunte el archivo Word en su respuesta al email de la notaría.<br>
+    Nos pondremos en contacto para confirmar la documentación necesaria y coordinar la cita.</p>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<div class="footer">Oficial Notarial IA · Sus datos se procesan localmente y no se almacenan en ningún servidor.</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  ESTADO
+// ═══════════════════════════════════════════════════════
+const LABELS = ['Causante','Título','Herederos','Bienes','Notas','Resumen'];
+let step          = 0;
+let herederoCount = 0;
+let inmuebleCount = 0;
+let cuentaCount   = 0;
+let vehiculoCount = 0;
+let hayTestamento = null;   // true | false | null
+let hayConyuge    = false;
+let hayGananciales= false;
+
+// ═══════════════════════════════════════════════════════
+//  STEP BAR
+// ═══════════════════════════════════════════════════════
+function renderBar(){
+  const bar = document.getElementById('stepBar');
+  bar.innerHTML = '';
+  LABELS.forEach((l,i)=>{
+    const d = document.createElement('div');
+    d.className='sdot '+(i<step?'done':i===step?'active':'pend');
+    d.textContent = i<step?'✓':(i+1);
+    d.title = l;
+    bar.appendChild(d);
+    if(i<LABELS.length-1){
+      const ln=document.createElement('div');
+      ln.className='sline'+(i<step?' done':'');
+      bar.appendChild(ln);
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAVEGACIÓN
+// ═══════════════════════════════════════════════════════
+function go(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  step=n;
+  if(n===5) buildResumen();
+  document.getElementById('s'+n).classList.add('active');
+  renderBar();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════════
+function gv(id){ const e=document.getElementById(id); return e?e.value.trim():''; }
+function gr(name){ const e=document.querySelector(`input[name="${name}"]:checked`); return e?e.value:''; }
+function sv(id){ const e=document.getElementById(id); return e?e.value:''; }
+function dash(v){ return v||'—'; }
+
+// ═══════════════════════════════════════════════════════
+//  FECHAS Y ALERTAS AUTOMÁTICAS
+// ═══════════════════════════════════════════════════════
+function calcDiasHabiles(inicio, fin){
+  let dias=0, cursor=new Date(inicio);
+  while(cursor<fin){ cursor.setDate(cursor.getDate()+1); const d=cursor.getDay(); if(d!==0&&d!==6) dias++; }
+  return dias;
+}
+
+function actualizarAlertas(){
+  const f = gv('c-fecha');
+  if(!f){ document.getElementById('isd-box').classList.add('hidden'); return; }
+  const fall = new Date(f);
+  const isd  = new Date(fall); isd.setMonth(isd.getMonth()+6);
+  document.getElementById('isd-fecha').textContent = isd.toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('isd-box').classList.remove('hidden');
+  // CUV 15 días hábiles
+  const dh = calcDiasHabiles(fall, new Date());
+  document.getElementById('cuv-plazo-alerta').classList.toggle('hidden', dh>=15);
+}
+
+function actualizarVecindad(){
+  const v = gv('c-vecindad');
+  document.getElementById('alert-mm').classList.toggle('hidden', v!=='balear-mm');
+  document.getElementById('alert-if').classList.toggle('hidden', v!=='balear-if');
+  document.getElementById('alert-ext').classList.toggle('hidden', v!=='extranjero');
+}
+
+function toggleConyuge(show){
+  hayConyuge = show;
+  document.getElementById('bloque-conyuge').classList.toggle('hidden',!show);
+  if(!show){ hayGananciales=false; }
+}
+
+function toggleGananciales(show){
+  hayGananciales = show;
+  document.getElementById('alert-gananciales').classList.toggle('hidden',!show);
+}
+
+function setTestamento(val){
+  hayTestamento = val;
+  document.getElementById('bloque-testamento').classList.toggle('hidden', val!==true);
+  document.getElementById('bloque-abintestato').classList.toggle('hidden', val!==false);
+  document.getElementById('bloque-testigos').classList.toggle('hidden', val!==false);
+}
+
+function vecindadLabel(v){
+  return {'balear-mm':'Balear — Mallorca / Menorca','balear-if':'Balear — Ibiza / Formentera','comun':'Común (Código Civil)','extranjero':'Extranjero'}[v]||v||'—';
+}
+
+// ═══════════════════════════════════════════════════════
+//  HEREDEROS DINÁMICOS
+// ═══════════════════════════════════════════════════════
+function addHeredero(){
+  herederoCount++;
+  const id = herederoCount;
+  const c  = document.getElementById('herederos-container');
+  const div= document.createElement('div');
+  div.className='item-block'; div.id='heredero-'+id;
+  div.innerHTML=`
+    <div class="item-hdr">
+      <span class="item-num">Heredero ${id}</span>
+      ${id>1?`<button class="btn-del" onclick="removeItem('heredero-${id}')">✕ Eliminar</button>`:''}
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Nombre y apellidos completos <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="h${id}-nombre" placeholder="Nombre y apellidos"></div>
+      <div class="field"><label>DNI / NIE <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="h${id}-dni" placeholder="Ej: 12345678A"></div>
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Relación con el fallecido <span class="tag imp">Imprescindible</span></label>
+        <select id="h${id}-relacion">
+          <option value="">— Seleccione —</option>
+          <option>Cónyuge</option><option>Hijo/a</option><option>Padre / Madre</option>
+          <option>Hermano/a</option><option>Nieto/a</option><option>Sobrino/a</option><option>Otro</option>
+        </select></div>
+      <div class="field"><label>Estado civil</label>
+        <select id="h${id}-ecivil">
+          <option value="">— Seleccione —</option>
+          <option>Soltero/a</option><option>Casado/a</option><option>Viudo/a</option>
+          <option>Divorciado/a</option><option>Separado/a</option>
+        </select></div>
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Régimen económico matrimonial</label>
+        <select id="h${id}-regimen">
+          <option value="">— No aplica / No sé —</option>
+          <option>Gananciales</option><option>Separación de bienes</option>
+          <option>Participación</option><option>Otro</option>
+        </select></div>
+      <div class="field"><label>Profesión</label>
+        <input type="text" id="h${id}-prof" placeholder="Profesión u ocupación"></div>
+    </div>
+    <div class="field"><label>Domicilio completo <span class="tag imp">Imprescindible</span></label>
+      <input type="text" id="h${id}-dom" placeholder="Calle, número, piso, localidad, código postal"></div>
+    <div class="field"><label>Porcentaje en la herencia (si lo conoce)</label>
+      <input type="text" id="h${id}-pct" placeholder="Ej: 33,33% — Déjelo en blanco si no lo sabe"></div>`;
+  c.appendChild(div);
+}
+
+function removeItem(id){ const e=document.getElementById(id); if(e) e.remove(); }
+
+// ═══════════════════════════════════════════════════════
+//  INMUEBLES DINÁMICOS
+// ═══════════════════════════════════════════════════════
+function addInmueble(){
+  inmuebleCount++;
+  const id=inmuebleCount;
+  const c=document.getElementById('inmuebles-container');
+  const div=document.createElement('div');
+  div.className='item-block'; div.id='inmueble-'+id;
+  div.innerHTML=`
+    <div class="item-hdr">
+      <span class="item-num">Inmueble ${id}</span>
+      <button class="btn-del" onclick="removeItem('inmueble-${id}')">✕ Eliminar</button>
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Tipo de inmueble</label>
+        <select id="i${id}-tipo">
+          <option>Piso / Apartamento</option><option>Casa / Chalet</option>
+          <option>Local comercial</option><option>Plaza de garaje</option>
+          <option>Trastero</option><option>Finca rústica</option><option>Solar</option><option>Otro</option>
+        </select></div>
+      <div class="field"><label>Referencia catastral</label>
+        <input type="text" id="i${id}-cat" placeholder="Ej: 7837298CF3473N0001WT"></div>
+    </div>
+    <div class="field"><label>Dirección completa <span class="tag imp">Imprescindible</span></label>
+      <input type="text" id="i${id}-dir" placeholder="Calle, número, piso, localidad, código postal"></div>
+    <div class="two-col">
+      <div class="field"><label>Número de finca registral (si lo conoce)</label>
+        <input type="text" id="i${id}-finca" placeholder="Ej: Finca 12345, Registro de Palma"></div>
+      <div class="field"><label>Valor estimado aproximado</label>
+        <input type="text" id="i${id}-valor" placeholder="Ej: 250.000 €"></div>
+    </div>
+    <div class="field"><label>¿Es un bien ganancial (adquirido durante el matrimonio)?</label>
+      <div class="rg">
+        <label><input type="radio" name="i${id}-gan" value="Sí, bien ganancial"> Sí</label>
+        <label><input type="radio" name="i${id}-gan" value="No, bien privativo"> No (privativo)</label>
+        <label><input type="radio" name="i${id}-gan" value="No sé"> No sé</label>
+      </div></div>
+    <div class="field"><label>¿Tiene hipoteca actualmente?</label>
+      <div class="rg">
+        <label><input type="radio" name="i${id}-hip" value="Sí" onclick="document.getElementById('i${id}-banco-w').classList.remove('hidden')"> Sí</label>
+        <label><input type="radio" name="i${id}-hip" value="No" onclick="document.getElementById('i${id}-banco-w').classList.add('hidden')"> No</label>
+        <label><input type="radio" name="i${id}-hip" value="No sé" onclick="document.getElementById('i${id}-banco-w').classList.add('hidden')"> No sé</label>
+      </div></div>
+    <div class="field hidden" id="i${id}-banco-w">
+      <label>Entidad bancaria acreedora</label>
+      <input type="text" id="i${id}-banco" placeholder="Nombre del banco"></div>`;
+  c.appendChild(div);
+}
+
+// ═══════════════════════════════════════════════════════
+//  CUENTAS DINÁMICAS
+// ═══════════════════════════════════════════════════════
+function addCuenta(){
+  cuentaCount++;
+  const id=cuentaCount;
+  const c=document.getElementById('cuentas-container');
+  const div=document.createElement('div');
+  div.className='item-block'; div.id='cuenta-'+id;
+  div.innerHTML=`
+    <div class="item-hdr">
+      <span class="item-num">Cuenta / Producto ${id}</span>
+      <button class="btn-del" onclick="removeItem('cuenta-${id}')">✕ Eliminar</button>
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Entidad bancaria <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="cc${id}-banco" placeholder="Ej: CaixaBank, Santander..."></div>
+      <div class="field"><label>Tipo de producto</label>
+        <select id="cc${id}-tipo">
+          <option>Cuenta corriente</option><option>Cuenta de ahorro</option>
+          <option>Depósito</option><option>Fondo de inversión</option>
+          <option>Acciones / Valores</option><option>Otro</option>
+        </select></div>
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Últimos 4 dígitos del IBAN (si lo conoce)</label>
+        <input type="text" id="cc${id}-iban" placeholder="Ej: ...4521" maxlength="4"></div>
+      <div class="field"><label>Saldo aproximado a fecha fallecimiento</label>
+        <input type="text" id="cc${id}-saldo" placeholder="Ej: 15.000 €"></div>
+    </div>
+    <p style="font-size:12px;color:var(--amber);margin-top:4px">⚠ Solicite al banco el certificado de saldo a fecha de fallecimiento — es imprescindible.</p>`;
+  c.appendChild(div);
+}
+
+// ═══════════════════════════════════════════════════════
+//  VEHÍCULOS DINÁMICOS
+// ═══════════════════════════════════════════════════════
+function addVehiculo(){
+  vehiculoCount++;
+  const id=vehiculoCount;
+  const c=document.getElementById('vehiculos-container');
+  const div=document.createElement('div');
+  div.className='item-block'; div.id='vehiculo-'+id;
+  div.innerHTML=`
+    <div class="item-hdr">
+      <span class="item-num">Vehículo ${id}</span>
+      <button class="btn-del" onclick="removeItem('vehiculo-${id}')">✕ Eliminar</button>
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Matrícula <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="v${id}-mat" placeholder="Ej: 1234 ABC"></div>
+      <div class="field"><label>Marca y modelo</label>
+        <input type="text" id="v${id}-modelo" placeholder="Ej: Seat Ibiza 2018"></div>
+    </div>`;
+  c.appendChild(div);
+}
+
+// ═══════════════════════════════════════════════════════
+//  RESUMEN
+// ═══════════════════════════════════════════════════════
+function buildResumen(){
+  buildISDResumen();
+  buildResumenContenido();
+  buildChecklist();
+}
+
+function buildISDResumen(){
+  const f=gv('c-fecha');
+  const c=document.getElementById('isd-resumen');
+  if(!f){c.innerHTML='';return;}
+  const fall=new Date(f), isd=new Date(fall);
+  isd.setMonth(isd.getMonth()+6);
+  c.innerHTML=`<div class="isd-box">
+    <div class="isd-label">⏰ Plazo Impuesto de Sucesiones (ISD)</div>
+    <div class="isd-date">${isd.toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'})}</div>
+    <div class="isd-sub">Fecha límite para autoliquidar el ISD (6 meses desde el fallecimiento).<br>
+    Se puede solicitar prórroga de otros 6 meses antes del vencimiento.</div>
+  </div>`;
+}
+
+function row(lbl,val){
+  if(!val||val==='—'||val==='') return '';
+  return `<div class="res-row"><span class="res-lbl">${lbl}</span><span class="res-val">${val}</span></div>`;
+}
+
+function buildResumenContenido(){
+  let h='';
+
+  h+=`<div class="res-block"><h3>Causante (Fallecido)</h3>`;
+  h+=row('Nombre',gv('c-nombre')); h+=row('DNI/NIE',gv('c-dni'));
+  h+=row('Fecha fallecimiento',gv('c-fecha')?new Date(gv('c-fecha')).toLocaleDateString('es-ES'):'');
+  h+=row('Lugar fallecimiento',gv('c-lugar')); h+=row('Nacionalidad',gv('c-nac'));
+  h+=row('Vecindad civil',vecindadLabel(gv('c-vecindad'))); h+=row('Estado civil',gr('c-ecivil'));
+  h+='</div>';
+
+  if(hayConyuge){
+    h+=`<div class="res-block"><h3>Cónyuge superviviente</h3>`;
+    h+=row('Nombre',gv('cny-nombre')); h+=row('DNI/NIE',gv('cny-dni'));
+    h+=row('Régimen matrimonial',gr('c-regimen')); h+=row('Domicilio',gv('cny-dom'));
+    if(hayGananciales) h+=`<div class="notice red" style="margin-top:8px;font-size:12px"><strong>⚠️ Liquidación de gananciales requerida antes de partir herencia</strong></div>`;
+    h+='</div>';
+  }
+
+  h+=`<div class="res-block"><h3>Título sucesorio</h3>`;
+  h+=row('CUV',{si:'Sí, obtenido',tramitando:'En trámite',no:'No obtenido todavía'}[gr('cuv')]||'—');
+  h+=row('Testamento',{si:'Sí — Con testamento',no:'No — Abintestato',ns:'Pendiente de CUV'}[gr('testamento')]||'—');
+  if(hayTestamento){h+=row('Notario',gv('t-notario')); h+=row('Fecha',gv('t-fecha')); h+=row('Protocolo',gv('t-protocolo'));}
+  h+='</div>';
+
+  const hBlocks=document.querySelectorAll('[id^="heredero-"]');
+  if(hBlocks.length){
+    h+=`<div class="res-block"><h3>Herederos (${hBlocks.length})</h3>`;
+    hBlocks.forEach((b,idx)=>{
+      const i=b.id.split('-')[1];
+      h+=`<div style="margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed var(--border)">`;
+      h+=`<div style="font-weight:700;font-size:12px;margin-bottom:5px;color:var(--ink)">Heredero ${idx+1}</div>`;
+      h+=row('Nombre',gv('h'+i+'-nombre')); h+=row('DNI/NIE',gv('h'+i+'-dni'));
+      h+=row('Relación',sv('h'+i+'-relacion')); h+=row('Estado civil',sv('h'+i+'-ecivil'));
+      h+=row('Domicilio',gv('h'+i+'-dom')); h+=row('Participación',gv('h'+i+'-pct'));
+      h+=`</div>`;
+    });
+    h+='</div>';
+  }
+
+  const iBlocks=document.querySelectorAll('[id^="inmueble-"]');
+  const cBlocks=document.querySelectorAll('[id^="cuenta-"]');
+  const vBlocks=document.querySelectorAll('[id^="vehiculo-"]');
+  if(iBlocks.length||cBlocks.length||vBlocks.length){
+    h+=`<div class="res-block"><h3>Bienes del caudal</h3>`;
+    iBlocks.forEach((b,idx)=>{
+      const i=b.id.split('-')[1];
+      h+=`<div style="margin-bottom:8px;padding-bottom:6px;border-bottom:1px dashed var(--border)">`;
+      h+=`<div style="font-size:12px;font-weight:700;color:var(--ink3);margin-bottom:4px">INMUEBLE ${idx+1}</div>`;
+      h+=row('Tipo',sv('i'+i+'-tipo')); h+=row('Dirección',gv('i'+i+'-dir'));
+      h+=row('Ref. catastral',gv('i'+i+'-cat')); h+=row('Valor',gv('i'+i+'-valor'));
+      h+=row('Ganancial',gr('i'+i+'-gan')); h+=row('Hipoteca',gr('i'+i+'-hip'));
+      h+=`</div>`;
+    });
+    cBlocks.forEach((b,idx)=>{
+      const i=b.id.split('-')[1];
+      h+=`<div style="margin-bottom:8px;padding-bottom:6px;border-bottom:1px dashed var(--border)">`;
+      h+=`<div style="font-size:12px;font-weight:700;color:var(--ink3);margin-bottom:4px">CUENTA ${idx+1}</div>`;
+      h+=row('Entidad',gv('cc'+i+'-banco')); h+=row('Tipo',sv('cc'+i+'-tipo'));
+      h+=row('Saldo aprox.',gv('cc'+i+'-saldo'));
+      h+=`</div>`;
+    });
+    vBlocks.forEach((b,idx)=>{
+      const i=b.id.split('-')[1];
+      h+=`<div style="margin-bottom:8px">`;
+      h+=`<div style="font-size:12px;font-weight:700;color:var(--ink3);margin-bottom:4px">VEHÍCULO ${idx+1}</div>`;
+      h+=row('Matrícula',gv('v'+i+'-mat')); h+=row('Modelo',gv('v'+i+'-modelo'));
+      h+=`</div>`;
+    });
+    h+='</div>';
+  }
+
+  if(hayTestamento===false){
+    h+=`<div class="res-block"><h3>Testigos para Acta de Notoriedad</h3>`;
+    h+=row('Testigo 1 — Nombre',gv('t1-nombre')); h+=row('Testigo 1 — DNI',gv('t1-dni'));
+    h+=row('Testigo 2 — Nombre',gv('t2-nombre')); h+=row('Testigo 2 — DNI',gv('t2-dni'));
+    h+='</div>';
+  }
+
+  if(gv('observaciones')){
+    h+=`<div class="res-block"><h3>Observaciones</h3>`;
+    h+=`<div style="font-size:13px;line-height:1.55;color:var(--ink2)">${gv('observaciones')}</div>`;
+    h+='</div>';
+  }
+
+  document.getElementById('resumen-contenido').innerHTML=h;
+}
+
+function buildChecklist(){
+  const items=[];
+  items.push({t:'imp',txt:'DNI/NIE original y en vigor de todos los herederos'});
+  items.push({t:'imp',txt:'Certificado de defunción del causante (original o copia compulsada)'});
+  items.push({t:'imp',txt:'Certificado de Últimas Voluntades (CUV)'+(gr('cuv')==='si'?' — ✓ Indicado como obtenido':'')});
+  if(hayTestamento===true) items.push({t:'imp',txt:'Copia autorizada del último testamento (identificado mediante el CUV)'});
+  if(hayTestamento===false){
+    items.push({t:'imp',txt:'Libro de familia y/o certificados de nacimiento que acrediten el parentesco de todos los herederos'});
+    items.push({t:'imp',txt:'Datos completos de los dos testigos: nombre y DNI de cada uno'});
+  }
+  if(hayConyuge&&hayGananciales) items.push({t:'imp',txt:'Certificado literal de matrimonio (para acreditar el régimen económico matrimonial)'});
+  const nI=document.querySelectorAll('[id^="inmueble-"]').length;
+  if(nI){
+    items.push({t:'imp',txt:`Nota simple registral actualizada de cada inmueble (${nI})`});
+    items.push({t:'imp',txt:`Título de propiedad del causante de cada inmueble (escritura de adquisición) (${nI})`});
+    items.push({t:'rec',txt:'Recibo del IBI del último ejercicio de cada inmueble (recomendable, no imprescindible)'});
+  }
+  const nC=document.querySelectorAll('[id^="cuenta-"]').length;
+  if(nC) items.push({t:'imp',txt:`Certificado de saldo a fecha de fallecimiento emitido por cada entidad bancaria (${nC} entidad/es)`});
+  const nV=document.querySelectorAll('[id^="vehiculo-"]').length;
+  if(nV) items.push({t:'imp',txt:`Permiso de circulación y ficha técnica de cada vehículo (${nV})`});
+  items.push({t:'rec',txt:'Asesor fiscal para la autoliquidación del ISD en el plazo de 6 meses desde el fallecimiento'});
+  if(hayTestamento!==false) items.push({t:'rec',txt:'Certificado de Seguros de Vida con cobertura de fallecimiento (útil para completar el expediente sucesorio)'});
+  const ul=document.getElementById('doc-checklist');
+  ul.innerHTML=items.map(it=>`<li><span class="di ${it.t}">●</span><span>${it.txt} <span class="tag ${it.t}">${it.t==='imp'?'Imprescindible':'Recomendable'}</span></span></li>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+//  WORD DOWNLOAD
+// ═══════════════════════════════════════════════════════
+function dlWord(){
+  const cf=gv('c-fecha'), fall=cf?new Date(cf):null;
+  const isd=fall?new Date(fall):null;
+  if(isd) isd.setMonth(isd.getMonth()+6);
+  const now=new Date();
+
+  function p(lbl,val){ if(!val||val==='—'||val==='') return ''; return `<p style="margin:3pt 0"><span style="font-weight:bold;color:#0d1b2e">${lbl}:</span>&nbsp;${val}</p>`; }
+  function sec(t){ return `<h2 style="font-size:12pt;color:#0d1b2e;border-bottom:2pt solid #c9a84c;padding-bottom:3pt;margin-top:18pt;margin-bottom:8pt">${t}</h2>`; }
+  function alerta(t){ return `<div style="background:#fff0ee;border-left:4pt solid #c0392b;padding:8pt 12pt;margin:8pt 0;font-size:10.5pt;line-height:1.5">${t}</div>`; }
+  function aviso(t){ return `<div style="background:#fff8e8;border-left:4pt solid #c9a84c;padding:8pt 12pt;margin:8pt 0;font-size:10.5pt;line-height:1.5">${t}</div>`; }
+  function info(t){ return `<div style="background:#e8f0ff;border-left:4pt solid #90a8e8;padding:8pt 12pt;margin:8pt 0;font-size:10.5pt;line-height:1.5">${t}</div>`; }
+
+  let body='';
+
+  // ── ALERTAS JURÍDICAS ──
+  body+=sec('⚠ ALERTAS JURÍDICAS — LEER ANTES DE PREPARAR EL EXPEDIENTE');
+  if(isd) body+=alerta(`<strong>🔴 PLAZO ISD:</strong> Fecha límite autoliquidación Impuesto de Sucesiones: <strong>${isd.toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'})}</strong><br>(6 meses desde el fallecimiento — prorrogable otros 6 meses si se solicita antes del vencimiento)`);
+  if(hayConyuge&&hayGananciales) body+=alerta('<strong>⚠️ LIQUIDACIÓN DE GANANCIALES:</strong> Requerida y previa a la partición. Determinar qué bienes integran el caudal del causante y cuáles corresponden al cónyuge superviviente. Puede formalizarse en la misma escritura.');
+  const vec=gv('c-vecindad');
+  if(vec==='balear-mm') body+=aviso('<strong>⚖ FORAL — MALLORCA / MENORCA:</strong> Legítima de un tercio, art. 41 CDCIB (no los dos tercios del CC). Verificar existencia de <em>definició</em> previa de algún legitimario. Aplicar Compilació de Dret Civil de les Illes Balears, Llibre I.');
+  if(vec==='balear-if') body+=aviso('<strong>⚖ FORAL — IBIZA / FORMENTERA:</strong> Legítima de un cuarto (pars valoris), Llibre IV CDCIB. Verificar si el testamento instituyó <em>hereu</em> universal. Si no: posible apertura de sucesión intestada aunque exista testamento. Verificar estructura del testamento antes de proceder.');
+  if(vec==='extranjero') body+=info('<strong>🌐 ELEMENTO INTERNACIONAL:</strong> Aplicar Reglamento UE 650/2012. Verificar residencia habitual del causante y si realizó elección de ley (<em>professio iuris</em>) en testamento. Recomendar consulta con abogado especializado en DIPr si la situación es compleja.');
+  if(hayTestamento===false) body+=aviso('<strong>📌 ABINTESTATO:</strong> Esta notaría tramitará el Acta de Notoriedad de Declaración de Herederos. Se requieren dos testigos (criterio establecido de esta notaría). No incluir el acta como documentación a aportar por el cliente.');
+  if(gr('cuv')==='no'||gr('cuv')==='tramitando'){
+    const dh=fall?calcDiasHabiles(fall,now):0;
+    if(dh<15) body+=aviso(`<strong>⏳ CUV — PLAZO PENDIENTE:</strong> Basándose en la fecha de fallecimiento indicada, han transcurrido aproximadamente <strong>${dh} días hábiles</strong>. El CUV no puede solicitarse hasta transcurridos 15 días hábiles desde la inscripción en el Registro Civil. Verificar con el cliente.`);
+  }
+
+  // ── 1. CAUSANTE ──
+  body+=sec('1. DATOS DEL CAUSANTE (FALLECIDO)');
+  body+=p('Nombre y apellidos',gv('c-nombre')); body+=p('DNI / NIE / Pasaporte',gv('c-dni'));
+  body+=p('Fecha de fallecimiento',fall?fall.toLocaleDateString('es-ES'):''); body+=p('Lugar de fallecimiento',gv('c-lugar'));
+  body+=p('Nacionalidad',gv('c-nac')); body+=p('Vecindad civil',vecindadLabel(gv('c-vecindad')));
+  body+=p('Estado civil al fallecimiento',gr('c-ecivil')); body+=p('Régimen económico matrimonial',gr('c-regimen'));
+
+  // ── 2. CÓNYUGE ──
+  if(hayConyuge){
+    body+=sec('2. CÓNYUGE SUPERVIVIENTE');
+    body+=p('Nombre y apellidos',gv('cny-nombre')); body+=p('DNI / NIE',gv('cny-dni'));
+    body+=p('Estado civil',sv('cny-ecivil')); body+=p('Profesión',gv('cny-prof'));
+    body+=p('Domicilio completo',gv('cny-dom')); body+=p('Régimen matrimonial',gr('c-regimen'));
+    if(hayGananciales) body+=alerta('Liquidación de la sociedad de gananciales requerida antes de la partición.');
+  }
+
+  // ── 3. TÍTULO SUCESORIO ──
+  body+=sec('3. TÍTULO SUCESORIO');
+  body+=p('CUV obtenido',{si:'Sí',tramitando:'En trámite',no:'No obtenido todavía'}[gr('cuv')]||'—');
+  body+=p('¿Hay testamento?',{si:'Sí — Con testamento',no:'No — Sucesión abintestato',ns:'Pendiente de CUV'}[gr('testamento')]||'—');
+  if(hayTestamento){
+    body+=p('Notario autorizante',gv('t-notario')); body+=p('Fecha del testamento',gv('t-fecha'));
+    body+=p('Número de protocolo',gv('t-protocolo'));
+  }
+
+  // ── 4. HEREDEROS ──
+  body+=sec('4. HEREDEROS');
+  const hBlocks=document.querySelectorAll('[id^="heredero-"]');
+  if(!hBlocks.length){ body+='<p style="color:#888;font-style:italic">No se han introducido datos de herederos.</p>'; }
+  else {
+    hBlocks.forEach((b,idx)=>{
+      const i=b.id.split('-')[1];
+      body+=`<h3 style="font-size:11pt;color:#0d1b2e;margin-top:12pt;border-left:3pt solid #c9a84c;padding-left:8pt">HEREDERO ${idx+1}${gv('h'+i+'-nombre')?' — '+gv('h'+i+'-nombre'):''}</h3>`;
+      body+=p('Nombre y apellidos',gv('h'+i+'-nombre')); body+=p('DNI / NIE',gv('h'+i+'-dni'));
+      body+=p('Relación con el causante',sv('h'+i+'-relacion')); body+=p('Estado civil',sv('h'+i+'-ecivil'));
+      body+=p('Régimen económico matrimonial',sv('h'+i+'-regimen')); body+=p('Profesión',gv('h'+i+'-prof'));
+      body+=p('Domicilio completo',gv('h'+i+'-dom')); body+=p('Participación en la herencia',gv('h'+i+'-pct'));
+    });
+  }
+
+  // ── 5. BIENES ──
+  body+=sec('5. BIENES DEL CAUDAL HEREDITARIO');
+  const iBlocks=document.querySelectorAll('[id^="inmueble-"]');
+  const cBlocks=document.querySelectorAll('[id^="cuenta-"]');
+  const vBlocks=document.querySelectorAll('[id^="vehiculo-"]');
+
+  if(iBlocks.length){
+    body+=`<h3 style="font-size:11pt;color:#c9a84c;margin-top:12pt;margin-bottom:6pt">INMUEBLES</h3>`;
+    iBlocks.forEach((b,idx)=>{
+      const i=b.id.split('-')[1];
+      body+=`<h4 style="font-size:10.5pt;color:#0d1b2e;margin-top:10pt">Inmueble ${idx+1} — ${sv('i'+i+'-tipo')}</h4>`;
+      body+=p('Dirección',gv('i'+i+'-dir')); body+=p('Referencia catastral',gv('i'+i+'-cat'));
+      body+=p('Finca registral',gv('i'+i+'-finca')); body+=p('Valor estimado',gv('i'+i+'-valor'));
+      body+=p('¿Bien ganancial?',gr('i'+i+'-gan')); body+=p('¿Tiene hipoteca?',gr('i'+i+'-hip'));
+      body+=p('Entidad hipotecaria',gv('i'+i+'-banco'));
+    });
+  } else { body+=`<h3 style="font-size:11pt;color:#c9a84c;margin-top:12pt;margin-bottom:6pt">INMUEBLES</h3><p style="color:#888;font-style:italic">No indicados.</p>`; }
+
+  if(cBlocks.length){
+    body+=`<h3 style="font-size:11pt;color:#c9a84c;margin-top:12pt;margin-bottom:6pt">CUENTAS BANCARIAS Y PRODUCTOS FINANCIEROS</h3>`;
+    body+=aviso('Acción pendiente del cliente: solicitar certificado de saldo a fecha de fallecimiento en cada entidad.');
+    cBlocks.forEach((b,idx)=>{
+      const i=b.id.split('-')[1];
+      body+=`<h4 style="font-size:10.5pt;color:#0d1b2e;margin-top:10pt">Cuenta / Producto ${idx+1}</h4>`;
+      body+=p('Entidad bancaria',gv('cc'+i+'-banco')); body+=p('Tipo de producto',sv('cc'+i+'-tipo'));
+      body+=p('IBAN (últimos 4 dígitos)',gv('cc'+i+'-iban')); body+=p('Saldo aproximado',gv('cc'+i+'-saldo'));
+    });
+  } else { body+=`<h3 style="font-size:11pt;color:#c9a84c;margin-top:12pt;margin-bottom:6pt">CUENTAS BANCARIAS</h3><p style="color:#888;font-style:italic">No indicadas.</p>`; }
+
+  if(vBlocks.length){
+    body+=`<h3 style="font-size:11pt;color:#c9a84c;margin-top:12pt;margin-bottom:6pt">VEHÍCULOS</h3>`;
+    vBlocks.forEach((b,idx)=>{
+      const i=b.id.split('-')[1];
+      body+=`<h4 style="font-size:10.5pt;color:#0d1b2e;margin-top:10pt">Vehículo ${idx+1}</h4>`;
+      body+=p('Matrícula',gv('v'+i+'-mat')); body+=p('Marca y modelo',gv('v'+i+'-modelo'));
+    });
+  }
+
+  const ob=gv('otros-bienes');
+  if(ob){
+    body+=`<h3 style="font-size:11pt;color:#c9a84c;margin-top:12pt;margin-bottom:6pt">OTROS BIENES Y DERECHOS</h3>`;
+    body+=`<p style="font-size:11pt;line-height:1.6">${ob}</p>`;
+  }
+
+  const pens=gr('pensiones');
+  if(pens){
+    body+=`<h3 style="font-size:11pt;color:#c9a84c;margin-top:12pt;margin-bottom:6pt">PLANES DE PENSIONES / SEGUROS DE VIDA</h3>`;
+    body+=p('¿Tenía planes de pensiones o seguros?',{si:'Sí',no:'No',ns:'No sabe'}[pens]||pens);
+    body+=info('Recordatorio: los planes de pensiones y seguros de vida con beneficiario designado NO forman parte del caudal hereditario. El beneficiario los percibe directamente, al margen de la herencia.');
+  }
+
+  // ── 6. TESTIGOS ──
+  if(hayTestamento===false){
+    body+=sec('6. TESTIGOS PARA ACTA DE NOTORIEDAD');
+    body+=`<h3 style="font-size:11pt;color:#0d1b2e;margin-top:10pt">Testigo 1</h3>`;
+    body+=p('Nombre y apellidos',gv('t1-nombre')); body+=p('DNI / NIE',gv('t1-dni'));
+    body+=`<h3 style="font-size:11pt;color:#0d1b2e;margin-top:10pt">Testigo 2</h3>`;
+    body+=p('Nombre y apellidos',gv('t2-nombre')); body+=p('DNI / NIE',gv('t2-dni'));
+  }
+
+  // ── 7. OBSERVACIONES ──
+  if(gv('observaciones')){
+    body+=sec('7. OBSERVACIONES');
+    body+=`<p style="font-size:11pt;line-height:1.65">${gv('observaciones')}</p>`;
+  }
+
+  // ── 8. CHECKLIST DOCUMENTACIÓN ──
+  body+=sec('8. DOCUMENTACIÓN QUE EL CLIENTE DEBE APORTAR');
+  body+=`<p style="font-size:10.5pt;font-weight:bold;margin-bottom:6pt;color:#c0392b">🔴 IMPRESCINDIBLE (sin estos documentos no puede autorizarse la escritura):</p>`;
+  body+=`<ul style="font-size:11pt;line-height:2;padding-left:20pt">`;
+  body+=`<li>DNI/NIE original y en vigor de todos los herederos</li>`;
+  body+=`<li>Certificado de defunción del causante</li>`;
+  body+=`<li>Certificado de Últimas Voluntades (CUV)${gr('cuv')==='si'?' ✓ (indicado como obtenido)':''}</li>`;
+  if(hayTestamento===true) body+=`<li>Copia autorizada del último testamento (identificado por el CUV)</li>`;
+  if(hayTestamento===false){
+    body+=`<li>Libro de familia y/o certificados de nacimiento (acreditación del parentesco)</li>`;
+    body+=`<li>Datos de dos testigos: nombre completo y DNI de cada uno</li>`;
+  }
+  if(hayConyuge&&hayGananciales) body+=`<li>Certificado literal de matrimonio</li>`;
+  const nI=document.querySelectorAll('[id^="inmueble-"]').length;
+  if(nI){ body+=`<li>Nota simple registral actualizada de cada inmueble (${nI})</li>`; body+=`<li>Título de propiedad del causante de cada inmueble (${nI})</li>`; }
+  const nC=document.querySelectorAll('[id^="cuenta-"]').length;
+  if(nC) body+=`<li>Certificado de saldo a fecha de fallecimiento de cada entidad bancaria (${nC} entidad/es)</li>`;
+  const nV=document.querySelectorAll('[id^="vehiculo-"]').length;
+  if(nV) body+=`<li>Permiso de circulación y ficha técnica de cada vehículo (${nV})</li>`;
+  body+=`</ul>`;
+  body+=`<p style="font-size:10.5pt;font-weight:bold;margin-top:12pt;margin-bottom:6pt;color:#d4820a">🟡 RECOMENDABLE:</p>`;
+  body+=`<ul style="font-size:11pt;line-height:2;padding-left:20pt">`;
+  if(nI) body+=`<li>Recibo del IBI del último ejercicio de cada inmueble</li>`;
+  if(hayTestamento!==false) body+=`<li>Certificado de Seguros de Vida con cobertura de fallecimiento</li>`;
+  body+=`<li>Asesor fiscal para la autoliquidación del ISD (plazo: 6 meses desde el fallecimiento)</li>`;
+  body+=`</ul>`;
+
+  // ── BUILD WORD HTML ──
+  const nombre=gv('c-nombre').split(' ')[0]||'Causante';
+  const w=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>
+<head><meta charset='utf-8'><style>
+body{font-family:'Times New Roman',serif;font-size:11pt;line-height:1.6;margin:2cm 2cm 2.5cm;color:#1a1a1a}
+h1{text-align:center;font-size:14pt;color:#0d1b2e;margin-bottom:4pt}
+h2{font-size:12pt;color:#0d1b2e;border-bottom:2pt solid #c9a84c;padding-bottom:3pt;margin-top:18pt;margin-bottom:8pt}
+h3{font-size:11pt;color:#0d1b2e;margin-top:12pt;margin-bottom:4pt}
+h4{font-size:10.5pt;color:#0d1b2e;margin-top:8pt;margin-bottom:2pt}
+p{margin:3pt 0}ul{margin:0}
+.ftr{font-size:9pt;color:#aaa;text-align:center;margin-top:30pt;border-top:1pt solid #eee;padding-top:8pt}
+</style></head>
+<body>
+<h1>NOTARÍA<br>EXPEDIENTE DE HERENCIA</h1>
+<p style="text-align:center;font-size:10pt;color:#888;margin-bottom:16pt">
+  Generado: ${now.toLocaleDateString('es-ES')} ${now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}
+  ${gv('c-nombre')?' · Causante: '+gv('c-nombre'):''}
+</p>
+${body}
+<div class="ftr">Documento generado por Oficial Notarial IA · ${now.toLocaleDateString('es-ES')}<br>Sus datos se han procesado localmente y no han sido almacenados en ningún servidor.</div>
+</body></html>`;
+
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([w],{type:'application/msword'}));
+  a.download=`Datos_Herencia_${nombre}_${now.toISOString().slice(0,10)}.doc`;
+  a.click();
+  document.getElementById('ok').style.display='block';
+  document.getElementById('ok').scrollIntoView({behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+(function init(){
+  renderBar();
+  addHeredero();
+})();
+</script>
+</body>
+</html>
