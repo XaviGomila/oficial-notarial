@@ -2224,7 +2224,22 @@ function poblar(p, emailRaw){
     ${abstension.abstener ? `<div class="meta-row"><span class="meta-key">Decisión</span><span class="meta-badge" style="background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);">🚫 Revisión manual</span></div>` : ''}
   `;
 
-  document.getElementById('emailOut').textContent = p.email || '';
+  var emailTexto = p.email || '';
+var actoParsed = (p.actoNombre || '').toLowerCase();
+var urlFormulario = null;
+if(actoParsed.includes('compraventa'))                               urlFormulario = 'https://oficial-notarial.vercel.app/compraventa.html';
+else if(actoParsed.includes('poder'))                                urlFormulario = 'https://oficial-notarial.vercel.app/poder.html';
+else if(actoParsed.includes('herencia')||actoParsed.includes('adjudicación')) urlFormulario = 'https://oficial-notarial.vercel.app/herencia.html';
+else if(actoParsed.includes('donaci'))                               urlFormulario = 'https://oficial-notarial.vercel.app/donacion.html';
+else if(actoParsed.includes('testamento'))                           urlFormulario = 'https://oficial-notarial.vercel.app/testamento.html';
+else if(actoParsed.includes('renuncia')||actoParsed.includes('repudiaci')) urlFormulario = 'https://oficial-notarial.vercel.app/renuncia.html';
+else if(actoParsed.includes('cancelaci'))                            urlFormulario = 'https://oficial-notarial.vercel.app/cancelacion.html';
+else if(actoParsed.includes('obra nueva'))                           urlFormulario = 'https://oficial-notarial.vercel.app/obranue.html';
+
+if(urlFormulario){
+  emailTexto += '\n\nPara agilizar la preparación de su expediente, le rogamos que complete el siguiente formulario y nos envíe el documento Word descargado como adjunto a este email:\n' + urlFormulario;
+}
+document.getElementById('emailOut').textContent = emailTexto;
 
   // Documentación recibida (acuse de recibo)
   const rdocs = document.getElementById('rcardDocsRecibida');
