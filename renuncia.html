@@ -98,6 +98,7 @@ body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-heigh
         </div>
         <div class="field"><label>Domicilio completo</label><input type="text" id="domicilio" placeholder="Calle, número, municipio"></div>
       </div>
+      <div class="field"><label>Teléfono de contacto</label><input type="text" id="telefono" placeholder="Ej: 971 000 000 / 600 000 000"></div>
       <div class="field"><label>¿Es menor de edad o tiene medidas de apoyo judiciales?</label>
         <div class="rg">
           <label><input type="radio" name="menor" value="No"> No</label>
@@ -259,7 +260,7 @@ function buildRes(){
   h = addRow(h, 'DNI / NIE', gv('dni'));
   h = addRow(h, 'Estado civil', gv('estado-civil'));
   h = addRow(h, 'Domicilio', gv('domicilio'));
-  h = addRow(h, 'Menor / medidas apoyo', gr('menor'));
+  h = addRow(h, 'Teléfono', gv('telefono'));
   h += '</div>';
 
   h += '<div class="sg"><h3>⚰️ Causante</h3>';
@@ -291,7 +292,7 @@ function dlWord(){
     p('DNI / NIE', gv('dni')) +
     p('Estado civil', gv('estado-civil')) +
     p('Domicilio', gv('domicilio')) +
-    p('¿Menor o medidas de apoyo?', gr('menor')) +
+    p('Teléfono de contacto', gv('telefono')) +
     '<br>' +
     '<h2>DATOS DEL CAUSANTE (FALLECIDO)</h2>' +
     p('Nombre y apellidos', gv('causante-nombre')) +

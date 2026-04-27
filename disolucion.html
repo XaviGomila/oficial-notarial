@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notaría — Datos para Disolución de Condominio</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <style>
+    :root{--ink:#0d1b2e;--gold:#c9a84c;--goldd:#a8872e;--bg:#f5f0e8;--card:#ffffff;--ink2:#2c2c2c;--ink3:#888;--red:#c0392b;--green:#1e8449;--amber:#d4820a;--border:#e0d8cc;--shadow:0 2px 10px rgba(0,0,0,.07);}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink2);min-height:100vh}
+    .hdr{background:var(--ink);padding:22px 20px 18px;text-align:center}
+    .hdr h1{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold);letter-spacing:.02em}
+    .hdr p{font-size:12px;color:rgba(255,255,255,.45);margin-top:5px}
+    .step-bar{background:var(--ink);padding:10px 20px 16px;display:flex;align-items:center;overflow-x:auto;gap:0;border-top:1px solid rgba(255,255,255,.08)}
+    .sdot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;transition:all .25s}
+    .sdot.done{background:var(--gold);color:var(--ink)}.sdot.active{background:#fff;color:var(--ink);box-shadow:0 0 0 3px rgba(201,168,76,.4)}.sdot.pend{background:rgba(255,255,255,.12);color:rgba(255,255,255,.4)}
+    .sline{flex:1;height:2px;background:rgba(255,255,255,.15);min-width:8px;transition:background .25s}.sline.done{background:var(--gold)}
+    .wrap{max-width:700px;margin:0 auto;padding:22px 16px 90px}
+    .card{background:var(--card);border-radius:12px;padding:22px;margin-bottom:16px;border:1px solid var(--border);box-shadow:var(--shadow)}
+    .card h2{font-family:'Playfair Display',serif;font-size:16px;color:var(--ink);margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--gold)}
+    .field{margin-bottom:15px}
+    .field label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px}
+    .field input[type=text],.field input[type=date],.field select,.field textarea{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;background:#fafaf8;color:var(--ink2);transition:border-color .15s}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);outline:none;background:#fffdf7}
+    .field textarea{resize:vertical;min-height:90px;line-height:1.55}
+    .field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+    .rg{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+    .rg label{display:flex;align-items:center;gap:7px;font-size:13.5px;font-weight:400;cursor:pointer;padding:7px 13px;border:1.5px solid var(--border);border-radius:8px;transition:all .15s;line-height:1.3}
+    .rg label:hover{border-color:var(--gold);background:#fffdf7}
+    .rg input[type=radio]{accent-color:var(--gold);width:15px;height:15px;flex-shrink:0}
+    .rg label:has(input:checked){border-color:var(--gold);background:#fff8ec;font-weight:600}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    @media(max-width:540px){.two-col{grid-template-columns:1fr}}
+    .notice{border-radius:9px;padding:13px 16px;font-size:13px;line-height:1.55;margin-bottom:15px}
+    .notice strong{display:block;margin-bottom:3px;font-size:13.5px}
+    .notice.amber{background:#fff8e8;border:1px solid #e8c878}
+    .notice.red{background:#fff0ee;border:1px solid #e8a090}
+    .notice.blue{background:#e8f0ff;border:1px solid #90a8e8}
+    .notice.green{background:#efffee;border:1px solid #88c888}
+    .notice ul{padding-left:18px;margin-top:7px}
+    .notice li{margin-bottom:4px}
+    .tag{display:inline-block;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:700;margin-left:5px;vertical-align:middle;letter-spacing:.03em}
+    .tag.imp{background:var(--red);color:#fff}
+    .tag.rec{background:var(--amber);color:#fff}
+    .item-block{border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:14px;background:#fafaf8}
+    .item-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .item-num{font-size:12px;font-weight:700;background:var(--gold);color:var(--ink);padding:3px 12px;border-radius:12px}
+    .btn-del{background:none;border:1px solid #f0b0a0;color:var(--red);font-size:12px;cursor:pointer;padding:4px 10px;border-radius:6px}
+    .btn-add{background:transparent;color:var(--gold);border:1.5px dashed var(--gold);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;width:100%;margin-top:6px;font-family:inherit}
+    .btn-add:hover{background:#fff8ec}
+    .nav{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
+    .btn-p{background:var(--ink);color:#fff;border:none;padding:12px 28px;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}.btn-p:hover{opacity:.85}
+    .btn-s{background:transparent;color:var(--ink);border:1.5px solid var(--ink);padding:11px 22px;border-radius:9px;font-size:14px;cursor:pointer;font-family:inherit}
+    .btn-w{background:var(--gold);color:var(--ink);border:none;padding:12px 28px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}.btn-w:hover{opacity:.85}
+    .screen{display:none}.screen.active{display:block}.hidden{display:none!important}
+    .res-block{margin-bottom:20px}
+    .res-block h3{font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;padding:6px 0;border-bottom:1.5px solid var(--gold);margin-bottom:10px}
+    .res-row{display:flex;gap:12px;margin-bottom:7px;font-size:13px;line-height:1.4}
+    .res-lbl{font-weight:600;color:var(--ink);min-width:175px;flex-shrink:0}
+    .res-val{color:var(--ink2)}
+    .doc-list{list-style:none;padding:0}
+    .doc-list li{padding:8px 0;font-size:13px;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid var(--border);line-height:1.4}
+    .doc-list li:last-child{border-bottom:none}
+    .di{font-size:15px;flex-shrink:0;margin-top:1px}.di.imp{color:var(--red)}.di.rec{color:var(--amber)}
+    .success{display:none;background:#efffee;border:1px solid #88c888;border-radius:10px;padding:26px;text-align:center;margin-top:20px}
+    .success h3{color:var(--green);margin-bottom:8px}.success p{font-size:13px;color:var(--ink3);line-height:1.6}
+    .footer{text-align:center;font-size:11px;color:var(--ink3);padding:20px;border-top:1px solid var(--border)}
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>Disolución de Condominio — Datos para la notaría</h1>
+  <p>Complete el formulario para que preparemos su expediente. Sus datos se procesan localmente.</p>
+</div>
+<div class="step-bar" id="stepBar"></div>
+
+<div class="wrap">
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 0 — COPROPIETARIOS                            -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen active" id="s0">
+
+  <div class="notice blue">
+    <strong>ℹ️ ¿Qué es una disolución de condominio?</strong>
+    Es el acto por el que los copropietarios de un bien ponen fin a la situación de propiedad compartida. Un copropietario se queda con la totalidad del bien y, si su cuota era inferior al 100%, compensa económicamente al resto. Fiscalmente es más ventajosa que una compraventa: tributa por AJD, no por ITP.
+  </div>
+
+  <div class="card">
+    <h2>👥 Copropietarios actuales</h2>
+    <p style="font-size:13px;color:var(--ink3);margin-bottom:16px;line-height:1.5">Incluya todos los propietarios actuales del bien, con su cuota de participación.</p>
+
+    <div id="coprop-container"></div>
+    <button class="btn-add" onclick="addCoprop()">＋ Añadir copropietario</button>
+  </div>
+
+  <div class="nav">
+    <button class="btn-p" onclick="go(1)">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 1 — BIEN EN COPROPIEDAD                       -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen" id="s1">
+
+  <div class="card">
+    <h2>🏠 Bien objeto de la disolución</h2>
+
+    <div class="two-col">
+      <div class="field">
+        <label>Tipo de bien <span class="tag imp">Imprescindible</span></label>
+        <select id="bien-tipo">
+          <option value="">— Seleccione —</option>
+          <option>Piso / Apartamento</option><option>Casa / Chalet</option>
+          <option>Local comercial</option><option>Plaza de garaje</option>
+          <option>Finca rústica</option><option>Solar / terreno</option><option>Otro</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Referencia catastral <span class="tag rec">Recomendable</span></label>
+        <input type="text" id="bien-cat" placeholder="Ej: 7837298CF3473N0001WT">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Dirección completa <span class="tag imp">Imprescindible</span></label>
+      <input type="text" id="bien-dir" placeholder="Calle, número, piso, localidad, código postal">
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label>Número de finca registral (si lo conoce)</label>
+        <input type="text" id="bien-finca" placeholder="Ej: Finca 12345, Registro de Palma">
+      </div>
+      <div class="field">
+        <label>Valor del bien <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="bien-valor" placeholder="Ej: 250.000 €">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>¿Cómo se fija el valor?</label>
+      <div class="rg">
+        <label><input type="radio" name="bien-valoracion" value="Tasación oficial"> Tasación oficial</label>
+        <label><input type="radio" name="bien-valoracion" value="Valor de mercado acordado entre las partes"> Acuerdo entre las partes</label>
+        <label><input type="radio" name="bien-valoracion" value="Valor catastral"> Valor catastral</label>
+        <label><input type="radio" name="bien-valoracion" value="Pendiente de determinar"> Pendiente</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>¿El bien tiene hipoteca actualmente?</label>
+      <div class="rg">
+        <label><input type="radio" name="bien-hip" value="No"> No</label>
+        <label><input type="radio" name="bien-hip" value="Sí" onclick="showHipoteca(true)"> Sí</label>
+        <label><input type="radio" name="bien-hip" value="No sé"> No sé</label>
+      </div>
+    </div>
+
+    <div id="bloque-hipoteca" class="hidden">
+      <div class="notice amber">
+        <strong>⚠️ Bien con hipoteca — Subrogación o cancelación</strong>
+        Si el bien tiene hipoteca, el adjudicatario normalmente se subroga en la deuda hipotecaria (la asume él solo). El banco debe aceptar la subrogación. Si no la acepta, puede ser necesario cancelar la hipoteca antes de disolver o negociar con la entidad. Su notaría le orientará sobre las opciones.
+      </div>
+      <div class="two-col">
+        <div class="field">
+          <label>Entidad bancaria acreedora</label>
+          <input type="text" id="bien-banco" placeholder="Nombre del banco">
+        </div>
+        <div class="field">
+          <label>Capital pendiente aproximado</label>
+          <input type="text" id="bien-deuda" placeholder="Ej: 80.000 €">
+        </div>
+      </div>
+      <div class="field">
+        <label>¿El banco ha confirmado que acepta la subrogación?</label>
+        <div class="rg">
+          <label><input type="radio" name="banco-acepta" value="Sí, lo ha confirmado"> Sí</label>
+          <label><input type="radio" name="banco-acepta" value="No, todavía no"> No todavía</label>
+          <label><input type="radio" name="banco-acepta" value="No lo hemos preguntado"> No lo hemos preguntado</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>¿Cómo se adquirió originalmente la copropiedad?</label>
+      <select id="bien-origen">
+        <option value="">— Seleccione —</option>
+        <option>Compraventa</option><option>Herencia / legado</option>
+        <option>Donación</option><option>Separación o divorcio</option>
+        <option>Constitución de sociedad de gananciales</option><option>Otro</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="btn-s" onclick="go(0)">← Atrás</button>
+    <button class="btn-p" onclick="go(2)">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 2 — ADJUDICACIÓN Y COMPENSACIÓN               -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen" id="s2">
+
+  <div class="card">
+    <h2>⚖️ ¿Quién se queda el bien y cómo se compensa?</h2>
+
+    <div class="field">
+      <label>¿Quién se adjudica la totalidad del bien? <span class="tag imp">Imprescindible</span></label>
+      <input type="text" id="adjudicatario" placeholder="Nombre y apellidos del copropietario que se queda el 100%">
+    </div>
+
+    <div class="field">
+      <label>Cuota actual del adjudicatario en el bien</label>
+      <input type="text" id="cuota-adjud" placeholder="Ej: 50% (mitad indivisa) / 1/3 parte indivisa">
+    </div>
+
+    <div class="notice blue">
+      <strong>ℹ️ La compensación — AJD vs ITP</strong>
+      La disolución de condominio tributa por AJD (Actos Jurídicos Documentados) sobre el valor total del bien, con un tipo muy inferior al ITP de una compraventa. Sin embargo, si la compensación supera el valor de la cuota cedida (<em>exceso de adjudicación</em>), esa diferencia puede tributar adicionalmente. Su notaría y asesor fiscal le indicarán el importe exacto.
+    </div>
+
+    <div class="field">
+      <label>¿Hay compensación económica al copropietario que cede su parte? <span class="tag imp">Imprescindible</span></label>
+      <div class="rg">
+        <label><input type="radio" name="compensacion" value="Sí, compensación en metálico" onclick="showCompensacion(true)"> Sí, en metálico</label>
+        <label><input type="radio" name="compensacion" value="Sí, el adjudicatario asume la hipoteca como compensación" onclick="showCompensacion(false)"> Solo asume la hipoteca</label>
+        <label><input type="radio" name="compensacion" value="Compensación mixta: metálico y asunción de hipoteca" onclick="showCompensacion(true)"> Mixta (metálico + hipoteca)</label>
+        <label><input type="radio" name="compensacion" value="Sin compensación (donación de la cuota)" onclick="showCompensacion(false)"> Sin compensación</label>
+      </div>
+    </div>
+
+    <div id="bloque-compensacion" class="hidden">
+      <div class="two-col">
+        <div class="field">
+          <label>Importe de la compensación en metálico <span class="tag imp">Imprescindible</span></label>
+          <input type="text" id="comp-importe" placeholder="Ej: 75.000 €">
+        </div>
+        <div class="field">
+          <label>Forma de pago</label>
+          <div class="rg" style="margin-top:6px">
+            <label><input type="radio" name="comp-forma" value="Transferencia bancaria"> Transferencia</label>
+            <label><input type="radio" name="comp-forma" value="Cheque bancario"> Cheque bancario</label>
+            <label><input type="radio" name="comp-forma" value="Efectivo"> Efectivo</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>¿Cuándo se paga?</label>
+        <div class="rg">
+          <label><input type="radio" name="comp-momento" value="En el acto de la firma"> En el acto de la firma</label>
+          <label><input type="radio" name="comp-momento" value="Ya se ha pagado con anterioridad"> Ya se ha pagado</label>
+          <label><input type="radio" name="comp-momento" value="Se pagará después de la firma"> Después de la firma</label>
+        </div>
+      </div>
+    </div>
+
+    <div id="alerta-sin-comp" class="notice amber hidden">
+      <strong>⚠️ Disolución sin compensación</strong>
+      Si el copropietario cede su cuota sin recibir nada a cambio, puede tener la consideración de donación, con las implicaciones fiscales que ello conlleva (ISD a cargo del que recibe). Su notaría y asesor fiscal verificarán el tratamiento correcto según las circunstancias.
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="btn-s" onclick="go(1)">← Atrás</button>
+    <button class="btn-p" onclick="go(3)">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 3 — OBSERVACIONES                             -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen" id="s3">
+  <div class="card">
+    <h2>📝 Información adicional</h2>
+    <div class="field">
+      <label>Observaciones</label>
+      <textarea id="observaciones" style="min-height:130px" placeholder="Ejemplos: si la disolución viene de un divorcio o separación (puede tener implicaciones distintas), si hay menores de edad copropietarios, si uno de los copropietarios tiene cargas o embargos sobre su cuota, si hay desacuerdo entre los copropietarios sobre el valor del bien, cualquier otra situación especial..."></textarea>
+    </div>
+  </div>
+  <div class="nav">
+    <button class="btn-s" onclick="go(2)">← Atrás</button>
+    <button class="btn-p" onclick="go(4)">Revisar →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 4 — RESUMEN + DESCARGA                        -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen" id="s4">
+
+  <div class="card">
+    <h2>📋 Resumen del expediente</h2>
+    <div id="resumen-contenido"></div>
+  </div>
+  <div class="card">
+    <h2>📎 Documentación que deberá aportar</h2>
+    <ul class="doc-list" id="doc-checklist"></ul>
+  </div>
+  <div class="notice amber">Si hay algún error, pulse "Corregir" para volver atrás.</div>
+  <div class="nav">
+    <button class="btn-s" onclick="go(3)">← Corregir</button>
+    <button class="btn-w" onclick="dlWord()">⬇️ Descargar Word y enviar a la notaría</button>
+  </div>
+  <div class="success" id="ok">
+    <h3>✅ Documento descargado</h3>
+    <p>Adjunte el archivo Word en su respuesta al email de la notaría.</p>
+  </div>
+</div>
+
+</div>
+<div class="footer">Oficial Notarial IA · Sus datos se procesan localmente y no se almacenan en ningún servidor.</div>
+
+<script>
+const LABELS=['Copropietarios','Bien','Adjudicación','Notas','Resumen'];
+let step=0, copropCount=0;
+
+function renderBar(){
+  const bar=document.getElementById('stepBar');bar.innerHTML='';
+  LABELS.forEach((l,i)=>{
+    const d=document.createElement('div');
+    d.className='sdot '+(i<step?'done':i===step?'active':'pend');
+    d.textContent=i<step?'✓':(i+1);d.title=l;bar.appendChild(d);
+    if(i<LABELS.length-1){const ln=document.createElement('div');ln.className='sline'+(i<step?' done':'');bar.appendChild(ln);}
+  });
+}
+function go(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  step=n;if(n===4)buildResumen();
+  document.getElementById('s'+n).classList.add('active');
+  renderBar();window.scrollTo({top:0,behavior:'smooth'});
+}
+function gv(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+function gr(name){const e=document.querySelector(`input[name="${name}"]:checked`);return e?e.value:'';}
+function sv(id){const e=document.getElementById(id);return e?e.value:'';}
+
+function addCoprop(){
+  copropCount++;
+  const id=copropCount;
+  const c=document.getElementById('coprop-container');
+  const div=document.createElement('div');
+  div.className='item-block';div.id='coprop-'+id;
+  div.innerHTML=`
+    <div class="item-hdr">
+      <span class="item-num">Copropietario ${id}</span>
+      ${id>1?`<button class="btn-del" onclick="removeItem('coprop-${id}')">✕ Eliminar</button>`:''}
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Nombre y apellidos completos <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="cp${id}-nombre" placeholder="Nombre y apellidos"></div>
+      <div class="field"><label>DNI / NIE <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="cp${id}-dni" placeholder="Ej: 12345678A"></div>
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Estado civil <span class="tag imp">Imprescindible</span></label>
+        <select id="cp${id}-ecivil">
+          <option value="">— Seleccione —</option>
+          <option>Soltero/a</option><option>Casado/a</option>
+          <option>Viudo/a</option><option>Divorciado/a</option><option>Separado/a</option>
+        </select></div>
+      <div class="field"><label>Régimen matrimonial</label>
+        <select id="cp${id}-regimen">
+          <option value="">— No aplica / No sé —</option>
+          <option>Gananciales</option><option>Separación de bienes</option><option>Participación</option>
+        </select></div>
+    </div>
+    <div class="field"><label>Profesión <span class="tag imp">Imprescindible</span></label>
+      <input type="text" id="cp${id}-prof" placeholder="Profesión u ocupación"></div>
+    <div class="field"><label>Domicilio completo <span class="tag imp">Imprescindible</span></label>
+      <input type="text" id="cp${id}-dom" placeholder="Calle, número, piso, localidad, código postal"></div>
+    <div class="field"><label>Teléfono de contacto</label>
+      <input type="text" id="cp${id}-tel" placeholder="Ej: 971 000 000 / 600 000 000"></div>
+    <div class="field"><label>Cuota de participación actual en el bien <span class="tag imp">Imprescindible</span></label>
+      <input type="text" id="cp${id}-cuota" placeholder="Ej: 50% / 1/3 / 25%"></div>`;
+  c.appendChild(div);
+}
+function removeItem(id){const e=document.getElementById(id);if(e)e.remove();}
+
+function showHipoteca(show){document.getElementById('bloque-hipoteca').classList.toggle('hidden',!show);}
+function showCompensacion(show){
+  document.getElementById('bloque-compensacion').classList.toggle('hidden',!show);
+  document.getElementById('alerta-sin-comp').classList.toggle('hidden',gr('compensacion')!=='Sin compensación (donación de la cuota)');
+}
+
+function row(lbl,val){if(!val||val==='—'||val==='')return '';return `<div class="res-row"><span class="res-lbl">${lbl}</span><span class="res-val">${val}</span></div>`;}
+
+function buildResumen(){
+  let h='';
+  const cBlocks=document.querySelectorAll('[id^="coprop-"]');
+  if(cBlocks.length){
+    h+=`<div class="res-block"><h3>Copropietarios (${cBlocks.length})</h3>`;
+    cBlocks.forEach((b,idx)=>{
+      const i=b.id.split('-')[1];
+      h+=`<div style="margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed var(--border)">`;
+      h+=`<div style="font-weight:700;font-size:12px;margin-bottom:5px">Copropietario ${idx+1}</div>`;
+      h+=row('Nombre',gv('cp'+i+'-nombre'));h+=row('DNI/NIE',gv('cp'+i+'-dni'));
+      h+=row('Estado civil',sv('cp'+i+'-ecivil'));h+=row('Domicilio',gv('cp'+i+'-dom'));
+      h+=row('Teléfono',gv('cp'+i+'-tel'));h+=row('Cuota',gv('cp'+i+'-cuota'));
+      h+=`</div>`;
+    });
+    h+='</div>';
+  }
+  h+=`<div class="res-block"><h3>Bien en copropiedad</h3>`;
+  h+=row('Tipo',sv('bien-tipo'));h+=row('Dirección',gv('bien-dir'));
+  h+=row('Ref. catastral',gv('bien-cat'));h+=row('Finca registral',gv('bien-finca'));
+  h+=row('Valor',gv('bien-valor'));h+=row('Forma de valoración',gr('bien-valoracion'));
+  h+=row('Hipoteca',gr('bien-hip'));h+=row('Origen de la copropiedad',sv('bien-origen'));
+  h+='</div>';
+  h+=`<div class="res-block"><h3>Adjudicación y compensación</h3>`;
+  h+=row('Adjudicatario',gv('adjudicatario'));h+=row('Cuota actual del adjudicatario',gv('cuota-adjud'));
+  h+=row('Compensación',gr('compensacion'));h+=row('Importe compensación',gv('comp-importe'));
+  h+=row('Forma de pago',gr('comp-forma'));h+=row('Momento del pago',gr('comp-momento'));
+  h+='</div>';
+  if(gv('observaciones')){h+=`<div class="res-block"><h3>Observaciones</h3><div style="font-size:13px;line-height:1.55">${gv('observaciones')}</div></div>`;}
+  document.getElementById('resumen-contenido').innerHTML=h;
+
+  const items=[];
+  const cb=document.querySelectorAll('[id^="coprop-"]');
+  cb.forEach((b,idx)=>{const i=b.id.split('-')[1];items.push({t:'imp',txt:`DNI/NIE original: ${gv('cp'+i+'-nombre')||'Copropietario '+(idx+1)}`});});
+  items.push({t:'imp',txt:'Nota simple registral actualizada del bien'});
+  items.push({t:'imp',txt:'Título de propiedad (escritura por la que se adquirió en copropiedad)'});
+  if(gr('bien-hip')==='Sí') items.push({t:'imp',txt:'Certificado de deuda pendiente de hipoteca (emitido por el banco)'});
+  if(gr('compensacion').includes('metálico')) items.push({t:'imp',txt:'Justificante de disponibilidad de los fondos de compensación (extracto bancario, cheque conformado...)'});
+  items.push({t:'rec',txt:'Asesor fiscal para la liquidación del AJD (y verificar si hay exceso de adjudicación tributando por ITP o ISD)'});
+  items.push({t:'rec',txt:'Tasación actualizada del bien (si el valor acordado difiere significativamente del catastral)'});
+  const ul=document.getElementById('doc-checklist');
+  ul.innerHTML=items.map(it=>`<li><span class="di ${it.t}">●</span><span>${it.txt} <span class="tag ${it.t}">${it.t==='imp'?'Imprescindible':'Recomendable'}</span></span></li>`).join('');
+}
+
+function dlWord(){
+  const now=new Date();
+  function p(lbl,val){if(!val||val==='—'||val==='')return '';return `<p style="margin:3pt 0"><span style="font-weight:bold;color:#0d1b2e">${lbl}:</span>&nbsp;${val}</p>`;}
+  function sec(t){return `<h2 style="font-size:12pt;color:#0d1b2e;border-bottom:2pt solid #c9a84c;padding-bottom:3pt;margin-top:18pt;margin-bottom:8pt">${t}</h2>`;}
+  function alerta(t){return `<div style="background:#fff0ee;border-left:4pt solid #c0392b;padding:8pt 12pt;margin:8pt 0;font-size:10.5pt;line-height:1.5">${t}</div>`;}
+  function aviso(t){return `<div style="background:#fff8e8;border-left:4pt solid #c9a84c;padding:8pt 12pt;margin:8pt 0;font-size:10.5pt;line-height:1.5">${t}</div>`;}
+
+  let body='';
+  body+=sec('⚠ ALERTAS JURÍDICAS — LEER ANTES DE PREPARAR EL EXPEDIENTE');
+  body+=aviso(`<strong>⚖ FISCALIDAD — AJD vs ITP:</strong> La disolución de condominio tributa por AJD sobre el valor total del bien (tipo autonómico Baleares). Verificar si existe exceso de adjudicación: si el adjudicatario recibe más valor del que le corresponde por su cuota y no hay indivisibilidad justificada, el exceso puede tributar por ITP o ISD. Calcular y advertir al cliente antes de la firma.`);
+  if(gr('bien-hip')==='Sí') body+=alerta('<strong>⚠️ BIEN CON HIPOTECA — SUBROGACIÓN:</strong> El adjudicatario se subroga en la deuda hipotecaria. Verificar que el banco ha aceptado expresamente la subrogación antes de autorizar la escritura. Si no hay aceptación, la escritura puede otorgarse pero el cedente seguirá obligado frente al banco hasta novación.');
+  if(gr('compensacion')==='Sin compensación (donación de la cuota)') body+=alerta('<strong>⚠️ SIN COMPENSACIÓN — POSIBLE DONACIÓN:</strong> La cesión de cuota sin contrapartida puede tener la consideración fiscal de donación (ISD). Verificar el tratamiento fiscal correcto y advertir al cliente. Puede existir también ganancia patrimonial para el cedente en su IRPF.');
+  if(sv('bien-origen')==='Separación o divorcio') body+=aviso('<strong>ℹ️ ORIGEN: DIVORCIO/SEPARACIÓN:</strong> Las disoluciones de condominio derivadas de separación o divorcio sobre la vivienda habitual del matrimonio pueden tener un tratamiento fiscal especial (exención en IRPF del cónyuge que la cede). Verificar si concurren los requisitos y remitir al asesor fiscal.');
+  body+=aviso('<strong>ℹ️ IRPF DEL CEDENTE:</strong> El copropietario que cede su parte puede tener que declarar una ganancia o pérdida patrimonial en su IRPF (diferencia entre el valor de adquisición de su cuota y el valor de transmisión). Recordar al cliente que consulte con asesor fiscal.');
+
+  body+=sec('1. COPROPIETARIOS');
+  const cBlocks=document.querySelectorAll('[id^="coprop-"]');
+  cBlocks.forEach((b,idx)=>{
+    const i=b.id.split('-')[1];
+    body+=`<h3 style="font-size:11pt;color:#0d1b2e;margin-top:12pt;border-left:3pt solid #c9a84c;padding-left:8pt">COPROPIETARIO ${idx+1}${gv('cp'+i+'-nombre')?' — '+gv('cp'+i+'-nombre'):''}</h3>`;
+    body+=p('Nombre y apellidos',gv('cp'+i+'-nombre'));body+=p('DNI / NIE',gv('cp'+i+'-dni'));
+    body+=p('Estado civil',sv('cp'+i+'-ecivil'));body+=p('Régimen matrimonial',sv('cp'+i+'-regimen'));
+    body+=p('Profesión',gv('cp'+i+'-prof'));body+=p('Domicilio completo',gv('cp'+i+'-dom'));
+    body+=p('Teléfono de contacto',gv('cp'+i+'-tel'));body+=p('Cuota de participación',gv('cp'+i+'-cuota'));
+  });
+
+  body+=sec('2. BIEN EN COPROPIEDAD');
+  body+=p('Tipo de bien',sv('bien-tipo'));body+=p('Dirección completa',gv('bien-dir'));
+  body+=p('Referencia catastral',gv('bien-cat'));body+=p('Número de finca registral',gv('bien-finca'));
+  body+=p('Valor del bien',gv('bien-valor'));body+=p('Forma de valoración',gr('bien-valoracion'));
+  body+=p('¿Tiene hipoteca?',gr('bien-hip'));
+  if(gr('bien-hip')==='Sí'){body+=p('Banco acreedor',gv('bien-banco'));body+=p('Deuda pendiente aprox.',gv('bien-deuda'));body+=p('Banco acepta subrogación',gr('banco-acepta'));}
+  body+=p('Origen de la copropiedad',sv('bien-origen'));
+
+  body+=sec('3. ADJUDICACIÓN Y COMPENSACIÓN');
+  body+=p('Adjudicatario del bien completo',gv('adjudicatario'));body+=p('Cuota actual del adjudicatario',gv('cuota-adjud'));
+  body+=p('Tipo de compensación',gr('compensacion'));
+  if(gr('compensacion').includes('metálico')||gr('compensacion').includes('Mixta')){
+    body+=p('Importe compensación en metálico',gv('comp-importe'));body+=p('Forma de pago',gr('comp-forma'));body+=p('Momento del pago',gr('comp-momento'));
+  }
+  if(gv('observaciones')){body+=sec('4. OBSERVACIONES');body+=`<p style="font-size:11pt;line-height:1.65">${gv('observaciones')}</p>`;}
+
+  body+=sec('5. DOCUMENTACIÓN QUE EL CLIENTE DEBE APORTAR');
+  body+=`<p style="font-size:10.5pt;font-weight:bold;color:#c0392b;margin-bottom:6pt">🔴 IMPRESCINDIBLE:</p><ul style="font-size:11pt;line-height:2;padding-left:20pt">`;
+  cBlocks.forEach((b,idx)=>{const i=b.id.split('-')[1];body+=`<li>DNI/NIE original: ${gv('cp'+i+'-nombre')||'Copropietario '+(idx+1)}</li>`;});
+  body+=`<li>Nota simple registral actualizada</li><li>Título de propiedad (escritura de adquisición en copropiedad)</li>`;
+  if(gr('bien-hip')==='Sí') body+=`<li>Certificado de deuda pendiente de hipoteca</li>`;
+  if(gr('compensacion').includes('metálico')) body+=`<li>Justificante de disponibilidad de fondos de compensación</li>`;
+  body+=`</ul><p style="font-size:10.5pt;font-weight:bold;color:#d4820a;margin-top:10pt;margin-bottom:6pt">🟡 RECOMENDABLE:</p><ul style="font-size:11pt;line-height:2;padding-left:20pt"><li>Asesor fiscal para liquidación de AJD y verificación de exceso de adjudicación</li><li>Tasación actualizada del bien</li></ul>`;
+
+  const nombre=gv('adjudicatario').split(' ')[0]||'Adjudicatario';
+  const w=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>
+<head><meta charset='utf-8'><style>body{font-family:'Times New Roman',serif;font-size:11pt;line-height:1.6;margin:2cm 2cm 2.5cm;color:#1a1a1a}h1{text-align:center;font-size:14pt;color:#0d1b2e}h2{font-size:12pt;color:#0d1b2e;border-bottom:2pt solid #c9a84c;padding-bottom:3pt;margin-top:18pt;margin-bottom:8pt}h3{font-size:11pt;color:#0d1b2e;margin-top:12pt;margin-bottom:4pt}p{margin:3pt 0}ul{margin:0}.ftr{font-size:9pt;color:#aaa;text-align:center;margin-top:30pt;border-top:1pt solid #eee;padding-top:8pt}</style></head>
+<body><h1>NOTARÍA<br>EXPEDIENTE DE DISOLUCIÓN DE CONDOMINIO</h1>
+<p style="text-align:center;font-size:10pt;color:#888;margin-bottom:16pt">Generado: ${now.toLocaleDateString('es-ES')} ${now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}</p>
+${body}
+<div class="ftr">Documento generado por Oficial Notarial IA · ${now.toLocaleDateString('es-ES')}</div></body></html>`;
+
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([w],{type:'application/msword'}));
+  a.download=`Datos_Disolucion_Condominio_${nombre}_${now.toISOString().slice(0,10)}.doc`;
+  a.click();
+  document.getElementById('ok').style.display='block';
+  document.getElementById('ok').scrollIntoView({behavior:'smooth'});
+}
+
+(function init(){renderBar();addCoprop();addCoprop();})();
+</script>
+</body>
+</html>

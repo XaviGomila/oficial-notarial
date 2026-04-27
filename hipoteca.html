@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notaría — Datos para Préstamo Hipotecario</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --ink:#0d1b2e;--gold:#c9a84c;--goldd:#a8872e;--bg:#f5f0e8;
+      --card:#ffffff;--ink2:#2c2c2c;--ink3:#888;--red:#c0392b;
+      --green:#1e8449;--amber:#d4820a;--border:#e0d8cc;--shadow:0 2px 10px rgba(0,0,0,.07);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink2);min-height:100vh}
+    .hdr{background:var(--ink);padding:22px 20px 18px;text-align:center}
+    .hdr h1{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold);letter-spacing:.02em}
+    .hdr p{font-size:12px;color:rgba(255,255,255,.45);margin-top:5px}
+    .step-bar{background:var(--ink);padding:10px 20px 16px;display:flex;align-items:center;overflow-x:auto;gap:0;border-top:1px solid rgba(255,255,255,.08)}
+    .sdot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;transition:all .25s}
+    .sdot.done{background:var(--gold);color:var(--ink)}.sdot.active{background:#fff;color:var(--ink);box-shadow:0 0 0 3px rgba(201,168,76,.4)}.sdot.pend{background:rgba(255,255,255,.12);color:rgba(255,255,255,.4)}
+    .sline{flex:1;height:2px;background:rgba(255,255,255,.15);min-width:8px;transition:background .25s}.sline.done{background:var(--gold)}
+    .wrap{max-width:700px;margin:0 auto;padding:22px 16px 90px}
+    .card{background:var(--card);border-radius:12px;padding:22px;margin-bottom:16px;border:1px solid var(--border);box-shadow:var(--shadow)}
+    .card h2{font-family:'Playfair Display',serif;font-size:16px;color:var(--ink);margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--gold);display:flex;align-items:center;gap:8px}
+    .field{margin-bottom:15px}
+    .field label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px}
+    .field input[type=text],.field input[type=date],.field input[type=number],.field select,.field textarea{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;background:#fafaf8;color:var(--ink2);transition:border-color .15s}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);outline:none;background:#fffdf7}
+    .field textarea{resize:vertical;min-height:90px;line-height:1.55}
+    .field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+    .rg{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+    .rg label{display:flex;align-items:center;gap:7px;font-size:13.5px;font-weight:400;cursor:pointer;padding:7px 13px;border:1.5px solid var(--border);border-radius:8px;transition:all .15s;line-height:1.3}
+    .rg label:hover{border-color:var(--gold);background:#fffdf7}
+    .rg input[type=radio]{accent-color:var(--gold);width:15px;height:15px;flex-shrink:0}
+    .rg label:has(input:checked){border-color:var(--gold);background:#fff8ec;font-weight:600}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    @media(max-width:540px){.two-col{grid-template-columns:1fr}}
+    .notice{border-radius:9px;padding:13px 16px;font-size:13px;line-height:1.55;margin-bottom:15px}
+    .notice strong{display:block;margin-bottom:3px;font-size:13.5px}
+    .notice.amber{background:#fff8e8;border:1px solid #e8c878}
+    .notice.red{background:#fff0ee;border:1px solid #e8a090}
+    .notice.blue{background:#e8f0ff;border:1px solid #90a8e8}
+    .notice.green{background:#efffee;border:1px solid #88c888}
+    .notice ul{padding-left:18px;margin-top:7px}
+    .notice li{margin-bottom:4px}
+    .tag{display:inline-block;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:700;margin-left:5px;vertical-align:middle;letter-spacing:.03em}
+    .tag.imp{background:var(--red);color:#fff}
+    .tag.rec{background:var(--amber);color:#fff}
+    .item-block{border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:14px;background:#fafaf8}
+    .item-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .item-num{font-size:12px;font-weight:700;background:var(--gold);color:var(--ink);padding:3px 12px;border-radius:12px}
+    .btn-del{background:none;border:1px solid #f0b0a0;color:var(--red);font-size:12px;cursor:pointer;padding:4px 10px;border-radius:6px}
+    .btn-add{background:transparent;color:var(--gold);border:1.5px dashed var(--gold);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;width:100%;margin-top:6px;font-family:inherit}
+    .btn-add:hover{background:#fff8ec}
+    .nav{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
+    .btn-p{background:var(--ink);color:#fff;border:none;padding:12px 28px;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+    .btn-p:hover{opacity:.85}
+    .btn-s{background:transparent;color:var(--ink);border:1.5px solid var(--ink);padding:11px 22px;border-radius:9px;font-size:14px;cursor:pointer;font-family:inherit}
+    .btn-w{background:var(--gold);color:var(--ink);border:none;padding:12px 28px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+    .btn-w:hover{opacity:.85}
+    .screen{display:none}.screen.active{display:block}.hidden{display:none!important}
+    .fein-box{background:#fff0ee;border:2px solid var(--red);border-radius:10px;padding:18px 22px;margin-bottom:16px}
+    .fein-box .fein-label{font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+    .fein-box .fein-txt{font-size:13px;color:var(--ink2);line-height:1.6}
+    .res-block{margin-bottom:20px}
+    .res-block h3{font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;padding:6px 0;border-bottom:1.5px solid var(--gold);margin-bottom:10px}
+    .res-row{display:flex;gap:12px;margin-bottom:7px;font-size:13px;line-height:1.4}
+    .res-lbl{font-weight:600;color:var(--ink);min-width:175px;flex-shrink:0}
+    .res-val{color:var(--ink2)}
+    .doc-list{list-style:none;padding:0}
+    .doc-list li{padding:8px 0;font-size:13px;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid var(--border);line-height:1.4}
+    .doc-list li:last-child{border-bottom:none}
+    .di{font-size:15px;flex-shrink:0;margin-top:1px}.di.imp{color:var(--red)}.di.rec{color:var(--amber)}
+    .success{display:none;background:#efffee;border:1px solid #88c888;border-radius:10px;padding:26px;text-align:center;margin-top:20px}
+    .success h3{color:var(--green);margin-bottom:8px}
+    .success p{font-size:13px;color:var(--ink3);line-height:1.6}
+    .footer{text-align:center;font-size:11px;color:var(--ink3);padding:20px;border-top:1px solid var(--border)}
+    .sub-hdr{font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;margin:18px 0 10px;border-top:1px solid var(--border);padding-top:14px}
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>Préstamo Hipotecario — Datos para la notaría</h1>
+  <p>Complete el formulario para que preparemos su expediente. Sus datos se procesan localmente.</p>
+</div>
+<div class="step-bar" id="stepBar"></div>
+
+<div class="wrap">
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 0 — PRESTATARIO/S                             -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen active" id="s0">
+
+  <div class="fein-box">
+    <div class="fein-label">⏰ Alerta LCCI — Plazo obligatorio</div>
+    <div class="fein-txt">La Ley de Crédito Inmobiliario (LCCI) exige que el banco entregue la documentación precontractual (FEIN, FIAE, etc.) con al menos <strong>10 días naturales de antelación</strong> a la firma. La notaría no puede fijar fecha hasta confirmar que el banco ha enviado esa documentación. No organice mudanzas ni compromisos antes de que la notaría le confirme la fecha.</div>
+  </div>
+
+  <div class="card">
+    <h2>👤 Datos del prestatario / deudor</h2>
+    <p style="font-size:13px;color:var(--ink3);margin-bottom:16px;line-height:1.5">Persona/s que solicitan el préstamo y quedan obligadas frente al banco. Si son varios, añádalos con el botón inferior.</p>
+
+    <div id="prestatarios-container"></div>
+    <button class="btn-add" onclick="addPrestatario()">＋ Añadir prestatario</button>
+  </div>
+
+  <div class="notice blue">
+    <strong>ℹ️ ¿Hay avalista o fiador?</strong>
+    Si alguna persona garantiza el préstamo con su patrimonio sin ser titular de la hipoteca (avalista / fiador personal), también deberá comparecer en la escritura. Indíquelo en las observaciones del último paso.
+  </div>
+
+  <div class="nav">
+    <button class="btn-p" onclick="go(1)">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 1 — INMUEBLE HIPOTECADO                       -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen" id="s1">
+
+  <div class="card">
+    <h2>🏠 Inmueble que se hipoteca</h2>
+
+    <div class="notice blue">
+      <strong>ℹ️ El inmueble es la garantía del préstamo</strong>
+      En caso de impago, el banco puede ejecutar la hipoteca sobre este inmueble. Si es una vivienda habitual, se aplica la protección reforzada de la LCCI.
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label>Tipo de inmueble <span class="tag imp">Imprescindible</span></label>
+        <select id="i-tipo" onchange="checkViviendaHabitual()">
+          <option value="">— Seleccione —</option>
+          <option value="vivienda-habitual">Vivienda habitual</option>
+          <option value="segunda-residencia">Segunda residencia / vacacional</option>
+          <option value="local">Local comercial</option>
+          <option value="garaje">Plaza de garaje</option>
+          <option value="finca-rustica">Finca rústica</option>
+          <option value="solar">Solar / terreno</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Referencia catastral <span class="tag rec">Recomendable</span></label>
+        <input type="text" id="i-cat" placeholder="Ej: 7837298CF3473N0001WT">
+      </div>
+    </div>
+
+    <div id="alerta-vivienda-habitual" class="notice green hidden">
+      <strong>✓ Vivienda habitual — Protección LCCI reforzada</strong>
+      Al tratarse de vivienda habitual, se aplican todas las protecciones de la Ley 5/2019 (LCCI): derecho a acta notarial de información precontractual, plazo mínimo de 10 días, limitaciones a comisiones, etc.
+    </div>
+
+    <div class="field">
+      <label>Dirección completa del inmueble <span class="tag imp">Imprescindible</span></label>
+      <input type="text" id="i-dir" placeholder="Calle, número, piso, localidad, código postal">
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label>Número de finca registral (si lo conoce)</label>
+        <input type="text" id="i-finca" placeholder="Ej: Finca 12345, Registro de Palma">
+      </div>
+      <div class="field">
+        <label>Valor de tasación oficial <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="i-tasacion" placeholder="Ej: 320.000 €">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>¿Cómo se adquirió el inmueble? <span class="tag imp">Imprescindible</span></label>
+      <div class="rg">
+        <label><input type="radio" name="i-adquisicion" value="Se adquiere simultáneamente con el préstamo" onclick="checkSimultaneo(true)"> Se compra ahora mismo (compraventa simultánea)</label>
+        <label><input type="radio" name="i-adquisicion" value="Ya es propiedad del prestatario" onclick="checkSimultaneo(false)"> Ya es propietario</label>
+        <label><input type="radio" name="i-adquisicion" value="Herencia / donación previa" onclick="checkSimultaneo(false)"> Por herencia o donación previa</label>
+      </div>
+    </div>
+
+    <div id="alerta-simultaneo" class="notice amber hidden">
+      <strong>📋 Compraventa simultánea — Dos escrituras</strong>
+      Si el inmueble se compra en el mismo acto, se otorgarán dos escrituras: primero la compraventa y a continuación la hipoteca. La notaría coordinará ambas con el banco y el vendedor. Indique también los datos del vendedor en las observaciones del último paso.
+    </div>
+
+    <div class="field">
+      <label>¿El inmueble tiene cargas o hipotecas previas?</label>
+      <div class="rg">
+        <label><input type="radio" name="i-cargas" value="No tiene cargas previas"> No</label>
+        <label><input type="radio" name="i-cargas" value="Sí, tiene hipoteca previa que se cancelará" onclick="showCargaPrevia(true)"> Sí — se cancelará con este préstamo</label>
+        <label><input type="radio" name="i-cargas" value="Sí, tiene otras cargas" onclick="showCargaPrevia(false)"> Sí — otras cargas</label>
+      </div>
+    </div>
+
+    <div id="bloque-carga-previa" class="hidden">
+      <div class="notice amber">
+        <strong>⚠️ Cancelación registral de hipoteca previa</strong>
+        Si existe una hipoteca anterior que se va a cancelar con este préstamo, el banco prestamista normalmente retiene parte del capital para destinarla directamente a la cancelación. La notaría tramitará también la escritura de cancelación de esa hipoteca previa.
+      </div>
+      <div class="two-col">
+        <div class="field">
+          <label>Banco acreedor de la hipoteca previa</label>
+          <input type="text" id="i-banco-previo" placeholder="Entidad bancaria">
+        </div>
+        <div class="field">
+          <label>Capital pendiente aproximado</label>
+          <input type="text" id="i-deuda-previa" placeholder="Ej: 45.000 €">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="btn-s" onclick="go(0)">← Atrás</button>
+    <button class="btn-p" onclick="go(2)">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 2 — CONDICIONES DEL PRÉSTAMO                  -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen" id="s2">
+
+  <div class="card">
+    <h2>🏦 Entidad prestamista y condiciones del préstamo</h2>
+
+    <div class="notice blue">
+      <strong>ℹ️ Esta información figura en la FEIN y en la oferta vinculante del banco</strong>
+      Si ya tiene el documento FEIN (Ficha Europea de Información Normalizada), puede consultar estos datos ahí.
+    </div>
+
+    <div class="field">
+      <label>Entidad bancaria prestamista <span class="tag imp">Imprescindible</span></label>
+      <input type="text" id="banco" placeholder="Ej: CaixaBank, Bankinter, Santander, BBVA...">
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label>Importe del préstamo <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="importe" placeholder="Ej: 200.000 €">
+      </div>
+      <div class="field">
+        <label>Plazo de amortización <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="plazo" placeholder="Ej: 30 años / 360 meses">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Tipo de interés <span class="tag imp">Imprescindible</span></label>
+      <div class="rg">
+        <label><input type="radio" name="tipo-interes" value="Fijo" onclick="setInteres('fijo')"> Fijo</label>
+        <label><input type="radio" name="tipo-interes" value="Variable" onclick="setInteres('variable')"> Variable</label>
+        <label><input type="radio" name="tipo-interes" value="Mixto" onclick="setInteres('mixto')"> Mixto</label>
+      </div>
+    </div>
+
+    <div id="bloque-fijo" class="hidden">
+      <div class="field">
+        <label>Tipo de interés fijo (TIN anual)</label>
+        <input type="text" id="tin-fijo" placeholder="Ej: 3,25%">
+      </div>
+    </div>
+
+    <div id="bloque-variable" class="hidden">
+      <div class="notice amber">
+        <strong>⚠️ Interés variable — Riesgo de subida de cuota</strong>
+        Con tipo variable, su cuota mensual puede aumentar si sube el índice de referencia (habitualmente el Euribor). La LCCI obliga al banco a informarle de escenarios de subida de tipos. Asegúrese de haber recibido y entendido esa información.
+      </div>
+      <div class="two-col">
+        <div class="field">
+          <label>Índice de referencia</label>
+          <select id="indice-ref">
+            <option value="">— Seleccione —</option>
+            <option>Euribor a 12 meses</option>
+            <option>Euribor a 6 meses</option>
+            <option>Euribor a 3 meses</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Diferencial sobre el índice</label>
+          <input type="text" id="diferencial" placeholder="Ej: + 0,75%">
+        </div>
+      </div>
+    </div>
+
+    <div id="bloque-mixto" class="hidden">
+      <div class="two-col">
+        <div class="field">
+          <label>Tipo fijo inicial (años)</label>
+          <input type="text" id="mixto-fijo-anios" placeholder="Ej: 10 años al 2,80%">
+        </div>
+        <div class="field">
+          <label>Tipo variable posterior</label>
+          <input type="text" id="mixto-variable" placeholder="Ej: Euribor + 0,60%">
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col" style="margin-top:8px">
+      <div class="field">
+        <label>TAE (si lo conoce)</label>
+        <input type="text" id="tae" placeholder="Ej: 3,87%">
+      </div>
+      <div class="field">
+        <label>Cuota mensual aproximada</label>
+        <input type="text" id="cuota" placeholder="Ej: 950 €/mes">
+      </div>
+    </div>
+
+    <div class="sub-hdr">Comisiones y cláusulas</div>
+
+    <div class="two-col">
+      <div class="field">
+        <label>Comisión de apertura</label>
+        <input type="text" id="com-apertura" placeholder="Ej: 0% / 500 € / 0,50%">
+      </div>
+      <div class="field">
+        <label>Comisión amortización anticipada</label>
+        <input type="text" id="com-amort" placeholder="Ej: 0,25% primeros 3 años">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>¿Existen productos vinculados al préstamo?</label>
+      <p style="font-size:12px;color:var(--ink3);margin-bottom:8px">Seguros, planes de pensiones, tarjetas u otros productos que el banco exige para obtener el tipo de interés ofertado.</p>
+      <div class="rg">
+        <label><input type="radio" name="vinculados" value="No"> No</label>
+        <label><input type="radio" name="vinculados" value="Sí" onclick="showVinculados(true)"> Sí</label>
+        <label><input type="radio" name="vinculados" value="No lo sé"> No lo sé</label>
+      </div>
+    </div>
+    <div id="bloque-vinculados" class="hidden">
+      <div class="field">
+        <label>Productos vinculados</label>
+        <textarea id="vinculados-txt" placeholder="Ej: Seguro de hogar con la entidad, seguro de vida, domiciliación de nómina mínima de 1.500 €/mes..."></textarea>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>¿Tiene cláusula suelo?</label>
+      <div class="rg">
+        <label><input type="radio" name="suelo" value="No"> No</label>
+        <label><input type="radio" name="suelo" value="Sí" onclick="showSuelo(true)"> Sí</label>
+        <label><input type="radio" name="suelo" value="No lo sé"> No lo sé</label>
+      </div>
+    </div>
+    <div id="alerta-suelo" class="notice red hidden">
+      <strong>⚠️ Cláusula suelo</strong>
+      Las cláusulas suelo en hipotecas a tipo variable limitan la bajada de la cuota aunque el Euribor baje. Si tiene una, asegúrese de haberla revisado con su asesor y entendido su impacto económico antes de firmar.
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="btn-s" onclick="go(1)">← Atrás</button>
+    <button class="btn-p" onclick="go(3)">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 3 — DOCUMENTACIÓN LCCI / ACTA PREVIA          -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen" id="s3">
+
+  <div class="card">
+    <h2>📋 Documentación precontractual LCCI</h2>
+
+    <div class="notice red">
+      <strong>🔴 La notaría necesita saber el estado de la documentación del banco</strong>
+      Sin la documentación precontractual entregada por el banco con al menos 10 días de antelación, la notaría no puede autorizar la escritura. Es el banco quien la envía, no el cliente.
+    </div>
+
+    <div class="field">
+      <label>¿Ha recibido ya la documentación precontractual del banco? <span class="tag imp">Imprescindible</span></label>
+      <div class="rg">
+        <label><input type="radio" name="fein" value="Sí, la tengo toda" onclick="checkFEIN('si')"> Sí, la he recibido toda</label>
+        <label><input type="radio" name="fein" value="Parcialmente" onclick="checkFEIN('parcial')"> Solo parte de ella</label>
+        <label><input type="radio" name="fein" value="No, todavía no" onclick="checkFEIN('no')"> No, todavía no</label>
+      </div>
+    </div>
+
+    <div id="fein-si" class="notice green hidden">
+      <strong>✓ Documentación recibida</strong>
+      La notaría verificará que han transcurrido los 10 días naturales obligatorios desde la recepción antes de autorizar la firma. Una vez confirmado el cumplimiento del plazo, podremos fijar fecha de otorgamiento.
+    </div>
+
+    <div id="fein-parcial" class="notice amber hidden">
+      <strong>⚠️ Documentación incompleta</strong>
+      Contacte con su banco para solicitar el envío completo de la documentación. La notaría necesita: FEIN, FIAE, simulación de cuotas, copia del proyecto de contrato y, si aplica, advertencias específicas. Sin todo ello el plazo de 10 días no empieza a contar.
+    </div>
+
+    <div id="fein-no" class="notice red hidden">
+      <strong>🔴 Sin documentación del banco — No es posible fijar fecha aún</strong>
+      Hasta que el banco envíe la documentación precontractual completa y transcurran 10 días naturales, la notaría no puede fijar fecha de firma. Solicite al banco que la envíe a la mayor brevedad.
+    </div>
+
+    <div class="field" style="margin-top:16px">
+      <label>Fecha prevista de firma (orientativa)</label>
+      <p style="font-size:12px;color:var(--ink3);margin-bottom:8px">Solo informativa. La fecha real la fijará la notaría una vez confirmado el cumplimiento del plazo LCCI.</p>
+      <input type="date" id="fecha-firma">
+    </div>
+
+    <div class="field">
+      <label>¿Ha realizado ya la visita al notario para el acta de información precontractual?</label>
+      <p style="font-size:12px;color:var(--ink3);margin-bottom:8px">La LCCI exige una primera cita gratuita con el notario (elegido por usted) para explicar el contenido del préstamo antes de firmar.</p>
+      <div class="rg">
+        <label><input type="radio" name="acta-previa" value="Sí, ya la hemos hecho"> Sí, ya la realizamos</label>
+        <label><input type="radio" name="acta-previa" value="No todavía"> No todavía</label>
+        <label><input type="radio" name="acta-previa" value="No lo sabía"> No sabía que debía hacerla</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="notice amber">
+    <strong>ℹ️ ¿Quién elige el notario?</strong>
+    Desde la LCCI (2019), el prestatario tiene derecho a elegir libremente el notario. El banco no puede imponerle la notaría. Si ya eligió esta notaría, comuníquelo al banco para que envíe la documentación a nuestro código ANCERT.
+  </div>
+
+  <div class="nav">
+    <button class="btn-s" onclick="go(2)">← Atrás</button>
+    <button class="btn-p" onclick="go(4)">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 4 — OBSERVACIONES                             -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen" id="s4">
+  <div class="card">
+    <h2>📝 Información adicional</h2>
+    <div class="field">
+      <label>Observaciones</label>
+      <textarea id="observaciones" style="min-height:130px" placeholder="Ejemplos: datos del vendedor si es compraventa simultánea, avalistas o fiadores que comparecen, situación especial de algún prestatario (menores de edad, personas con medidas de apoyo), bienes del prestatario en el extranjero, si el banco exige que se aporte notario distinto al elegido..."></textarea>
+    </div>
+  </div>
+  <div class="nav">
+    <button class="btn-s" onclick="go(3)">← Atrás</button>
+    <button class="btn-p" onclick="go(5)">Revisar →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- PASO 5 — RESUMEN + DESCARGA                        -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="screen" id="s5">
+
+  <div class="fein-box">
+    <div class="fein-label">⏰ Recordatorio LCCI — Plazo mínimo 10 días naturales</div>
+    <div class="fein-txt">La notaría no puede fijar fecha de firma hasta que el banco haya enviado la documentación precontractual completa y hayan transcurrido al menos 10 días naturales. No organice nada hasta que la notaría le confirme la fecha.</div>
+  </div>
+
+  <div class="card">
+    <h2>📋 Resumen del expediente</h2>
+    <div id="resumen-contenido"></div>
+  </div>
+
+  <div class="card">
+    <h2>📎 Documentación que deberá aportar</h2>
+    <ul class="doc-list" id="doc-checklist"></ul>
+  </div>
+
+  <div class="notice amber">Si hay algún error, pulse "Corregir" para volver atrás.</div>
+
+  <div class="nav">
+    <button class="btn-s" onclick="go(4)">← Corregir</button>
+    <button class="btn-w" onclick="dlWord()">⬇️ Descargar Word y enviar a la notaría</button>
+  </div>
+
+  <div class="success" id="ok">
+    <h3>✅ Documento descargado</h3>
+    <p>Adjunte el archivo Word en su respuesta al email de la notaría.<br>
+    Nos pondremos en contacto para confirmar la documentación y coordinar la cita.</p>
+  </div>
+</div>
+
+</div>
+<div class="footer">Oficial Notarial IA · Sus datos se procesan localmente y no se almacenan en ningún servidor.</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  ESTADO
+// ═══════════════════════════════════════════════════════
+const LABELS=['Prestatario/s','Inmueble','Préstamo','LCCI','Notas','Resumen'];
+let step=0, prestatarioCount=0;
+
+// ═══════════════════════════════════════════════════════
+//  STEP BAR
+// ═══════════════════════════════════════════════════════
+function renderBar(){
+  const bar=document.getElementById('stepBar');bar.innerHTML='';
+  LABELS.forEach((l,i)=>{
+    const d=document.createElement('div');
+    d.className='sdot '+(i<step?'done':i===step?'active':'pend');
+    d.textContent=i<step?'✓':(i+1);d.title=l;bar.appendChild(d);
+    if(i<LABELS.length-1){const ln=document.createElement('div');ln.className='sline'+(i<step?' done':'');bar.appendChild(ln);}
+  });
+}
+function go(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  step=n;if(n===5)buildResumen();
+  document.getElementById('s'+n).classList.add('active');
+  renderBar();window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════════
+function gv(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+function gr(name){const e=document.querySelector(`input[name="${name}"]:checked`);return e?e.value:'';}
+function sv(id){const e=document.getElementById(id);return e?e.value:'';}
+
+// ═══════════════════════════════════════════════════════
+//  PRESTATARIOS DINÁMICOS
+// ═══════════════════════════════════════════════════════
+function addPrestatario(){
+  prestatarioCount++;
+  const id=prestatarioCount;
+  const c=document.getElementById('prestatarios-container');
+  const div=document.createElement('div');
+  div.className='item-block';div.id='prestatario-'+id;
+  div.innerHTML=`
+    <div class="item-hdr">
+      <span class="item-num">Prestatario ${id}</span>
+      ${id>1?`<button class="btn-del" onclick="removeItem('prestatario-${id}')">✕ Eliminar</button>`:''}
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Nombre y apellidos completos <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="p${id}-nombre" placeholder="Nombre y apellidos"></div>
+      <div class="field"><label>DNI / NIE <span class="tag imp">Imprescindible</span></label>
+        <input type="text" id="p${id}-dni" placeholder="Ej: 12345678A"></div>
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Fecha de nacimiento <span class="tag rec">Recomendable</span></label>
+        <input type="date" id="p${id}-fnac"></div>
+      <div class="field"><label>Nacionalidad</label>
+        <input type="text" id="p${id}-nac" placeholder="Ej: Española"></div>
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Estado civil <span class="tag imp">Imprescindible</span></label>
+        <select id="p${id}-ecivil">
+          <option value="">— Seleccione —</option>
+          <option>Soltero/a</option><option>Casado/a</option>
+          <option>Viudo/a</option><option>Divorciado/a</option><option>Separado/a</option>
+        </select></div>
+      <div class="field"><label>Régimen económico matrimonial</label>
+        <select id="p${id}-regimen">
+          <option value="">— No aplica / No sé —</option>
+          <option>Gananciales</option><option>Separación de bienes</option>
+          <option>Participación</option>
+        </select></div>
+    </div>
+    <div class="field"><label>Profesión <span class="tag imp">Imprescindible</span></label>
+      <input type="text" id="p${id}-prof" placeholder="Profesión u ocupación"></div>
+    <div class="field"><label>Domicilio completo <span class="tag imp">Imprescindible</span></label>
+      <input type="text" id="p${id}-dom" placeholder="Calle, número, piso, localidad, código postal"></div>
+    <div class="field"><label>Teléfono de contacto</label>
+      <input type="text" id="p${id}-tel" placeholder="Ej: 971 000 000 / 600 000 000"></div>`;
+  c.appendChild(div);
+}
+
+function removeItem(id){const e=document.getElementById(id);if(e)e.remove();}
+
+// ═══════════════════════════════════════════════════════
+//  LÓGICA DE FORMULARIO
+// ═══════════════════════════════════════════════════════
+function checkViviendaHabitual(){
+  const v=sv('i-tipo');
+  document.getElementById('alerta-vivienda-habitual').classList.toggle('hidden',v!=='vivienda-habitual');
+}
+function checkSimultaneo(show){
+  document.getElementById('alerta-simultaneo').classList.toggle('hidden',!show);
+}
+function showCargaPrevia(show){
+  document.getElementById('bloque-carga-previa').classList.toggle('hidden',!show);
+}
+function setInteres(tipo){
+  ['fijo','variable','mixto'].forEach(t=>document.getElementById('bloque-'+t).classList.toggle('hidden',t!==tipo));
+}
+function showVinculados(show){
+  document.getElementById('bloque-vinculados').classList.toggle('hidden',!show);
+}
+function showSuelo(show){
+  document.getElementById('alerta-suelo').classList.toggle('hidden',!show);
+}
+function checkFEIN(estado){
+  ['si','parcial','no'].forEach(s=>document.getElementById('fein-'+s).classList.add('hidden'));
+  document.getElementById('fein-'+estado).classList.remove('hidden');
+}
+
+// ═══════════════════════════════════════════════════════
+//  RESUMEN
+// ═══════════════════════════════════════════════════════
+function row(lbl,val){if(!val||val==='—'||val==='')return '';return `<div class="res-row"><span class="res-lbl">${lbl}</span><span class="res-val">${val}</span></div>`;}
+
+function buildResumen(){
+  buildResumenContenido();
+  buildChecklist();
+}
+
+function buildResumenContenido(){
+  let h='';
+
+  // PRESTATARIOS
+  const pBlocks=document.querySelectorAll('[id^="prestatario-"]');
+  if(pBlocks.length){
+    h+=`<div class="res-block"><h3>Prestatario/s (${pBlocks.length})</h3>`;
+    pBlocks.forEach((b,idx)=>{
+      const i=b.id.split('-')[1];
+      h+=`<div style="margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed var(--border)">`;
+      h+=`<div style="font-weight:700;font-size:12px;margin-bottom:5px">Prestatario ${idx+1}</div>`;
+      h+=row('Nombre',gv('p'+i+'-nombre'));h+=row('DNI/NIE',gv('p'+i+'-dni'));
+      h+=row('Estado civil',sv('p'+i+'-ecivil'));h+=row('Profesión',gv('p'+i+'-prof'));
+      h+=row('Domicilio',gv('p'+i+'-dom'));h+=row('Teléfono',gv('p'+i+'-tel'));
+      h+=`</div>`;
+    });
+    h+='</div>';
+  }
+
+  // INMUEBLE
+  h+=`<div class="res-block"><h3>Inmueble hipotecado</h3>`;
+  h+=row('Tipo',sv('i-tipo'));h+=row('Dirección',gv('i-dir'));
+  h+=row('Referencia catastral',gv('i-cat'));h+=row('Finca registral',gv('i-finca'));
+  h+=row('Valor de tasación',gv('i-tasacion'));h+=row('Forma de adquisición',gr('i-adquisicion'));
+  h+=row('Cargas previas',gr('i-cargas'));
+  h+='</div>';
+
+  // PRÉSTAMO
+  h+=`<div class="res-block"><h3>Condiciones del préstamo</h3>`;
+  h+=row('Banco prestamista',gv('banco'));h+=row('Importe',gv('importe'));
+  h+=row('Plazo',gv('plazo'));h+=row('Tipo de interés',gr('tipo-interes'));
+  if(gr('tipo-interes')==='Fijo') h+=row('TIN fijo',gv('tin-fijo'));
+  if(gr('tipo-interes')==='Variable'){h+=row('Índice de referencia',sv('indice-ref'));h+=row('Diferencial',gv('diferencial'));}
+  if(gr('tipo-interes')==='Mixto'){h+=row('Tramo fijo',gv('mixto-fijo-anios'));h+=row('Tramo variable',gv('mixto-variable'));}
+  h+=row('TAE',gv('tae'));h+=row('Cuota mensual aprox.',gv('cuota'));
+  h+=row('Comisión apertura',gv('com-apertura'));h+=row('Comisión amort. anticipada',gv('com-amort'));
+  h+=row('Productos vinculados',gr('vinculados'));h+=row('Cláusula suelo',gr('suelo'));
+  h+='</div>';
+
+  // LCCI
+  h+=`<div class="res-block"><h3>Situación LCCI</h3>`;
+  h+=row('Documentación precontractual',gr('fein'));
+  h+=row('Acta previa de información',gr('acta-previa'));
+  h+=row('Fecha prevista firma (orientativa)',gv('fecha-firma')?new Date(gv('fecha-firma')).toLocaleDateString('es-ES'):'');
+  h+='</div>';
+
+  if(gv('observaciones')){h+=`<div class="res-block"><h3>Observaciones</h3><div style="font-size:13px;line-height:1.55">${gv('observaciones')}</div></div>`;}
+
+  document.getElementById('resumen-contenido').innerHTML=h;
+}
+
+function buildChecklist(){
+  const items=[];
+  const pBlocks=document.querySelectorAll('[id^="prestatario-"]');
+  pBlocks.forEach((b,idx)=>{
+    const i=b.id.split('-')[1];
+    items.push({t:'imp',txt:`DNI/NIE original y en vigor: ${gv('p'+i+'-nombre')||'Prestatario '+(idx+1)}`});
+  });
+  items.push({t:'imp',txt:'Nota simple registral actualizada del inmueble hipotecado'});
+  items.push({t:'imp',txt:'Certificado de tasación oficial del inmueble (emitido por tasadora homologada por el banco)'});
+  items.push({t:'imp',txt:'FEIN (Ficha Europea de Información Normalizada) — entregada por el banco'});
+  items.push({t:'imp',txt:'FIAE (Ficha de Advertencias Estandarizadas) — entregada por el banco'});
+  items.push({t:'imp',txt:'Proyecto de contrato de préstamo hipotecario — entregado por el banco'});
+  if(gr('i-adquisicion').includes('compra')||gr('i-adquisicion').includes('simultán')) items.push({t:'imp',txt:'Escritura de compraventa o datos completos del vendedor (compraventa simultánea)'});
+  if(gr('i-cargas').includes('previa')) items.push({t:'imp',txt:'Certificado de deuda pendiente de la hipoteca anterior (emitido por el banco acreedor previo)'});
+  items.push({t:'rec',txt:'Últimas 3 nóminas / declaración IRPF (el banco puede requerirlas para validar la operación)'});
+  items.push({t:'rec',txt:'Justificante del seguro de hogar (habitualmente requerido por el banco como condición del préstamo)'});
+  const ul=document.getElementById('doc-checklist');
+  ul.innerHTML=items.map(it=>`<li><span class="di ${it.t}">●</span><span>${it.txt} <span class="tag ${it.t}">${it.t==='imp'?'Imprescindible':'Recomendable'}</span></span></li>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+//  WORD DOWNLOAD
+// ═══════════════════════════════════════════════════════
+function dlWord(){
+  const now=new Date();
+  function p(lbl,val){if(!val||val==='—'||val==='')return '';return `<p style="margin:3pt 0"><span style="font-weight:bold;color:#0d1b2e">${lbl}:</span>&nbsp;${val}</p>`;}
+  function sec(t){return `<h2 style="font-size:12pt;color:#0d1b2e;border-bottom:2pt solid #c9a84c;padding-bottom:3pt;margin-top:18pt;margin-bottom:8pt">${t}</h2>`;}
+  function alerta(t){return `<div style="background:#fff0ee;border-left:4pt solid #c0392b;padding:8pt 12pt;margin:8pt 0;font-size:10.5pt;line-height:1.5">${t}</div>`;}
+  function aviso(t){return `<div style="background:#fff8e8;border-left:4pt solid #c9a84c;padding:8pt 12pt;margin:8pt 0;font-size:10.5pt;line-height:1.5">${t}</div>`;}
+  function info(t){return `<div style="background:#e8f0ff;border-left:4pt solid #90a8e8;padding:8pt 12pt;margin:8pt 0;font-size:10.5pt;line-height:1.5">${t}</div>`;}
+
+  let body='';
+
+  // ALERTAS
+  body+=sec('⚠ ALERTAS JURÍDICAS — LEER ANTES DE PREPARAR EL EXPEDIENTE');
+  body+=alerta(`<strong>🔴 LCCI — PLAZO MÍNIMO 10 DÍAS NATURALES:</strong> Verificar que el banco ha enviado la documentación precontractual completa (FEIN, FIAE, proyecto de contrato) y que han transcurrido al menos 10 días naturales desde la recepción. Sin este requisito cumplido, la escritura NO puede autorizarse. Documentación recibida según cliente: <strong>${gr('fein')||'No indicado'}</strong>.`);
+  body+=alerta(`<strong>⚠️ ACTA NOTARIAL PREVIA DE INFORMACIÓN (LCCI):</strong> Verificar que el prestatario ha comparecido ante notario (de su elección) para la cita de información precontractual. Estado según cliente: <strong>${gr('acta-previa')||'No indicado'}</strong>. Si no se ha realizado, debe completarse antes de la escritura.`);
+
+  const tipoInmueble=sv('i-tipo');
+  if(tipoInmueble==='vivienda-habitual') body+=aviso('<strong>🏠 VIVIENDA HABITUAL:</strong> Aplicar todas las protecciones LCCI. Verificar que se cumplen los requisitos de información, plazo y transparencia reforzada. El prestatario tiene derecho a elegir notario, seguro de hogar y tasador.');
+  if(gr('i-adquisicion').includes('simultán')||gr('i-adquisicion').includes('compra')) body+=aviso('<strong>⚠️ COMPRAVENTA SIMULTÁNEA:</strong> Otorgar primero la escritura de compraventa y a continuación la de hipoteca. Coordinar con banco y vendedor. Verificar datos del vendedor en observaciones.');
+  if(gr('i-cargas').includes('previa')) body+=aviso('<strong>⚠️ CANCELACIÓN HIPOTECA PREVIA:</strong> Coordinar cancelación registral de hipoteca anterior. El banco prestamista normalmente retiene fondos para este fin. Tramitar escritura de cancelación simultáneamente.');
+  if(gr('suelo')==='Sí') body+=alerta('<strong>⚠️ CLÁUSULA SUELO DECLARADA:</strong> El cliente indica que el préstamo contiene cláusula suelo. Verificar su contenido y advertir expresamente en la escritura conforme a la normativa de transparencia material.');
+  if(gr('tipo-interes')==='Variable') body+=aviso('<strong>ℹ️ TIPO VARIABLE:</strong> Verificar que la FEIN incluye los escenarios de subida del Euribor y que el prestatario los ha recibido y comprendido. La LCCI exige advertencia específica sobre el riesgo de variación.');
+
+  // 1. PRESTATARIOS
+  body+=sec('1. PRESTATARIOS');
+  const pBlocks=document.querySelectorAll('[id^="prestatario-"]');
+  pBlocks.forEach((b,idx)=>{
+    const i=b.id.split('-')[1];
+    body+=`<h3 style="font-size:11pt;color:#0d1b2e;margin-top:12pt;border-left:3pt solid #c9a84c;padding-left:8pt">PRESTATARIO ${idx+1}${gv('p'+i+'-nombre')?' — '+gv('p'+i+'-nombre'):''}</h3>`;
+    body+=p('Nombre y apellidos',gv('p'+i+'-nombre'));body+=p('DNI / NIE',gv('p'+i+'-dni'));
+    body+=p('Fecha de nacimiento',gv('p'+i+'-fnac')?new Date(gv('p'+i+'-fnac')).toLocaleDateString('es-ES'):'');
+    body+=p('Nacionalidad',gv('p'+i+'-nac'));body+=p('Estado civil',sv('p'+i+'-ecivil'));
+    body+=p('Régimen matrimonial',sv('p'+i+'-regimen'));body+=p('Profesión',gv('p'+i+'-prof'));
+    body+=p('Domicilio completo',gv('p'+i+'-dom'));body+=p('Teléfono de contacto',gv('p'+i+'-tel'));
+  });
+
+  // 2. INMUEBLE
+  body+=sec('2. INMUEBLE HIPOTECADO');
+  body+=p('Tipo de inmueble',sv('i-tipo'));body+=p('Dirección completa',gv('i-dir'));
+  body+=p('Referencia catastral',gv('i-cat'));body+=p('Número de finca registral',gv('i-finca'));
+  body+=p('Valor de tasación',gv('i-tasacion'));body+=p('Forma de adquisición',gr('i-adquisicion'));
+  body+=p('Cargas / hipoteca previa',gr('i-cargas'));
+  if(gr('i-cargas').includes('previa')){body+=p('Banco acreedor previo',gv('i-banco-previo'));body+=p('Deuda pendiente aprox.',gv('i-deuda-previa'));}
+
+  // 3. PRÉSTAMO
+  body+=sec('3. CONDICIONES DEL PRÉSTAMO');
+  body+=p('Entidad prestamista',gv('banco'));body+=p('Importe del préstamo',gv('importe'));
+  body+=p('Plazo de amortización',gv('plazo'));body+=p('Tipo de interés',gr('tipo-interes'));
+  if(gr('tipo-interes')==='Fijo') body+=p('TIN anual fijo',gv('tin-fijo'));
+  if(gr('tipo-interes')==='Variable'){body+=p('Índice de referencia',sv('indice-ref'));body+=p('Diferencial',gv('diferencial'));}
+  if(gr('tipo-interes')==='Mixto'){body+=p('Tramo fijo inicial',gv('mixto-fijo-anios'));body+=p('Tramo variable posterior',gv('mixto-variable'));}
+  body+=p('TAE',gv('tae'));body+=p('Cuota mensual aproximada',gv('cuota'));
+  body+=p('Comisión de apertura',gv('com-apertura'));body+=p('Comisión amortización anticipada',gv('com-amort'));
+  body+=p('Productos vinculados',gr('vinculados'));
+  if(gr('vinculados')==='Sí') body+=p('Detalle productos vinculados',gv('vinculados-txt'));
+  body+=p('Cláusula suelo',gr('suelo'));
+
+  // 4. LCCI
+  body+=sec('4. SITUACIÓN DOCUMENTACIÓN LCCI');
+  body+=p('Documentación precontractual recibida',gr('fein'));
+  body+=p('Acta notarial previa de información',gr('acta-previa'));
+  body+=p('Fecha prevista de firma (orientativa)',gv('fecha-firma')?new Date(gv('fecha-firma')).toLocaleDateString('es-ES'):'Pendiente de confirmar por la notaría');
+
+  // 5. OBSERVACIONES
+  if(gv('observaciones')){body+=sec('5. OBSERVACIONES');body+=`<p style="font-size:11pt;line-height:1.65">${gv('observaciones')}</p>`;}
+
+  // 6. DOCUMENTACIÓN
+  body+=sec('6. DOCUMENTACIÓN QUE EL CLIENTE DEBE APORTAR');
+  body+=`<p style="font-size:10.5pt;font-weight:bold;color:#c0392b;margin-bottom:6pt">🔴 IMPRESCINDIBLE:</p><ul style="font-size:11pt;line-height:2;padding-left:20pt">`;
+  pBlocks.forEach((b,idx)=>{const i=b.id.split('-')[1];body+=`<li>DNI/NIE original: ${gv('p'+i+'-nombre')||'Prestatario '+(idx+1)}</li>`;});
+  body+=`<li>Nota simple registral actualizada del inmueble</li>`;
+  body+=`<li>Certificado de tasación oficial (tasadora homologada por el banco)</li>`;
+  body+=`<li>FEIN — Ficha Europea de Información Normalizada</li>`;
+  body+=`<li>FIAE — Ficha de Advertencias Estandarizadas</li>`;
+  body+=`<li>Proyecto de contrato de préstamo hipotecario</li>`;
+  if(gr('i-adquisicion').includes('simultán')||gr('i-adquisicion').includes('compra')) body+=`<li>Datos completos del vendedor / escritura de compraventa</li>`;
+  if(gr('i-cargas').includes('previa')) body+=`<li>Certificado de deuda pendiente de hipoteca anterior</li>`;
+  body+=`</ul><p style="font-size:10.5pt;font-weight:bold;color:#d4820a;margin-top:10pt;margin-bottom:6pt">🟡 RECOMENDABLE:</p><ul style="font-size:11pt;line-height:2;padding-left:20pt">`;
+  body+=`<li>Justificante del seguro de hogar contratado</li>`;
+  body+=`<li>Últimas 3 nóminas / declaración IRPF (el banco puede requerirlas)</li>`;
+  body+=`</ul>`;
+
+  const nombre=pBlocks.length?gv('p'+document.querySelector('[id^="prestatario-"]').id.split('-')[1]+'-nombre').split(' ')[0]||'Prestatario':'Prestatario';
+  const w=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>
+<head><meta charset='utf-8'><style>
+body{font-family:'Times New Roman',serif;font-size:11pt;line-height:1.6;margin:2cm 2cm 2.5cm;color:#1a1a1a}
+h1{text-align:center;font-size:14pt;color:#0d1b2e;margin-bottom:4pt}
+h2{font-size:12pt;color:#0d1b2e;border-bottom:2pt solid #c9a84c;padding-bottom:3pt;margin-top:18pt;margin-bottom:8pt}
+h3{font-size:11pt;color:#0d1b2e;margin-top:12pt;margin-bottom:4pt}
+p{margin:3pt 0}ul{margin:0}
+.ftr{font-size:9pt;color:#aaa;text-align:center;margin-top:30pt;border-top:1pt solid #eee;padding-top:8pt}
+</style></head>
+<body>
+<h1>NOTARÍA<br>EXPEDIENTE DE PRÉSTAMO HIPOTECARIO</h1>
+<p style="text-align:center;font-size:10pt;color:#888;margin-bottom:16pt">
+  Generado: ${now.toLocaleDateString('es-ES')} ${now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}
+  ${nombre?' · Prestatario principal: '+nombre:''}
+</p>
+${body}
+<div class="ftr">Documento generado por Oficial Notarial IA · ${now.toLocaleDateString('es-ES')}<br>Sus datos se han procesado localmente y no han sido almacenados en ningún servidor.</div>
+</body></html>`;
+
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([w],{type:'application/msword'}));
+  a.download=`Datos_Hipoteca_${nombre}_${now.toISOString().slice(0,10)}.doc`;
+  a.click();
+  document.getElementById('ok').style.display='block';
+  document.getElementById('ok').scrollIntoView({behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+(function init(){renderBar();addPrestatario();})();
+</script>
+</body>
+</html>

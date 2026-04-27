@@ -277,6 +277,10 @@
       <label>Domicilio completo del cónyuge <span class="tag imp">Imprescindible</span></label>
       <input type="text" id="cny-dom" placeholder="Calle, número, piso, localidad, código postal">
     </div>
+    <div class="field">
+      <label>Teléfono de contacto del cónyuge</label>
+      <input type="text" id="cny-tel" placeholder="Ej: 971 000 000 / 600 000 000">
+    </div>
   </div>
 
   <!-- ISD ALERT (auto-generado) -->
@@ -699,6 +703,8 @@ function addHeredero(){
     </div>
     <div class="field"><label>Domicilio completo <span class="tag imp">Imprescindible</span></label>
       <input type="text" id="h${id}-dom" placeholder="Calle, número, piso, localidad, código postal"></div>
+    <div class="field"><label>Teléfono de contacto</label>
+      <input type="text" id="h${id}-tel" placeholder="Ej: 971 000 000 / 600 000 000"></div>
     <div class="field"><label>Porcentaje en la herencia (si lo conoce)</label>
       <input type="text" id="h${id}-pct" placeholder="Ej: 33,33% — Déjelo en blanco si no lo sabe"></div>`;
   c.appendChild(div);
@@ -854,7 +860,7 @@ function buildResumenContenido(){
   if(hayConyuge){
     h+=`<div class="res-block"><h3>Cónyuge superviviente</h3>`;
     h+=row('Nombre',gv('cny-nombre')); h+=row('DNI/NIE',gv('cny-dni'));
-    h+=row('Régimen matrimonial',gr('c-regimen')); h+=row('Domicilio',gv('cny-dom'));
+    h+=row('Régimen matrimonial',gr('c-regimen')); h+=row('Domicilio',gv('cny-dom')); h+=row('Teléfono',gv('cny-tel'));
     if(hayGananciales) h+=`<div class="notice red" style="margin-top:8px;font-size:12px"><strong>⚠️ Liquidación de gananciales requerida antes de partir herencia</strong></div>`;
     h+='</div>';
   }
@@ -874,7 +880,7 @@ function buildResumenContenido(){
       h+=`<div style="font-weight:700;font-size:12px;margin-bottom:5px;color:var(--ink)">Heredero ${idx+1}</div>`;
       h+=row('Nombre',gv('h'+i+'-nombre')); h+=row('DNI/NIE',gv('h'+i+'-dni'));
       h+=row('Relación',sv('h'+i+'-relacion')); h+=row('Estado civil',sv('h'+i+'-ecivil'));
-      h+=row('Domicilio',gv('h'+i+'-dom')); h+=row('Participación',gv('h'+i+'-pct'));
+      h+=row('Domicilio',gv('h'+i+'-dom')); h+=row('Teléfono',gv('h'+i+'-tel')); h+=row('Participación',gv('h'+i+'-pct'));
       h+=`</div>`;
     });
     h+='</div>';
@@ -998,7 +1004,7 @@ function dlWord(){
     body+=sec('2. CÓNYUGE SUPERVIVIENTE');
     body+=p('Nombre y apellidos',gv('cny-nombre')); body+=p('DNI / NIE',gv('cny-dni'));
     body+=p('Estado civil',sv('cny-ecivil')); body+=p('Profesión',gv('cny-prof'));
-    body+=p('Domicilio completo',gv('cny-dom')); body+=p('Régimen matrimonial',gr('c-regimen'));
+    body+=p('Domicilio completo',gv('cny-dom')); body+=p('Teléfono de contacto',gv('cny-tel')); body+=p('Régimen matrimonial',gr('c-regimen'));
     if(hayGananciales) body+=alerta('Liquidación de la sociedad de gananciales requerida antes de la partición.');
   }
 
@@ -1022,7 +1028,7 @@ function dlWord(){
       body+=p('Nombre y apellidos',gv('h'+i+'-nombre')); body+=p('DNI / NIE',gv('h'+i+'-dni'));
       body+=p('Relación con el causante',sv('h'+i+'-relacion')); body+=p('Estado civil',sv('h'+i+'-ecivil'));
       body+=p('Régimen económico matrimonial',sv('h'+i+'-regimen')); body+=p('Profesión',gv('h'+i+'-prof'));
-      body+=p('Domicilio completo',gv('h'+i+'-dom')); body+=p('Participación en la herencia',gv('h'+i+'-pct'));
+      body+=p('Domicilio completo',gv('h'+i+'-dom')); body+=p('Teléfono de contacto',gv('h'+i+'-tel')); body+=p('Participación en la herencia',gv('h'+i+'-pct'));
     });
   }
 

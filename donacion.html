@@ -164,6 +164,10 @@
         <input type="text" id="dn-prof" placeholder="Profesión u ocupación actual">
       </div>
     </div>
+    <div class="field">
+      <label>Teléfono de contacto</label>
+      <input type="text" id="dn-tel" placeholder="Ej: 971 000 000 / 600 000 000">
+    </div>
 
     <div class="two-col">
       <div class="field">
@@ -762,6 +766,8 @@ function addDonatario(){
     </div>
     <div class="field"><label>Domicilio completo <span class="tag imp">Imprescindible</span></label>
       <input type="text" id="dt${id}-dom" placeholder="Calle, número, piso, localidad, código postal"></div>
+    <div class="field"><label>Teléfono de contacto</label>
+      <input type="text" id="dt${id}-tel" placeholder="Ej: 971 000 000 / 600 000 000"></div>
     <div class="field"><label>Porcentaje que recibe (si hay varios donatarios)</label>
       <input type="text" id="dt${id}-pct" placeholder="Ej: 50% — Déjelo en blanco si es el único donatario"></div>`;
   c.appendChild(div);
@@ -839,7 +845,7 @@ function buildResumenContenido(){
   // DONANTE
   h+=`<div class="res-block"><h3>Donante</h3>`;
   h+=row('Nombre',gv('dn-nombre')); h+=row('DNI/NIE',gv('dn-dni'));
-  h+=row('Domicilio',gv('dn-dom')); h+=row('Profesión',gv('dn-prof'));
+  h+=row('Domicilio',gv('dn-dom')); h+=row('Teléfono',gv('dn-tel')); h+=row('Profesión',gv('dn-prof'));
   h+=row('Estado civil',gr('dn-ecivil'));
   if(hayConyugeDonante){ h+=row('Régimen matrimonial',gr('dn-regimen')); h+=row('Nombre del cónyuge',gv('dn-cny-nombre')); h+=row('DNI cónyuge',gv('dn-cny-dni')); }
   h+='</div>';
@@ -854,7 +860,7 @@ function buildResumenContenido(){
       h+=`<div style="font-weight:700;font-size:12px;margin-bottom:5px">Donatario ${idx+1}</div>`;
       h+=row('Nombre',gv('dt'+i+'-nombre')); h+=row('DNI/NIE',gv('dt'+i+'-dni'));
       h+=row('Relación',sv('dt'+i+'-relacion')); h+=row('Estado civil',sv('dt'+i+'-ecivil'));
-      h+=row('Domicilio',gv('dt'+i+'-dom')); h+=row('Participación',gv('dt'+i+'-pct'));
+      h+=row('Domicilio',gv('dt'+i+'-dom')); h+=row('Teléfono',gv('dt'+i+'-tel')); h+=row('Participación',gv('dt'+i+'-pct'));
       h+=`</div>`;
     });
     h+='</div>';
@@ -981,7 +987,7 @@ function dlWord(){
   body+=p('Nombre y apellidos',gv('dn-nombre')); body+=p('DNI / NIE / Pasaporte',gv('dn-dni'));
   body+=p('Fecha de nacimiento',gv('dn-nacimiento')?new Date(gv('dn-nacimiento')).toLocaleDateString('es-ES'):'');
   if(edadDonante>0) body+=p('Edad',edadDonante+' años');
-  body+=p('Domicilio',gv('dn-dom')); body+=p('Profesión',gv('dn-prof'));
+  body+=p('Domicilio',gv('dn-dom')); body+=p('Teléfono de contacto',gv('dn-tel')); body+=p('Profesión',gv('dn-prof'));
   body+=p('Nacionalidad',gv('dn-nac')); body+=p('Estado civil',gr('dn-ecivil'));
   if(hayConyugeDonante) body+=p('Régimen matrimonial',gr('dn-regimen'));
 
@@ -1005,7 +1011,7 @@ function dlWord(){
       body+=p('Nombre y apellidos',gv('dt'+i+'-nombre')); body+=p('DNI / NIE',gv('dt'+i+'-dni'));
       body+=p('Relación con el donante',sv('dt'+i+'-relacion')); body+=p('Estado civil',sv('dt'+i+'-ecivil'));
       body+=p('Régimen matrimonial',sv('dt'+i+'-regimen')); body+=p('Profesión',gv('dt'+i+'-prof'));
-      body+=p('Domicilio completo',gv('dt'+i+'-dom')); body+=p('Participación',gv('dt'+i+'-pct'));
+      body+=p('Domicilio completo',gv('dt'+i+'-dom')); body+=p('Teléfono de contacto',gv('dt'+i+'-tel')); body+=p('Participación',gv('dt'+i+'-pct'));
       if(sv('dt'+i+'-ecivil')==='Menor de edad') body+=alerta('MENOR DE EDAD: Verificar representación legal y posible conflicto de interés si los padres son los donantes.');
     });
   }

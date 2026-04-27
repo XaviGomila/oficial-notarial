@@ -95,6 +95,7 @@ body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-heigh
         <div class="field"><label>Lugar de nacimiento</label><input type="text" id="lnac" placeholder="Municipio, provincia"></div>
       </div>
       <div class="field"><label>Domicilio completo</label><input type="text" id="domicilio" placeholder="Calle, número, piso, municipio"></div>
+      <div class="field"><label>Teléfono de contacto</label><input type="text" id="telefono" placeholder="Ej: 971 000 000 / 600 000 000"></div>
       <div class="row2">
         <div class="field"><label>Estado civil</label>
           <select id="estado-civil">
@@ -311,7 +312,7 @@ function buildRes(){
   h = addRow(h, 'Fecha nacimiento', gv('fnac'));
   h = addRow(h, 'Lugar nacimiento', gv('lnac'));
   h = addRow(h, 'Domicilio', gv('domicilio'));
-  h = addRow(h, 'Estado civil', gv('estado-civil'));
+  h = addRow(h, 'Teléfono', gv('telefono'));
   h = addRow(h, 'Régimen económico', gv('regimen'));
   h = addRow(h, 'Nombre del padre', gv('nombre-padre'));
   h = addRow(h, 'Nombre de la madre', gv('nombre-madre'));
@@ -357,7 +358,7 @@ function dlWord(){
     p('Fecha de nacimiento', gv('fnac')) +
     p('Lugar de nacimiento', gv('lnac')) +
     p('Domicilio', gv('domicilio')) +
-    p('Estado civil', gv('estado-civil')) +
+    p('Teléfono de contacto', gv('telefono')) +
     p('Régimen económico matrimonial', gv('regimen')) +
     p('Nombre del padre', gv('nombre-padre')) +
     p('Nombre de la madre', gv('nombre-madre')) +
