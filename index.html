@@ -1064,6 +1064,14 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
       <svg class="nav-icon" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 5h6M4 7.5h4.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M8.5 10l1.5-1.5L8.5 7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Donación
     </a>
+    <a class="nav-item" href="hipoteca.html" target="_blank" style="text-decoration:none;">
+      <svg class="nav-icon" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 5h6M4 7.5h4.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M8.5 10l1.5-1.5L8.5 7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Hipoteca
+    </a>
+    <a class="nav-item" href="disolucion.html" target="_blank" style="text-decoration:none;">
+      <svg class="nav-icon" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 5h6M4 7.5h4.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M8.5 10l1.5-1.5L8.5 7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Disolución condominio
+    </a>
   </div>
   <!-- Trial Counter -->
   <div class="trial-counter" id="sidebarTrial" style="display:none;">
@@ -2906,7 +2914,7 @@ const FORM_LABELS = {
   obranue:     '🏗️ Obra nueva',
 };
 
-const DISPONIBLES = ['compraventa', 'poder', 'renuncia','testamento', 'cancelacion', 'donación', 'herencia', 'disolución', 'hipoteca',];
+const DISPONIBLES = ['compraventa', 'poder', 'renuncia','testamento', 'cancelacion', 'donación', 'herencia',];
 // Añadir más cuando estén subidos a Vercel
 
 function detectarActo(){
@@ -3661,7 +3669,7 @@ document.addEventListener('keydown',e=>{
 //  OUTLOOK — Configuración Azure
 // ══════════════════════════════════════════════════════
 const OUTLOOK_CLIENT_ID  = '0d5728a6-f2e5-48f6-815a-f5d9cf67ac89';
-const OUTLOOK_REDIRECT   = 'https://oficial-notarial.xavigomilaorfila.workers.dev/';
+const OUTLOOK_REDIRECT   = 'https://oficial-notarial.vercel.app/';
 const OUTLOOK_SCOPES     = ['Mail.Read', 'User.Read'];
 const OUTLOOK_MAX_EMAILS = 50;
 
