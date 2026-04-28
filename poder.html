@@ -297,21 +297,62 @@ function partyHtml(label, n, isSoc, rm, esPoderdante){
       '<div class="row2"><div class="field"><label>CIF *</label><input type="text" placeholder="B12345678"></div>' +
       '<div class="field"><label>Cargo del representante *</label><input type="text" placeholder="Administrador único"></div></div>' +
       '<div class="field"><label>Nombre del representante *</label><input type="text" placeholder="Nombre y apellidos completos"></div>' +
-      '<div class="field"><label>DNI / NIE del representante *</label><input type="text" placeholder="12345678A"></div>' +
+      '<div class="field"><label>DNI / NIE / Pasaporte del representante *</label><input type="text" placeholder="12345678A · Y1234567X · pasaporte"></div>' +
       '<div class="field"><label>Domicilio de la sociedad</label><input type="text" placeholder="Dirección completa"></div>' +
     '</div>';
   }
 
   var camposPersona =
     '<div class="row2"><div class="field"><label>Nombre y apellidos *</label><input type="text" placeholder="Nombre completo"></div>' +
-    '<div class="field"><label>DNI / NIE *</label><input type="text" placeholder="12345678A"></div></div>' +
+    '<div class="field"><label>DNI / NIE / Pasaporte *</label><input type="text" placeholder="12345678A · Y1234567X · pasaporte"></div></div>' +
     '<div class="row2"><div class="field"><label>Estado civil</label><select><option value="">—</option><option>Soltero/a</option><option>Casado/a</option><option>Viudo/a</option><option>Divorciado/a</option></select></div>' +
     '<div class="field"><label>Profesión</label><input type="text" placeholder="Ej: Empresario, Médico..."></div></div>' +
     '<div class="field"><label>Domicilio completo</label><input type="text" placeholder="Calle, número, piso, municipio"></div>' +
     '<div class="field"><label>Teléfono de contacto</label><input type="text" placeholder="Ej: 971 000 000 / 600 000 000"></div>';
 
-  // Solo el poderdante necesita datos de extranjero y poder previo
+  // ── BLOQUE CÉDULA LATINOAMERICANA — para poderdante Y apoderado ──
+  // Independiente de "Es extranjero/a" porque también aplica a:
+  //   - españoles con doble nacionalidad (LatAm)
+  //   - extranjeros con NIE que tienen cédula en su país de origen
+  // Es CRÍTICO para poderes destinados a Colombia, Ecuador, Perú, Venezuela, etc.
+  // — sin la cédula reseñada, el poder no es aceptable en destino.
   var camposExtra = '';
+  camposExtra +=
+    '<div class="toggle-row"><input type="checkbox" id="ced' + u + '" onchange="document.getElementById(\'cedx' + u + '\').classList.toggle(\'hidden\',!this.checked)">' +
+    '<label for="ced' + u + '">Tiene cédula de identidad de un país latinoamericano</label></div>' +
+    '<div id="cedx' + u + '" class="hidden">' +
+      '<div class="warn">⚠ Importante para poderes destinados a Colombia, Ecuador, Venezuela, Perú u otros países latinoamericanos: en destino se identifica al titular por su cédula. El notario español la reseñará junto al DNI / NIE / Pasaporte.</div>' +
+      '<div class="row2" style="margin-top:10px">' +
+        '<div class="field"><label>País de la cédula *</label>' +
+          '<select>' +
+            '<option value="">— Seleccione —</option>' +
+            '<option>Colombia (cédula de ciudadanía)</option>' +
+            '<option>Ecuador (cédula de identidad)</option>' +
+            '<option>Venezuela (cédula de identidad)</option>' +
+            '<option>Perú (DNI peruano)</option>' +
+            '<option>Bolivia (cédula de identidad)</option>' +
+            '<option>Argentina (DNI argentino)</option>' +
+            '<option>Chile (RUN / cédula)</option>' +
+            '<option>Uruguay (cédula de identidad)</option>' +
+            '<option>Paraguay (cédula de identidad)</option>' +
+            '<option>México (CURP / INE)</option>' +
+            '<option>República Dominicana (cédula)</option>' +
+            '<option>Cuba (carnet de identidad)</option>' +
+            '<option>Costa Rica (cédula)</option>' +
+            '<option>Panamá (cédula)</option>' +
+            '<option>Honduras (DNI hondureño)</option>' +
+            '<option>El Salvador (DUI)</option>' +
+            '<option>Guatemala (DPI)</option>' +
+            '<option>Nicaragua (cédula)</option>' +
+            '<option>Brasil (CPF / RG)</option>' +
+            '<option>Otro país latinoamericano</option>' +
+          '</select>' +
+        '</div>' +
+        '<div class="field"><label>Número de cédula *</label><input type="text" placeholder="Ej: 1.234.567.890 · 1712345678 · V-12345678"></div>' +
+      '</div>' +
+    '</div>';
+
+  // ── BLOQUE EXTRANJERÍA Y PODER PREVIO — solo poderdante ──
   if(esPoderdante){
     camposExtra +=
       '<div class="toggle-row"><input type="checkbox" id="ext' + u + '" onchange="document.getElementById(\'extx' + u + '\').classList.toggle(\'hidden\',!this.checked)">' +
@@ -328,7 +369,7 @@ function partyHtml(label, n, isSoc, rm, esPoderdante){
       '<label for="pow' + u + '">Actúa mediante poder notarial previo</label></div>' +
       '<div id="powx' + u + '" class="hidden">' +
         '<div class="field"><label>Nombre del representante *</label><input type="text" placeholder="Nombre y apellidos completos"></div>' +
-        '<div class="field"><label>DNI / NIE del representante *</label><input type="text" placeholder="12345678A"></div>' +
+        '<div class="field"><label>DNI / NIE / Pasaporte del representante *</label><input type="text" placeholder="12345678A · Y1234567X · pasaporte"></div>' +
         '<div class="row2"><div class="field"><label>Notario autorizante</label><input type="text" placeholder="Nombre del notario"></div>' +
         '<div class="field"><label>Fecha del poder</label><input type="date"></div></div>' +
         '<div class="field"><label>Número de protocolo</label><input type="text" placeholder="Ej: 1234/2024"></div>' +
