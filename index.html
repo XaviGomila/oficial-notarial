@@ -1910,9 +1910,23 @@ function evaluarInputCalidad(emailRaw, p){
   const email  = (emailRaw || '').trim();
   const words  = email.split(/\s+/).length;
   const certLow = (p.certeza || '').toLowerCase();
+  const actoOk = p.actoNombre && p.actoNombre !== '—' && p.actoNombre.length > 3;
+
+  // OVERRIDE: si el Worker devuelve CERTEZA Alta + acto identificado,
+  // su juicio prevalece sobre la heurística local de longitud del email.
+  // El Worker tiene contexto jurídico (prompt completo) que el frontend
+  // no replica. Las heurísticas de palabras solo se aplican en zona
+  // ambigua (Media/Baja) donde el Worker no se ha comprometido del todo.
+  if(certLow.startsWith('alta') && actoOk){
+    return {
+      estado: 'ok',
+      icon: '✔', label: 'Input interpretable',
+      desc: 'El email contiene información suficiente para el análisis.'
+    };
+  }
 
   // ✖ No interpretable: email demasiado corto o vacío
-  if(words < 15 || !p.actoNombre || p.actoNombre === '—'){
+  if(words < 15 || !actoOk){
     return {
       estado: 'fail',
       icon: '✖', label: 'Input no interpretable',
