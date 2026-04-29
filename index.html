@@ -1953,7 +1953,7 @@ function evaluarInputCalidad(emailRaw, p){
    Busca señales de múltiples operaciones en el output.
    Si detecta más de una, bloquea la acción automática.  */
 const ACTOS_NOTARIALES = [
-  'compraventa','hipoteca','herencia','donación','poder notarial',
+  'compraventa','hipoteca','herencia','donación', 'donacion','poder notarial',
   'adjudicación','cancelación','permuta','segregación','agrupación',
   'obra nueva','division horizontal','arrendamiento','préstamo','aceptación'
 ];
@@ -2942,6 +2942,7 @@ const FORM_URLS = {
   poder:       BASE_URL + '/poder.html',
   herencia:    BASE_URL + '/herencia.html',
   donacion:    BASE_URL + '/donacion.html',
+  donación:    BASE_URL + '/donacion.html',
   testamento:  BASE_URL + '/testamento.html',
   renuncia:    BASE_URL + '/renuncia.html',
   cancelacion: BASE_URL + '/cancelacion.html',
