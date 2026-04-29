@@ -2285,16 +2285,10 @@ function poblar(p, emailRaw){
   `;
 
   var emailTexto = p.email || '';
-var actoParsed = (p.actoNombre || '').toLowerCase();
-var urlFormulario = null;
-if(actoParsed.includes('compraventa'))                               urlFormulario = 'https://oficial-notarial.vercel.app/compraventa.html';
-else if(actoParsed.includes('poder'))                                urlFormulario = 'https://oficial-notarial.vercel.app/poder.html';
-else if(actoParsed.includes('herencia')||actoParsed.includes('adjudicación')) urlFormulario = 'https://oficial-notarial.vercel.app/herencia.html';
-else if(actoParsed.includes('donaci'))                               urlFormulario = 'https://oficial-notarial.vercel.app/donacion.html';
-else if(actoParsed.includes('testamento'))                           urlFormulario = 'https://oficial-notarial.vercel.app/testamento.html';
-else if(actoParsed.includes('renuncia')||actoParsed.includes('repudiaci')) urlFormulario = 'https://oficial-notarial.vercel.app/renuncia.html';
-else if(actoParsed.includes('cancelaci'))                            urlFormulario = 'https://oficial-notarial.vercel.app/cancelacion.html';
-else if(actoParsed.includes('obra nueva'))                           urlFormulario = 'https://oficial-notarial.vercel.app/obranue.html';
+// Detección unificada del acto y resolución de URL del formulario.
+// detectarActo() ya maneja abstención y fuentes secundarias.
+const actoCodigo  = detectarActo(p);
+const urlFormulario = (actoCodigo && typeof FORM_URLS !== 'undefined') ? (FORM_URLS[actoCodigo] || null) : null;
 
 if(urlFormulario){
   emailTexto += '\n\nPara agilizar la preparación de su expediente, le rogamos que complete el siguiente formulario y nos envíe el documento Word descargado como adjunto a este email:\n' + urlFormulario;
@@ -2305,7 +2299,7 @@ document.getElementById('emailOut').textContent = emailTexto;
 const cardForm = document.getElementById('rcardFormularioCliente');
 if(cardForm){
   if(urlFormulario){
-    document.getElementById('rcardFormActo').textContent = '— ' + (p.actoNombre || '');
+    document.getElementById('rcardFormActo').textContent = '— ' + (p.actoNombre || (typeof FORM_LABELS !== 'undefined' ? FORM_LABELS[actoCodigo] : '') || '');
     document.getElementById('rcardFormUrl').textContent  = urlFormulario;
     cardForm.style.display = 'block';
   } else {
@@ -2954,17 +2948,60 @@ const FORM_LABELS = {
 const DISPONIBLES = ['compraventa', 'poder', 'renuncia','testamento', 'cancelacion', 'donación', 'herencia',];
 // Añadir más cuando estén subidos a Vercel
 
-function detectarActo(){
-  const actoRaw = (_lastParsed?.actoNombre || '').toLowerCase();
-  if(actoRaw.includes('compraventa'))                             return 'compraventa';
-  if(actoRaw.includes('poder'))                                   return 'poder';
-  if(actoRaw.includes('herencia')||actoRaw.includes('adjudicación')) return 'herencia';
-  if(actoRaw.includes('donaci'))                                  return 'donacion';
-  if(actoRaw.includes('testamento'))                              return 'testamento';
-  if(actoRaw.includes('renuncia')||actoRaw.includes('repudiaci')) return 'renuncia';
-  if(actoRaw.includes('cancelaci'))                               return 'cancelacion';
-  if(actoRaw.includes('obra nueva'))                              return 'obranue';
-  return null;
+function detectarActo(parsed){
+  parsed = parsed || _lastParsed || {};
+  const actoCampo = (parsed.actoNombre || '').toLowerCase().trim();
+
+  // Detección estricta — para el campo principal actoNombre
+  function detectStrict(s){
+    if(!s) return null;
+    if(s.includes('compraventa'))                                   return 'compraventa';
+    if(s.includes('poder'))                                         return 'poder';
+    if(s.includes('herencia') || s.includes('adjudicación'))        return 'herencia';
+    if(s.includes('donaci'))                                        return 'donacion';
+    if(s.includes('testamento'))                                    return 'testamento';
+    if(s.includes('renuncia') || s.includes('repudiaci'))           return 'renuncia';
+    if(s.includes('cancelaci'))                                     return 'cancelacion';
+    if(s.includes('obra nueva'))                                    return 'obranue';
+    return null;
+  }
+
+  // Detección laxa — para fuentes secundarias combinadas; keywords más específicas
+  // para evitar falsos positivos (ej. "poder hacer" en una compraventa)
+  function detectLoose(s){
+    if(!s) return null;
+    if(s.includes('compraventa'))                                                                                                              return 'compraventa';
+    if(s.includes('apoderamient') || s.includes('poder notarial') || s.includes('poder general') || s.includes('poder especial') || s.includes('poderdante') || s.includes('apoderado'))  return 'poder';
+    if(s.includes('herencia') || s.includes('caudal hereditario') || s.includes('aceptación de herencia') || s.includes('adjudicación hereditaria'))                                       return 'herencia';
+    if(s.includes('donaci'))                                                                                                                   return 'donacion';
+    if(s.includes('testamento') || s.includes('testador') || s.includes('disposiciones testamentarias') || s.includes('última voluntad') || s.includes('testamentari'))                    return 'testamento';
+    if(s.includes('renuncia') || s.includes('repudiaci'))                                                                                      return 'renuncia';
+    if(s.includes('cancelaci') && s.includes('hipotec'))                                                                                       return 'cancelacion';
+    if(s.includes('obra nueva') || s.includes('declaración de edificación'))                                                                   return 'obranue';
+    return null;
+  }
+
+  // El campo se considera vacío en abstención o cuando el Worker no determina el acto
+  const actoVacio = !actoCampo
+    || actoCampo === '—' || actoCampo === '-'
+    || actoCampo.includes('no determin') || actoCampo.includes('no especific')
+    || actoCampo.includes('no aplica');
+
+  // Pasada 1: campo principal con detección estricta
+  if(!actoVacio){
+    const r = detectStrict(actoCampo);
+    if(r) return r;
+  }
+
+  // Pasada 2: combinar fuentes secundarias y aplicar detección laxa.
+  // No incluimos p.email (borrador) porque puede mencionar varios actos a título informativo.
+  const fallback = [
+    parsed.actoNombre   || '',
+    parsed.actoFinalidad|| '',
+    parsed.clObjeto     || ''
+  ].join(' ').toLowerCase();
+
+  return detectLoose(fallback);
 }
 function cerrarFormulario(){
   document.getElementById('formOverlay').classList.remove('open');
