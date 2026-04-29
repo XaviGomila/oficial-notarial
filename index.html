@@ -1044,7 +1044,7 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
       <svg class="nav-icon" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 5h6M4 7.5h4.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M8.5 10l1.5-1.5L8.5 7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Poder notarial
     </a>
-    <a class="nav-item" href="testamento-bi.html" target="_blank" style="text-decoration:none;">
+    <a class="nav-item" href="testamento.html" target="_blank" style="text-decoration:none;">
       <svg class="nav-icon" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 5h6M4 7.5h4.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M8.5 10l1.5-1.5L8.5 7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Testamento
     </a>
@@ -1297,6 +1297,26 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
                 </div>
               </div>
               <div class="rcard-body" id="emailOut"></div>
+            </div>
+
+            <div class="rcard" id="rcardFormularioCliente" style="display:none;">
+              <div class="rcard-head">
+                <div class="rcard-label">📋 Formulario para el cliente <span id="rcardFormActo" style="font-weight:500;color:var(--ink3);font-size:11px;margin-left:6px;"></span></div>
+                <div style="display:flex;gap:6px;">
+                  <button class="copy-btn" onclick="copiar('rcardFormUrl')">Copiar enlace</button>
+                  <button class="btn-send-email" onclick="abrirFormularioExterno()" style="background:var(--blue-bg);border-color:var(--blue-border);color:var(--blue);">
+                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M11 7v4a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h4M9 2h3v3M6 8l6-6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Ver formulario
+                  </button>
+                </div>
+              </div>
+              <div class="rcard-body">
+                <div id="rcardFormUrl" style="background:var(--cream2);border:0.5px solid var(--border2);border-radius:6px;padding:9px 11px;font-family:monospace;font-size:11.5px;color:var(--ink2);word-break:break-all;line-height:1.45;"></div>
+                <div style="margin-top:8px;font-size:11px;color:var(--ink3);line-height:1.55;display:flex;gap:6px;align-items:flex-start;">
+                  <span style="color:var(--green);flex-shrink:0;">✓</span>
+                  <span>Este enlace ya está incluido al final del borrador. El cliente lo abrirá, rellenará el formulario y descargará un Word con sus datos para enviarlo de vuelta.</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1735,6 +1755,9 @@ function limpiar(){
   document.getElementById('statusBar').classList.remove('on');
   document.getElementById('btnPdf').classList.remove('show');
   document.getElementById('resultsActions').classList.remove('show');
+  // Ocultar panel del formulario embebido
+  const cardForm = document.getElementById('rcardFormularioCliente');
+  if(cardForm) cardForm.style.display = 'none';
   // Reset bloque de decisión
   const db = document.getElementById('decisionBlock');
   if(db) db.className = 'decision-block';
@@ -2268,7 +2291,7 @@ if(actoParsed.includes('compraventa'))                               urlFormular
 else if(actoParsed.includes('poder'))                                urlFormulario = 'https://oficial-notarial.vercel.app/poder.html';
 else if(actoParsed.includes('herencia')||actoParsed.includes('adjudicación')) urlFormulario = 'https://oficial-notarial.vercel.app/herencia.html';
 else if(actoParsed.includes('donaci'))                               urlFormulario = 'https://oficial-notarial.vercel.app/donacion.html';
-else if(actoParsed.includes('testamento-bi'))                           urlFormulario = 'https://oficial-notarial.vercel.app/testamento-bi.html';
+else if(actoParsed.includes('testamento'))                           urlFormulario = 'https://oficial-notarial.vercel.app/testamento.html';
 else if(actoParsed.includes('renuncia')||actoParsed.includes('repudiaci')) urlFormulario = 'https://oficial-notarial.vercel.app/renuncia.html';
 else if(actoParsed.includes('cancelaci'))                            urlFormulario = 'https://oficial-notarial.vercel.app/cancelacion.html';
 else if(actoParsed.includes('obra nueva'))                           urlFormulario = 'https://oficial-notarial.vercel.app/obranue.html';
@@ -2277,6 +2300,20 @@ if(urlFormulario){
   emailTexto += '\n\nPara agilizar la preparación de su expediente, le rogamos que complete el siguiente formulario y nos envíe el documento Word descargado como adjunto a este email:\n' + urlFormulario;
 }
 document.getElementById('emailOut').textContent = emailTexto;
+
+// Panel embebido del formulario para el cliente (al final del borrador)
+const cardForm = document.getElementById('rcardFormularioCliente');
+if(cardForm){
+  if(urlFormulario){
+    document.getElementById('rcardFormActo').textContent = '— ' + (p.actoNombre || '');
+    document.getElementById('rcardFormUrl').textContent  = urlFormulario;
+    cardForm.style.display = 'block';
+  } else {
+    document.getElementById('rcardFormUrl').textContent  = '';
+    document.getElementById('rcardFormActo').textContent = '';
+    cardForm.style.display = 'none';
+  }
+}
 
   // Documentación recibida (acuse de recibo)
   const rdocs = document.getElementById('rcardDocsRecibida');
@@ -2897,7 +2934,7 @@ const FORM_URLS = {
   poder:       BASE_URL + '/poder.html',
   herencia:    BASE_URL + '/herencia.html',
   donacion:    BASE_URL + '/donacion.html',
-  testamento:  BASE_URL + '/testamento-bi.html',
+  testamento:  BASE_URL + '/testamento.html',
   renuncia:    BASE_URL + '/renuncia.html',
   cancelacion: BASE_URL + '/cancelacion.html',
   obranue:     BASE_URL + '/obranue.html',
@@ -2914,7 +2951,7 @@ const FORM_LABELS = {
   obranue:     '🏗️ Obra nueva',
 };
 
-const DISPONIBLES = ['compraventa', 'poder', 'renuncia','testamento-bi', 'cancelacion', 'donación', 'herencia',];
+const DISPONIBLES = ['compraventa', 'poder', 'renuncia','testamento', 'cancelacion', 'donación', 'herencia',];
 // Añadir más cuando estén subidos a Vercel
 
 function detectarActo(){
@@ -3059,6 +3096,11 @@ function copiarEnlace(url, btn){
 
 function abrirEnlace(url){
   window.open(url, '_blank');
+}
+
+function abrirFormularioExterno(){
+  const url = document.getElementById('rcardFormUrl')?.textContent.trim();
+  if(url) window.open(url, '_blank');
 }
 // ── PANTALLA DE SELECCIÓN ─────────────────────────────────
 function fovSelectHtml(){
