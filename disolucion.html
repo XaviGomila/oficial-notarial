@@ -489,7 +489,6 @@ function dlWord(){
 <body><h1>NOTARÍA<br>EXPEDIENTE DE DISOLUCIÓN DE CONDOMINIO</h1>
 <p style="text-align:center;font-size:10pt;color:#888;margin-bottom:16pt">Generado: ${now.toLocaleDateString('es-ES')} ${now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}</p>
 ${body}
-<div class="ftr">Documento generado por Oficial Notarial IA · ${now.toLocaleDateString('es-ES')}</div></body></html>`;
 
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([w],{type:'application/msword'}));
@@ -501,5 +500,14 @@ ${body}
 
 (function init(){renderBar();addCoprop();addCoprop();})();
 </script>
+</html>
+<div class="footer">
+  Formulario generado con <strong style="color:#1a3a5c">Oficial Notarial IA</strong>
+  &nbsp;·&nbsp;
+  <a href="https://landing-oficial-notarial.pages.dev" target="_blank"
+     style="color:#1a3a5c;text-decoration:none;border-bottom:1px solid #c9a84c">
+    Herramienta para despachos notariales
+  </a>
+</div>
 </body>
 </html>

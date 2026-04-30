@@ -1079,7 +1079,6 @@ function dlWord() {
     'h2{font-size:12pt;margin-top:16pt;border-bottom:1px solid #aaa;padding-bottom:3pt}' +
     'p{margin:3pt 0}' +
     '</style></head><body>' +
-    '<h1>' + T['word.h1'] + '</h1>' + body + '</body></html>';
 
   var a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([w], { type: 'application/msword' }));
@@ -1095,5 +1094,14 @@ function dlWord() {
 setLang(currentLang);
 renderBar();
 </script>
+</html>
+<div class="footer">
+  Formulario generado con <strong style="color:#1a3a5c">Oficial Notarial IA</strong>
+  &nbsp;·&nbsp;
+  <a href="https://landing-oficial-notarial.pages.dev" target="_blank"
+     style="color:#1a3a5c;text-decoration:none;border-bottom:1px solid #c9a84c">
+    Herramienta para despachos notariales
+  </a>
+</div>
 </body>
 </html>
