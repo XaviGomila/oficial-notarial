@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="page.title">Notaría · Testamento</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-height:100vh}
+.header{background:#1a3a5c;color:#fff;padding:20px 24px 18px;position:relative}
+.header-inner{max-width:620px;margin:0 auto}
+.header-seal{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.seal-icon{width:38px;height:38px;border-radius:8px;border:1px solid rgba(196,168,74,0.5);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.header h1{font-family:'Lora',serif;font-size:1.15rem;font-weight:500}
+.header p{font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:3px}
+.acto-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(196,168,74,0.15);border:1px solid rgba(196,168,74,0.3);border-radius:100px;padding:4px 12px;font-size:0.78rem;color:#c9a84c;margin-top:10px}
+.lang-switch{position:absolute;top:14px;right:16px;display:flex;gap:0;background:rgba(255,255,255,0.08);border:1px solid rgba(196,168,74,0.25);border-radius:7px;padding:2px;z-index:10}
+.lang-btn{background:transparent;color:rgba(255,255,255,0.55);border:none;padding:5px 11px;font-size:0.74rem;font-weight:700;letter-spacing:0.5px;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.lang-btn:hover{color:rgba(255,255,255,0.85)}
+.lang-btn.on{background:#c9a84c;color:#1a1510}
+.wrap{max-width:620px;margin:24px auto;padding:0 16px 60px}
+.notice{background:#eef3f9;border-left:3px solid #1a3a5c;border-radius:0 8px 8px 0;padding:11px 16px;font-size:0.83rem;color:#2c4a6a;line-height:1.6;margin-bottom:18px}
+.warn{background:#fef6e4;border-left:3px solid #c9a84c;border-radius:0 8px 8px 0;padding:9px 14px;font-size:0.78rem;color:#8c6830;line-height:1.5;margin-top:6px;margin-bottom:10px}
+.legal{background:#fff8f3;border-left:3px solid #b85c38;border-radius:0 8px 8px 0;padding:11px 14px;font-size:0.8rem;color:#6b3a22;line-height:1.55;margin-top:8px;margin-bottom:10px}
+.legal strong{color:#8a3f1f}
+.step-bar{display:flex;align-items:center;margin-bottom:22px}
+.sdot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;transition:all .3s}
+.sdot.done{background:#1a3a5c;color:#fff}
+.sdot.active{background:#c9a84c;color:#1a1510;box-shadow:0 0 0 4px rgba(201,168,76,0.2)}
+.sdot.pend{background:#ddd;color:#999}
+.sline{flex:1;height:2px;background:#ddd}
+.sline.done{background:#1a3a5c}
+.screen{display:none}
+.screen.active{display:block}
+.card{background:#fff;border-radius:10px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.07);margin-bottom:14px;border:0.5px solid #e8e2d8}
+.card h2{font-size:0.82rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px;padding-bottom:9px;border-bottom:1.5px solid #f0ebe0}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:0.79rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6b6258;margin-bottom:5px}
+.field label .req{color:#b85c38;margin-left:3px}
+.field input,.field select,.field textarea{width:100%;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:#1a1510;background:#faf8f4;border:1.5px solid #ddd8ce;border-radius:7px;padding:10px 12px;outline:none;transition:border-color .15s,background .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#1a3a5c;background:#fff}
+.field textarea{resize:vertical;min-height:80px}
+.field .hint{font-size:0.75rem;color:#8c6830;margin-top:4px;font-style:italic}
+.field.field-error input,.field.field-error select,.field.field-error textarea{border-color:#ef4444;background:#fef2f2}
+.field.field-error label{color:#991b1b}
+.field.field-error .rg{border:1.5px dashed #ef4444;border-radius:7px;padding:7px 9px;background:#fef2f2}
+.error-banner{background:#fef2f2;border:1.5px solid #ef4444;border-radius:10px;padding:13px 16px;margin-bottom:14px;font-size:0.85rem;color:#991b1b;animation:shake 0.32s}
+.error-banner strong{display:block;margin-bottom:5px;font-size:0.88rem}
+.error-banner ul{margin-top:4px;padding-left:18px;font-size:0.82rem}
+.error-banner li{margin:2px 0;line-height:1.45}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.rg{display:flex;gap:14px;flex-wrap:wrap;margin-top:5px}
+.rg label{display:flex;align-items:center;gap:6px;font-size:0.88rem;cursor:pointer;color:#3d3830}
+.rg input{accent-color:#1a3a5c}
+.toggle-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:0.82rem;color:#6b6258}
+.toggle-row input[type=checkbox]{accent-color:#1a3a5c;width:15px;height:15px;cursor:pointer}
+.hidden{display:none}
+.nav{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap}
+.btn-p{background:#1a3a5c;color:#fff;border:none;padding:12px 22px;border-radius:7px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;flex:1;transition:opacity .15s}
+.btn-p:hover{opacity:.88}
+.btn-s{background:#f0ebe0;color:#3d3830;border:1px solid #ddd8ce;padding:12px 18px;border-radius:7px;font-size:0.88rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-s:hover{background:#e8e0d0}
+.btn-w{background:#2b579a;color:#fff;border:none;padding:12px 20px;border-radius:7px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .15s}
+.btn-w:hover{opacity:.88}
+.sg{margin-bottom:12px}
+.sg h3{font-size:0.78rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px}
+.sr{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0ebe0;font-size:0.83rem}
+.sr span:first-child{color:#6b6258}
+.sr span:last-child{font-weight:500;text-align:right;max-width:65%}
+.success{background:#e8f5e9;border:1.5px solid #81c784;border-radius:10px;padding:20px;text-align:center;color:#2e7d32;margin-top:16px}
+.success h3{font-size:1rem;margin-bottom:6px;font-family:'Lora',serif}
+.success p{font-size:0.85rem;line-height:1.5}
+.footer{text-align:center;padding:24px 16px;font-size:0.75rem;color:#a09585;border-top:1px solid #e8e2d8;margin-top:8px}
+@media(max-width:480px){.row2{grid-template-columns:1fr}.nav{flex-direction:column}.lang-switch{top:10px;right:10px}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="lang-switch">
+    <button class="lang-btn on" data-lang="es" onclick="setLang('es')">ES</button>
+    <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
+  <div class="header-inner">
+    <div class="header-seal">
+      <div class="seal-icon">⚖</div>
+      <div>
+        <h1 data-i18n="header.title">Notaría · Testamento</h1>
+        <p data-i18n="header.subtitle">Formulario bilingüe — para parejas mixtas UK / ES</p>
+      </div>
+    </div>
+    <div class="acto-badge" data-i18n="header.badge">📋 Testamento abierto · Spanish open Will</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="notice" data-i18n-html="notice.intro">
+    Para el testamento solo necesitamos sus datos personales y una idea general de sus voluntades. <strong>No es necesario que traiga ningún documento patrimonial</strong> — el notario construye el testamento sobre su declaración en el acto.
+  </div>
+  <div class="legal" data-i18n-html="legal.lang">
+    ⚠ <strong>Importante:</strong> el testamento se firma en español ante notario. Si no domina el castellano, se gestionará intérprete o redacción bilingüe (art. 684 CC). <strong>Este formulario solo recoge datos</strong> — no es el testamento.
+  </div>
+
+  <div class="step-bar" id="stepBar"></div>
+
+  <!-- ═══ PASO 0 — Datos personales ═══ -->
+  <div class="screen active" id="s0">
+    <div class="card">
+      <h2 data-i18n="s0.personal">👤 Datos personales</h2>
+      <div class="row2">
+        <div class="field" id="f-nombre"><label data-i18n="f.nombre">Nombre y apellidos <span class="req">*</span></label><input type="text" id="nombre" data-i18n-ph="ph.nombre" placeholder="Nombre completo (como en el pasaporte)"></div>
+        <div class="field" id="f-dni"><label data-i18n="f.dni">DNI / NIE / Pasaporte <span class="req">*</span></label><input type="text" id="dni" data-i18n-ph="ph.dni" placeholder="12345678A · Y1234567X · pasaporte"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label data-i18n="f.fnac">Fecha de nacimiento</label><input type="date" id="fnac"></div>
+        <div class="field"><label data-i18n="f.lnac">Lugar de nacimiento</label><input type="text" id="lnac" data-i18n-ph="ph.lnac" placeholder="Municipio, provincia, país"></div>
+      </div>
+      <div class="field"><label data-i18n="f.dom">Domicilio completo</label><input type="text" id="domicilio" data-i18n-ph="ph.dom" placeholder="Calle, número, piso, municipio, código postal"></div>
+      <div class="row2">
+        <div class="field"><label data-i18n="f.estado">Estado civil</label>
+          <select id="estado-civil">
+            <option value="" data-i18n="opt.select">— Seleccione —</option>
+            <option value="Soltero/a" data-i18n="opt.estado.single">Soltero/a</option>
+            <option value="Casado/a" data-i18n="opt.estado.married">Casado/a</option>
+            <option value="Pareja civil" data-i18n="opt.estado.civilp">Pareja civil (civil partnership)</option>
+            <option value="Viudo/a" data-i18n="opt.estado.widow">Viudo/a</option>
+            <option value="Divorciado/a" data-i18n="opt.estado.divorced">Divorciado/a</option>
+            <option value="Separado/a" data-i18n="opt.estado.separated">Separado/a</option>
+            <option value="Pareja de hecho" data-i18n="opt.estado.cohab">Pareja de hecho</option>
+          </select>
+        </div>
+        <div class="field"><label data-i18n="f.regimen">Régimen económico matrimonial</label>
+          <select id="regimen">
+            <option value="" data-i18n="opt.select">— Seleccione —</option>
+            <option value="Gananciales" data-i18n="opt.reg.gan">Gananciales</option>
+            <option value="Separación de bienes" data-i18n="opt.reg.sep">Separación de bienes</option>
+            <option value="Foral balear" data-i18n="opt.reg.foral">Foral balear</option>
+            <option value="Capitulaciones prenupciales (UK)" data-i18n="opt.reg.prenup">Capitulaciones prenupciales (UK pre-nuptial)</option>
+            <option value="Capitulaciones postnupciales (UK)" data-i18n="opt.reg.postnup">Capitulaciones postnupciales (UK post-nuptial)</option>
+            <option value="Defecto UK (separación)" data-i18n="opt.reg.ukdef">Por defecto UK (separación)</option>
+            <option value="No aplica" data-i18n="opt.reg.na">No aplica</option>
+            <option value="No lo sé" data-i18n="opt.reg.unsure">No lo sé</option>
+          </select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field"><label data-i18n="f.padre">Nombre del padre</label><input type="text" id="nombre-padre" data-i18n-ph="ph.fullname" placeholder="Nombre y apellidos completos"></div>
+        <div class="field"><label data-i18n="f.madre">Nombre de la madre</label><input type="text" id="nombre-madre" data-i18n-ph="ph.maiden" placeholder="Nombre completo (apellidos de soltera si es posible)"></div>
+      </div>
+      <div class="field"><label data-i18n="f.conyuge">Cónyuge / pareja civil — nombre completo (si aplica)</label><input type="text" id="conyuge" data-i18n-ph="ph.fullname" placeholder="Nombre y apellidos completos"></div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="s0.nat">🇬🇧 Nacionalidad y sistema jurídico</h2>
+      <div class="field" id="f-nacionalidad"><label data-i18n="f.nat">Nacionalidad <span class="req">*</span></label>
+        <input type="text" id="nacionalidad" data-i18n-ph="ph.nat" placeholder="Ej: Española, Británica, Irlandesa, doble Británica-Española...">
+      </div>
+      <div class="field"><label data-i18n="f.uksys">Si es británico — ¿qué sistema jurídico del Reino Unido se le aplica?</label>
+        <select id="sistema-uk">
+          <option value="" data-i18n="opt.select">— Seleccione —</option>
+          <option value="England and Wales" data-i18n="opt.uk.ew">England and Wales</option>
+          <option value="Scotland" data-i18n="opt.uk.sc">Scotland</option>
+          <option value="Northern Ireland" data-i18n="opt.uk.ni">Northern Ireland</option>
+          <option value="No aplica" data-i18n="opt.uk.na">No aplica / no soy británico</option>
+          <option value="No lo sé" data-i18n="opt.uk.unsure">No lo sé</option>
+        </select>
+        <div class="hint" data-i18n="hint.uksys">El Reino Unido tiene tres sistemas sucesorios distintos. El notario necesita saber cuál se le aplica (normalmente el del lugar de nacimiento o domicilio de origen).</div>
+      </div>
+      <div class="field"><label data-i18n="f.residencia">Residencia habitual</label>
+        <select id="residencia">
+          <option value="" data-i18n="opt.select">— Seleccione —</option>
+          <option value="España todo el año" data-i18n="opt.res.fullsp">España — todo el año</option>
+          <option value="España la mayor parte del año" data-i18n="opt.res.mostsp">España — la mayor parte del año</option>
+          <option value="Reino Unido todo el año" data-i18n="opt.res.fulluk">Reino Unido — todo el año</option>
+          <option value="Repartido España/UK" data-i18n="opt.res.split">Repartido entre España y UK</option>
+          <option value="Otro país" data-i18n="opt.res.other">Otro país</option>
+        </select>
+        <div class="hint" data-i18n="hint.residencia">La residencia habitual determina la ley aplicable por defecto a su sucesión (Reglamento UE 650/2012).</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="s0.lex">⚖️ Elección de ley aplicable (professio iuris)</h2>
+      <div class="legal" data-i18n-html="legal.lex">
+        Conforme al <strong>Reglamento UE 650/2012 (art. 22)</strong>, puede elegir que su sucesión se rija por la <strong>ley de su nacionalidad</strong> en lugar de la ley de su residencia habitual. Si no elige y reside en España, <strong>se aplican las legítimas españolas</strong> (sus hijos tendrán cuota forzosa). La mayoría de testadores británicos eligen su ley nacional para conservar plena libertad de testar.
+      </div>
+      <div class="field" id="f-ley-aplicable"><label data-i18n="f.lex">¿Qué ley quiere que rija su sucesión? <span class="req">*</span></label>
+        <div class="rg" style="flex-direction:column;gap:8px;align-items:flex-start">
+          <label><input type="radio" name="ley-aplicable" value="Ley nacional UK"> <span data-i18n="opt.lex.uk">Ley de mi nacionalidad (UK — England & Wales / Scotland / NI)</span></label>
+          <label><input type="radio" name="ley-aplicable" value="Ley nacional otra"> <span data-i18n="opt.lex.other">Ley de mi nacionalidad (otro país)</span></label>
+          <label><input type="radio" name="ley-aplicable" value="Ley española"> <span data-i18n="opt.lex.es">Ley española (por defecto si resido en España)</span></label>
+          <label><input type="radio" name="ley-aplicable" value="No sé"> <span data-i18n="opt.lex.unsure">No estoy seguro/a — quiero que el notario me asesore</span></label>
+        </div>
+        <div class="hint" data-i18n="hint.lex">⚠ Es la decisión más importante. Coméntela con el notario antes de firmar.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="s0.assets">🌍 Bienes en el extranjero</h2>
+      <div class="field"><label data-i18n="f.assets">¿Tiene bienes en UK u otros países?</label>
+        <div class="rg">
+          <label><input type="radio" name="bienes-ext" value="Sí"> <span data-i18n="opt.yes">Sí</span></label>
+          <label><input type="radio" name="bienes-ext" value="No"> <span data-i18n="opt.no">No</span></label>
+        </div>
+      </div>
+      <div class="field"><label data-i18n="f.assetsdetail">Si tiene — ¿dónde? (descripción breve)</label>
+        <textarea id="bienes-detalle" data-i18n-ph="ph.assets" placeholder="Ej: Vivienda en Surrey (UK) · Cuentas en HSBC UK · Pensión británica · Apartamento en Francia..."></textarea>
+        <div class="hint" data-i18n="hint.assets">No necesita valores exactos ni referencias documentales — basta una descripción general.</div>
+      </div>
+    </div>
+
+    <div class="nav"><button class="btn-p" onclick="go(1)" data-i18n="btn.continue">Continuar →</button></div>
+  </div>
+
+  <!-- ═══ PASO 1 — Familia y herederos ═══ -->
+  <div class="screen" id="s1">
+    <div class="card">
+      <h2 data-i18n="s1.family">👨‍👩‍👧 Situación familiar</h2>
+      <div class="field" id="f-hijos"><label data-i18n="f.hijos">¿Tiene hijos? <span class="req">*</span></label>
+        <div class="rg">
+          <label><input type="radio" name="hijos" value="No" onclick="document.getElementById('bloque-hijos').classList.add('hidden')"> <span data-i18n="opt.no">No</span></label>
+          <label><input type="radio" name="hijos" value="Sí" onclick="document.getElementById('bloque-hijos').classList.remove('hidden')"> <span data-i18n="opt.yes">Sí</span></label>
+        </div>
+      </div>
+      <div id="bloque-hijos" class="hidden">
+        <div class="field"><label data-i18n="f.numhijos">Número de hijos</label><input type="text" id="num-hijos" data-i18n-ph="ph.numhijos" placeholder="Ej: 2"></div>
+        <div class="field"><label data-i18n="f.nomhijos">Nombres de los hijos (si los tiene a mano)</label>
+          <textarea id="nombres-hijos" data-i18n-ph="ph.nomhijos" placeholder="Ej: Mary Jane Smith, John Robert Smith&#10;La fecha de nacimiento y dirección actual son útiles pero no imprescindibles."></textarea>
+          <div class="hint" data-i18n="hint.nomhijos">No es imprescindible — el notario recogerá los datos en la cita.</div>
+        </div>
+        <div class="field"><label data-i18n="f.hijosprev">¿Algún hijo de un matrimonio o relación anterior?</label>
+          <div class="rg">
+            <label><input type="radio" name="hijos-previos" value="No"> <span data-i18n="opt.no">No</span></label>
+            <label><input type="radio" name="hijos-previos" value="Sí"> <span data-i18n="opt.yes">Sí</span></label>
+          </div>
+          <div class="hint" data-i18n="hint.hijosprev">Determinante para la planificación sucesoria. Mencione en la cita.</div>
+        </div>
+      </div>
+      <div class="field" style="margin-top:8px"><label data-i18n="f.nietos">¿Tiene nietos?</label>
+        <div class="rg">
+          <label><input type="radio" name="nietos" value="No"> <span data-i18n="opt.no">No</span></label>
+          <label><input type="radio" name="nietos" value="Sí"> <span data-i18n="opt.yes">Sí</span></label>
+        </div>
+      </div>
+      <div class="field"><label data-i18n="f.ascend">¿Tiene padres o abuelos vivos?</label>
+        <div class="rg">
+          <label><input type="radio" name="ascendientes" value="No"> <span data-i18n="opt.no">No</span></label>
+          <label><input type="radio" name="ascendientes" value="Sí"> <span data-i18n="opt.yes">Sí</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="s1.heirs">🏛️ ¿A quién quiere designar heredero?</h2>
+      <div class="notice" style="margin-bottom:12px" data-i18n="notice.heirs">No es necesario aportar datos exactos ahora. Indique la idea general y el notario lo redactará con precisión.</div>
+      <div class="field" id="f-herederos"><label data-i18n="f.herederos">Heredero/s principal/es <span class="req">*</span></label>
+        <textarea id="herederos" data-i18n-ph="ph.herederos" placeholder="Ej: Mis dos hijos a partes iguales&#10;Ej: Mi cónyuge en usufructo y mis hijos en nuda propiedad&#10;Ej: Mi hijo John Smith como heredero universal"></textarea>
+      </div>
+      <div class="toggle-row" style="margin-top:4px">
+        <input type="checkbox" id="chk-sustitucion" onchange="document.getElementById('bloque-sustitucion').classList.toggle('hidden',!this.checked)">
+        <label for="chk-sustitucion" data-i18n="f.chk-subst">Quiero indicar quién hereda si el heredero principal fallece antes que yo</label>
+      </div>
+      <div id="bloque-sustitucion" class="hidden">
+        <div class="field"><label data-i18n="f.subst">Sustituto/s (heredero de reemplazo)</label>
+          <textarea id="sustitutos" data-i18n-ph="ph.subst" placeholder="Ej: Si alguno de mis hijos fallece antes, su parte pasa a sus propios hijos (mis nietos)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-s" onclick="go(0)" data-i18n="btn.back">← Atrás</button>
+      <button class="btn-p" onclick="go(2)" data-i18n="btn.continue">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ PASO 2 — Legados y testamentos previos ═══ -->
+  <div class="screen" id="s2">
+    <div class="card">
+      <h2 data-i18n="s2.leg">🎁 Legados y disposiciones especiales</h2>
+      <div class="toggle-row">
+        <input type="checkbox" id="chk-legados" onchange="document.getElementById('bloque-legados').classList.toggle('hidden',!this.checked)">
+        <label for="chk-legados" data-i18n="f.chk-leg">Quiero dejar bienes o cantidades concretas a personas determinadas (legado)</label>
+      </div>
+      <div id="bloque-legados" class="hidden">
+        <div class="field"><label data-i18n="f.legados">Describa los legados</label>
+          <textarea id="legados" data-i18n-ph="ph.legados" placeholder="Ej: A mi sobrino Charles le dejo el reloj de mi padre&#10;Ej: A Cancer Research UK le dejo 5.000 €&#10;Ej: A mi amiga María le dejo el cuadro del salón"></textarea>
+        </div>
+      </div>
+      <div class="toggle-row" style="margin-top:8px">
+        <input type="checkbox" id="chk-albacea" onchange="document.getElementById('bloque-albacea').classList.toggle('hidden',!this.checked)">
+        <label for="chk-albacea" data-i18n="f.chk-alb">Quiero designar albacea (executor) — persona que ejecuta el testamento</label>
+      </div>
+      <div id="bloque-albacea" class="hidden">
+        <div class="field"><label data-i18n="f.albnom">Nombre del albacea</label><input type="text" id="albacea-nombre" data-i18n-ph="ph.fullname" placeholder="Nombre y apellidos completos"></div>
+        <div class="field"><label data-i18n="f.albdni">DNI / NIE / pasaporte del albacea (si lo tiene)</label><input type="text" id="albacea-dni" data-i18n-ph="ph.dni" placeholder="12345678A · Y1234567X · pasaporte"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="s2.prev">📜 Testamento anterior — importante</h2>
+      <div class="field" id="f-test-anterior"><label data-i18n="f.testprev">¿Tiene ya un testamento firmado en UK u otro país? <span class="req">*</span></label>
+        <div class="rg">
+          <label><input type="radio" name="test-anterior" value="No" onclick="document.getElementById('bloque-alcance').classList.add('hidden')"> <span data-i18n="opt.no">No</span></label>
+          <label><input type="radio" name="test-anterior" value="Sí — UK" onclick="document.getElementById('bloque-alcance').classList.remove('hidden')"> <span data-i18n="opt.prev.uk">Sí — UK</span></label>
+          <label><input type="radio" name="test-anterior" value="Sí — España" onclick="document.getElementById('bloque-alcance').classList.remove('hidden')"> <span data-i18n="opt.prev.es">Sí — España</span></label>
+          <label><input type="radio" name="test-anterior" value="Sí — otro país" onclick="document.getElementById('bloque-alcance').classList.remove('hidden')"> <span data-i18n="opt.prev.other">Sí — otro país</span></label>
+          <label><input type="radio" name="test-anterior" value="No sé" onclick="document.getElementById('bloque-alcance').classList.remove('hidden')"> <span data-i18n="opt.prev.unsure">No sé</span></label>
+        </div>
+      </div>
+      <div id="bloque-alcance" class="hidden">
+        <div class="legal" data-i18n-html="legal.scope">
+          ⚠ <strong>Decisión crítica:</strong> por defecto, un testamento español <strong>revoca todos los testamentos anteriores en cualquier país</strong>. Muchos clientes británicos prefieren que el testamento español <strong>coexista</strong> con su English Will: el español rige los bienes en España, el inglés rige los bienes en UK. Debe elegir.
+        </div>
+        <div class="field" id="f-alcance"><label data-i18n="f.scope">Alcance de su nuevo testamento español <span class="req">*</span></label>
+          <select id="alcance">
+            <option value="" data-i18n="opt.select">— Seleccione —</option>
+            <option value="Revocación total" data-i18n="opt.scope.full">Revocación total — este testamento sustituye a todos los anteriores (mundial)</option>
+            <option value="Limitado a bienes en España" data-i18n="opt.scope.limit">Limitado a bienes en España — el testamento UK / extranjero sigue vigente para esos bienes</option>
+            <option value="Necesito asesoramiento" data-i18n="opt.scope.advice">No estoy seguro/a — quiero que me asesore el notario</option>
+          </select>
+          <div class="hint" data-i18n="hint.scope">Si elige "limitado a bienes en España", traiga copia de su testamento UK a la cita si es posible.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="s2.other">📝 Otras voluntades</h2>
+      <div class="field"><label data-i18n="f.sepelio">¿Instrucciones sobre sepelio o donación de órganos?</label>
+        <div class="rg">
+          <label><input type="radio" name="sepelio" value="No"> <span data-i18n="opt.no">No</span></label>
+          <label><input type="radio" name="sepelio" value="Sí" onclick="document.getElementById('bloque-sepelio').classList.remove('hidden')"> <span data-i18n="opt.yes">Sí</span></label>
+        </div>
+      </div>
+      <div id="bloque-sepelio" class="hidden">
+        <div class="field"><label data-i18n="f.sepelio-det">Indique sus voluntades</label>
+          <textarea id="sepelio-detalle" data-i18n-ph="ph.sepelio" placeholder="Ej: Deseo ser incinerado/a y que mis cenizas se esparzan en...&#10;Ej: Deseo donar mis órganos&#10;Ej: Deseo ser enterrado/a en..."></textarea>
+        </div>
+      </div>
+      <div class="field" style="margin-top:8px"><label data-i18n="f.obs">Observaciones adicionales</label>
+        <textarea id="observaciones" data-i18n-ph="ph.obs" placeholder="Cualquier otro detalle relevante — salud, urgencia, fechas preferidas, idiomas que habla..."></textarea>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-s" onclick="go(1)" data-i18n="btn.back">← Atrás</button>
+      <button class="btn-p" onclick="go(3)" data-i18n="btn.review">Revisar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ PASO 3 — Resumen ═══ -->
+  <div class="screen" id="s3">
+    <div class="card">
+      <h2 data-i18n="s3.review">📋 Revise sus datos antes de descargar</h2>
+      <div id="resumen"></div>
+    </div>
+    <div class="notice" data-i18n="notice.review">Si hay algún error, pulse "Corregir" para volver atrás.</div>
+    <div class="nav">
+      <button class="btn-s" onclick="go(2)" data-i18n="btn.correct">← Corregir</button>
+      <button class="btn-w" onclick="dlWord()" data-i18n="btn.dl">⬇️ Descargar Word y enviar a la notaría</button>
+    </div>
+    <div class="success" id="ok">
+      <h3 data-i18n="ok.title">✅ Documento descargado</h3>
+      <p data-i18n-html="ok.body">Por favor, adjunte el archivo Word descargado en su respuesta al email de la notaría.<br>Nos pondremos en contacto para confirmar la fecha de la cita.</p>
+    </div>
+  </div>
+
+  <div class="footer" data-i18n="footer">Oficial Notarial IA · Sus datos se procesan localmente y no se almacenan en ningún servidor.</div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  DICCIONARIO i18n
+// ══════════════════════════════════════════════════════════
+var I18N = {
+  es: {
+    'page.title': 'Notaría · Testamento',
+    'header.title': 'Notaría · Testamento',
+    'header.subtitle': 'Formulario bilingüe — para parejas mixtas UK / ES',
+    'header.badge': '📋 Testamento abierto · Spanish open Will',
+
+    'notice.intro': 'Para el testamento solo necesitamos sus datos personales y una idea general de sus voluntades. <strong>No es necesario que traiga ningún documento patrimonial</strong> — el notario construye el testamento sobre su declaración en el acto.',
+    'legal.lang': '⚠ <strong>Importante:</strong> el testamento se firma en español ante notario. Si no domina el castellano, se gestionará intérprete o redacción bilingüe (art. 684 CC). <strong>Este formulario solo recoge datos</strong> — no es el testamento.',
+    'legal.lex': 'Conforme al <strong>Reglamento UE 650/2012 (art. 22)</strong>, puede elegir que su sucesión se rija por la <strong>ley de su nacionalidad</strong> en lugar de la ley de su residencia habitual. Si no elige y reside en España, <strong>se aplican las legítimas españolas</strong> (sus hijos tendrán cuota forzosa). La mayoría de testadores británicos eligen su ley nacional para conservar plena libertad de testar.',
+    'legal.scope': '⚠ <strong>Decisión crítica:</strong> por defecto, un testamento español <strong>revoca todos los testamentos anteriores en cualquier país</strong>. Muchos clientes británicos prefieren que el testamento español <strong>coexista</strong> con su English Will: el español rige los bienes en España, el inglés rige los bienes en UK. Debe elegir.',
+
+    'step.personal': 'Personal',
+    'step.family': 'Familia y herederos',
+    'step.legacies': 'Legados y voluntades',
+    'step.review': 'Resumen',
+
+    's0.personal': '👤 Datos personales',
+    's0.nat': '🇬🇧 Nacionalidad y sistema jurídico',
+    's0.lex': '⚖️ Elección de ley aplicable (professio iuris)',
+    's0.assets': '🌍 Bienes en el extranjero',
+    's1.family': '👨‍👩‍👧 Situación familiar',
+    's1.heirs': '🏛️ ¿A quién quiere designar heredero?',
+    's2.leg': '🎁 Legados y disposiciones especiales',
+    's2.prev': '📜 Testamento anterior — importante',
+    's2.other': '📝 Otras voluntades',
+    's3.review': '📋 Revise sus datos antes de descargar',
+
+    'f.nombre': 'Nombre y apellidos *',
+    'f.dni': 'DNI / NIE / Pasaporte *',
+    'f.fnac': 'Fecha de nacimiento',
+    'f.lnac': 'Lugar de nacimiento',
+    'f.dom': 'Domicilio completo',
+    'f.estado': 'Estado civil',
+    'f.regimen': 'Régimen económico matrimonial',
+    'f.padre': 'Nombre del padre',
+    'f.madre': 'Nombre de la madre',
+    'f.conyuge': 'Cónyuge / pareja civil — nombre completo (si aplica)',
+    'f.nat': 'Nacionalidad *',
+    'f.uksys': 'Si es británico — ¿qué sistema jurídico del Reino Unido se le aplica?',
+    'f.residencia': 'Residencia habitual',
+    'f.lex': '¿Qué ley quiere que rija su sucesión? *',
+    'f.assets': '¿Tiene bienes en UK u otros países?',
+    'f.assetsdetail': 'Si tiene — ¿dónde? (descripción breve)',
+    'f.hijos': '¿Tiene hijos? *',
+    'f.numhijos': 'Número de hijos',
+    'f.nomhijos': 'Nombres de los hijos (si los tiene a mano)',
+    'f.hijosprev': '¿Algún hijo de un matrimonio o relación anterior?',
+    'f.nietos': '¿Tiene nietos?',
+    'f.ascend': '¿Tiene padres o abuelos vivos?',
+    'f.herederos': 'Heredero/s principal/es *',
+    'f.chk-subst': 'Quiero indicar quién hereda si el heredero principal fallece antes que yo',
+    'f.subst': 'Sustituto/s (heredero de reemplazo)',
+    'f.chk-leg': 'Quiero dejar bienes o cantidades concretas a personas determinadas (legado)',
+    'f.legados': 'Describa los legados',
+    'f.chk-alb': 'Quiero designar albacea (executor) — persona que ejecuta el testamento',
+    'f.albnom': 'Nombre del albacea',
+    'f.albdni': 'DNI / NIE / pasaporte del albacea (si lo tiene)',
+    'f.testprev': '¿Tiene ya un testamento firmado en UK u otro país? *',
+    'f.scope': 'Alcance de su nuevo testamento español *',
+    'f.sepelio': '¿Instrucciones sobre sepelio o donación de órganos?',
+    'f.sepelio-det': 'Indique sus voluntades',
+    'f.obs': 'Observaciones adicionales',
+
+    'opt.select': '— Seleccione —',
+    'opt.yes': 'Sí',
+    'opt.no': 'No',
+    'opt.estado.single': 'Soltero/a',
+    'opt.estado.married': 'Casado/a',
+    'opt.estado.civilp': 'Pareja civil (civil partnership)',
+    'opt.estado.widow': 'Viudo/a',
+    'opt.estado.divorced': 'Divorciado/a',
+    'opt.estado.separated': 'Separado/a',
+    'opt.estado.cohab': 'Pareja de hecho',
+    'opt.reg.gan': 'Gananciales',
+    'opt.reg.sep': 'Separación de bienes',
+    'opt.reg.foral': 'Foral balear',
+    'opt.reg.prenup': 'Capitulaciones prenupciales (UK pre-nuptial)',
+    'opt.reg.postnup': 'Capitulaciones postnupciales (UK post-nuptial)',
+    'opt.reg.ukdef': 'Por defecto UK (separación)',
+    'opt.reg.na': 'No aplica',
+    'opt.reg.unsure': 'No lo sé',
+    'opt.uk.ew': 'England and Wales',
+    'opt.uk.sc': 'Scotland',
+    'opt.uk.ni': 'Northern Ireland',
+    'opt.uk.na': 'No aplica / no soy británico',
+    'opt.uk.unsure': 'No lo sé',
+    'opt.res.fullsp': 'España — todo el año',
+    'opt.res.mostsp': 'España — la mayor parte del año',
+    'opt.res.fulluk': 'Reino Unido — todo el año',
+    'opt.res.split': 'Repartido entre España y UK',
+    'opt.res.other': 'Otro país',
+    'opt.lex.uk': 'Ley de mi nacionalidad (UK — England & Wales / Scotland / NI)',
+    'opt.lex.other': 'Ley de mi nacionalidad (otro país)',
+    'opt.lex.es': 'Ley española (por defecto si resido en España)',
+    'opt.lex.unsure': 'No estoy seguro/a — quiero que el notario me asesore',
+    'opt.prev.uk': 'Sí — UK',
+    'opt.prev.es': 'Sí — España',
+    'opt.prev.other': 'Sí — otro país',
+    'opt.prev.unsure': 'No sé',
+    'opt.scope.full': 'Revocación total — este testamento sustituye a todos los anteriores (mundial)',
+    'opt.scope.limit': 'Limitado a bienes en España — el testamento UK / extranjero sigue vigente para esos bienes',
+    'opt.scope.advice': 'No estoy seguro/a — quiero que me asesore el notario',
+
+    'ph.nombre': 'Nombre completo (como en el pasaporte)',
+    'ph.dni': '12345678A · Y1234567X · pasaporte',
+    'ph.lnac': 'Municipio, provincia, país',
+    'ph.dom': 'Calle, número, piso, municipio, código postal',
+    'ph.fullname': 'Nombre y apellidos completos',
+    'ph.maiden': 'Nombre completo (apellidos de soltera si es posible)',
+    'ph.nat': 'Ej: Española, Británica, Irlandesa, doble Británica-Española...',
+    'ph.assets': 'Ej: Vivienda en Surrey (UK) · Cuentas en HSBC UK · Pensión británica · Apartamento en Francia...',
+    'ph.numhijos': 'Ej: 2',
+    'ph.nomhijos': 'Ej: Mary Jane Smith, John Robert Smith\nLa fecha de nacimiento y dirección actual son útiles pero no imprescindibles.',
+    'ph.herederos': 'Ej: Mis dos hijos a partes iguales\nEj: Mi cónyuge en usufructo y mis hijos en nuda propiedad\nEj: Mi hijo John Smith como heredero universal',
+    'ph.subst': 'Ej: Si alguno de mis hijos fallece antes, su parte pasa a sus propios hijos (mis nietos)',
+    'ph.legados': 'Ej: A mi sobrino Charles le dejo el reloj de mi padre\nEj: A Cancer Research UK le dejo 5.000 €\nEj: A mi amiga María le dejo el cuadro del salón',
+    'ph.sepelio': 'Ej: Deseo ser incinerado/a y que mis cenizas se esparzan en...\nEj: Deseo donar mis órganos\nEj: Deseo ser enterrado/a en...',
+    'ph.obs': 'Cualquier otro detalle relevante — salud, urgencia, fechas preferidas, idiomas que habla...',
+
+    'hint.uksys': 'El Reino Unido tiene tres sistemas sucesorios distintos. El notario necesita saber cuál se le aplica (normalmente el del lugar de nacimiento o domicilio de origen).',
+    'hint.residencia': 'La residencia habitual determina la ley aplicable por defecto a su sucesión (Reglamento UE 650/2012).',
+    'hint.lex': '⚠ Es la decisión más importante. Coméntela con el notario antes de firmar.',
+    'hint.assets': 'No necesita valores exactos ni referencias documentales — basta una descripción general.',
+    'hint.nomhijos': 'No es imprescindible — el notario recogerá los datos en la cita.',
+    'hint.hijosprev': 'Determinante para la planificación sucesoria. Mencione en la cita.',
+    'hint.scope': 'Si elige "limitado a bienes en España", traiga copia de su testamento UK a la cita si es posible.',
+
+    'btn.continue': 'Continuar →',
+    'btn.back': '← Atrás',
+    'btn.review': 'Revisar →',
+    'btn.correct': '← Corregir',
+    'btn.dl': '⬇️ Descargar Word y enviar a la notaría',
+
+    'notice.heirs': 'No es necesario aportar datos exactos ahora. Indique la idea general y el notario lo redactará con precisión.',
+    'notice.review': 'Si hay algún error, pulse "Corregir" para volver atrás.',
+    'ok.title': '✅ Documento descargado',
+    'ok.body': 'Por favor, adjunte el archivo Word descargado en su respuesta al email de la notaría.<br>Nos pondremos en contacto para confirmar la fecha de la cita.',
+    'footer': 'Oficial Notarial IA · Sus datos se procesan localmente y no se almacenan en ningún servidor.',
+
+    'val.title': 'Faltan datos obligatorios:',
+    'val.nombre': 'Nombre y apellidos',
+    'val.dni': 'DNI / NIE / Pasaporte',
+    'val.nat': 'Nacionalidad',
+    'val.lex': 'Elección de ley aplicable (professio iuris)',
+    'val.hijos': 'Indique si tiene hijos (Sí / No)',
+    'val.herederos': 'Heredero/s principal/es',
+    'val.testprev': 'Indique si tiene testamento anterior',
+    'val.scope': 'Alcance del nuevo testamento (revocación total / limitado)',
+
+    'sum.testator': '👤 Testador',
+    'sum.nat': '🇬🇧 Nacionalidad y ley aplicable',
+    'sum.family': '👨‍👩‍👧 Familia',
+    'sum.heirs': '🏛️ Herederos',
+    'sum.other': '📝 Legados, testamentos previos y voluntades',
+    'sum.nombre': 'Nombre',
+    'sum.dni': 'DNI / NIE / Pasaporte',
+    'sum.fnac': 'Fecha de nacimiento',
+    'sum.lnac': 'Lugar de nacimiento',
+    'sum.dom': 'Domicilio',
+    'sum.estado': 'Estado civil',
+    'sum.regimen': 'Régimen económico',
+    'sum.conyuge': 'Cónyuge / pareja civil',
+    'sum.padre': 'Nombre del padre',
+    'sum.madre': 'Nombre de la madre',
+    'sum.nat2': 'Nacionalidad',
+    'sum.uksys': 'Sistema jurídico UK',
+    'sum.residencia': 'Residencia habitual',
+    'sum.lex': 'Elección de ley (professio iuris)',
+    'sum.assets': 'Bienes en el extranjero',
+    'sum.assetsdetail': 'Descripción de bienes en el extranjero',
+    'sum.hijos': 'Hijos',
+    'sum.numhijos': 'Número de hijos',
+    'sum.nomhijos': 'Nombres',
+    'sum.hijosprev': 'Hijos de relación anterior',
+    'sum.nietos': 'Nietos',
+    'sum.ascend': 'Padres / abuelos vivos',
+    'sum.herederos': 'Heredero/s',
+    'sum.subst': 'Sustituto/s',
+    'sum.legados': 'Legados',
+    'sum.albnom': 'Albacea',
+    'sum.albdni': 'DNI del albacea',
+    'sum.testprev': 'Testamento anterior',
+    'sum.scope': 'Alcance del nuevo testamento',
+    'sum.sepelio': 'Sepelio / órganos',
+    'sum.obs': 'Observaciones',
+
+    'word.h1': 'NOTARÍA<br>DATOS PARA TESTAMENTO',
+    'word.dlname': 'Datos_Testamento.doc'
+  },
+  en: {
+    'page.title': 'Notary Office · Spanish Will',
+    'header.title': 'Notary Office · Spanish Will',
+    'header.subtitle': 'Bilingual form — for mixed UK / ES couples',
+    'header.badge': '📋 Spanish open Will · Testamento abierto',
+
+    'notice.intro': 'This form collects the information our notary needs to prepare your <strong>Spanish Will</strong>. <strong>You do not need to bring any property or banking documents</strong> — the notary drafts the Will from your declaration at the appointment.',
+    'legal.lang': '⚠ <strong>Important:</strong> the Will is signed in <strong>Spanish</strong> before a Spanish notary. If you do not have working Spanish, the notary will arrange a translator or a bilingual deed (Art. 684 of the Spanish Civil Code). <strong>This form is not the Will itself</strong> — it only gathers the data.',
+    'legal.lex': 'Under <strong>EU Regulation 650/2012 (Article 22)</strong>, you may choose to have your succession governed by the law of <strong>your nationality</strong> instead of the law of your habitual residence. If you do not choose, and you live in Spain, <strong>Spanish forced heirship rules will apply</strong> to your estate (your children would be entitled to a fixed share). Most British testators choose the law of their UK legal system to preserve full freedom of testation.',
+    'legal.scope': '⚠ <strong>Critical decision:</strong> by default, a new Spanish Will <strong>revokes all previous Wills, anywhere in the world</strong>. Many British clients prefer their Spanish Will to <strong>coexist</strong> with their English Will — the Spanish Will dealing only with Spanish assets, the English Will dealing with UK assets. You must choose.',
+
+    'step.personal': 'Personal',
+    'step.family': 'Family & heirs',
+    'step.legacies': 'Legacies & wishes',
+    'step.review': 'Review',
+
+    's0.personal': '👤 Personal details',
+    's0.nat': '🇬🇧 Nationality & legal system',
+    's0.lex': '⚖️ Choice of law (professio iuris)',
+    's0.assets': '🌍 Assets abroad',
+    's1.family': '👨‍👩‍👧 Family situation',
+    's1.heirs': '🏛️ Whom would you like to inherit?',
+    's2.leg': '🎁 Legacies and special dispositions',
+    's2.prev': '📜 Previous Will — important',
+    's2.other': '📝 Other wishes',
+    's3.review': '📋 Please review your details before downloading',
+
+    'f.nombre': 'Full name *',
+    'f.dni': 'NIE / Passport / National ID *',
+    'f.fnac': 'Date of birth',
+    'f.lnac': 'Place of birth',
+    'f.dom': 'Full address',
+    'f.estado': 'Marital status',
+    'f.regimen': 'Marital property regime',
+    'f.padre': "Father's full name",
+    'f.madre': "Mother's full name",
+    'f.conyuge': 'Spouse / civil partner — full name (if applicable)',
+    'f.nat': 'Nationality *',
+    'f.uksys': 'If you are British — which UK legal system applies to you?',
+    'f.residencia': 'Habitual residence',
+    'f.lex': 'Which law would you like to govern your succession? *',
+    'f.assets': 'Do you own property or assets in the UK or other countries?',
+    'f.assetsdetail': 'If yes — where? (short description)',
+    'f.hijos': 'Do you have children? *',
+    'f.numhijos': 'Number of children',
+    'f.nomhijos': "Children's names (if you have them to hand)",
+    'f.hijosprev': 'Are any of your children from a previous marriage or relationship?',
+    'f.nietos': 'Do you have grandchildren?',
+    'f.ascend': 'Are your parents or grandparents still alive?',
+    'f.herederos': 'Main heir(s) / beneficiaries *',
+    'f.chk-subst': 'I want to specify who inherits if my main heir dies before me',
+    'f.subst': 'Substitute / contingent beneficiaries',
+    'f.chk-leg': 'I want to leave specific items or amounts to particular persons (legacy)',
+    'f.legados': 'Describe your legacies',
+    'f.chk-alb': 'I want to appoint an executor (albacea) — the person who carries out the Will',
+    'f.albnom': "Executor's full name",
+    'f.albdni': "Executor's NIE / passport / national ID (if available)",
+    'f.testprev': 'Do you already have a Will signed in the UK or another country? *',
+    'f.scope': 'Scope of your new Spanish Will *',
+    'f.sepelio': 'Funeral or organ donation instructions?',
+    'f.sepelio-det': 'Please describe',
+    'f.obs': 'Other remarks',
+
+    'opt.select': '— Select —',
+    'opt.yes': 'Yes',
+    'opt.no': 'No',
+    'opt.estado.single': 'Single',
+    'opt.estado.married': 'Married',
+    'opt.estado.civilp': 'In a civil partnership',
+    'opt.estado.widow': 'Widowed',
+    'opt.estado.divorced': 'Divorced',
+    'opt.estado.separated': 'Separated',
+    'opt.estado.cohab': 'Cohabiting partner (pareja de hecho)',
+    'opt.reg.gan': 'Spanish "gananciales" (community of assets)',
+    'opt.reg.sep': 'Spanish "separación de bienes" (separation of assets)',
+    'opt.reg.foral': 'Balearic "foral" regime',
+    'opt.reg.prenup': 'UK pre-nuptial agreement',
+    'opt.reg.postnup': 'UK post-nuptial agreement',
+    'opt.reg.ukdef': 'UK default (separate property)',
+    'opt.reg.na': 'Not applicable',
+    'opt.reg.unsure': "I don't know",
+    'opt.uk.ew': 'England and Wales',
+    'opt.uk.sc': 'Scotland',
+    'opt.uk.ni': 'Northern Ireland',
+    'opt.uk.na': 'Not applicable / I am not British',
+    'opt.uk.unsure': "I don't know",
+    'opt.res.fullsp': 'Spain — full year',
+    'opt.res.mostsp': 'Spain — most of the year',
+    'opt.res.fulluk': 'United Kingdom — full year',
+    'opt.res.split': 'Split between Spain and UK',
+    'opt.res.other': 'Other country',
+    'opt.lex.uk': 'The law of my nationality (UK — England & Wales / Scotland / NI)',
+    'opt.lex.other': 'The law of my nationality (other country)',
+    'opt.lex.es': 'Spanish law (default if I live in Spain)',
+    'opt.lex.unsure': 'I am not sure — I would like the notary to advise me',
+    'opt.prev.uk': 'Yes — UK',
+    'opt.prev.es': 'Yes — Spain',
+    'opt.prev.other': 'Yes — another country',
+    'opt.prev.unsure': "I'm not sure",
+    'opt.scope.full': 'Full revocation — this Will replaces all my previous Wills (worldwide)',
+    'opt.scope.limit': 'Limited to Spanish assets — my UK / foreign Will remains in force for those assets',
+    'opt.scope.advice': "I'm not sure — I would like the notary to advise me",
+
+    'ph.nombre': 'Full name as shown on your passport',
+    'ph.dni': 'Y1234567X · passport No. · 12345678A',
+    'ph.lnac': 'Town, county, country',
+    'ph.dom': 'Street, number, town, postcode, country',
+    'ph.fullname': 'Full name',
+    'ph.maiden': 'Full maiden name if possible',
+    'ph.nat': 'e.g. British, Irish, Spanish, dual British-Spanish...',
+    'ph.assets': 'e.g. Property in Surrey, UK · Bank accounts at HSBC UK · UK pension · Apartment in France...',
+    'ph.numhijos': 'e.g. 2',
+    'ph.nomhijos': 'e.g. Mary Jane Smith, John Robert Smith\nDates of birth and addresses are useful but not essential.',
+    'ph.herederos': 'e.g. My two children in equal shares\ne.g. My spouse for life (life interest), then my children\ne.g. My son John Smith as sole heir',
+    'ph.subst': "e.g. If any of my children dies before me, their share passes to their own children (my grandchildren)",
+    'ph.legados': "e.g. To my nephew Charles I leave my father's watch\ne.g. To Cancer Research UK I leave £5,000\ne.g. To my friend Mary I leave the painting in the living room",
+    'ph.sepelio': 'e.g. I wish to be cremated and my ashes scattered at...\ne.g. I wish to donate my organs\ne.g. I wish to be buried at...',
+    'ph.obs': 'Anything else relevant — health concerns, urgency, preferred dates, languages spoken...',
+
+    'hint.uksys': 'The United Kingdom has three different succession legal systems. The notary needs to know which one applies to you (typically the one where you were born or where your domicile of origin is).',
+    'hint.residencia': 'Your habitual residence determines the default law applicable to your succession under EU Regulation 650/2012.',
+    'hint.lex': '⚠ This is the single most important decision. Discuss it with the notary before signing.',
+    'hint.assets': 'You do not need exact values or document references — a general description is enough.',
+    'hint.nomhijos': 'Not strictly required — the notary will collect the exact details at the appointment.',
+    'hint.hijosprev': 'Important for inheritance planning — please mention at the appointment.',
+    'hint.scope': 'If you choose "Limited to Spanish assets", please bring a copy of your existing UK Will to the appointment if possible.',
+
+    'btn.continue': 'Continue →',
+    'btn.back': '← Back',
+    'btn.review': 'Review →',
+    'btn.correct': '← Correct',
+    'btn.dl': '⬇️ Download Word file and send it to the notary',
+
+    'notice.heirs': 'You do not need exact details now. Describe your wishes in plain words and the notary will draft them precisely.',
+    'notice.review': 'If anything is incorrect, click "Correct" to go back.',
+    'ok.title': '✅ File downloaded',
+    'ok.body': "Please attach the downloaded Word file to your reply to the notary's email.<br>We will contact you to confirm the appointment date.",
+    'footer': 'Oficial Notarial IA · Your data is processed locally in your browser and is not stored on any server.',
+
+    'val.title': 'Required fields missing:',
+    'val.nombre': 'Full name',
+    'val.dni': 'NIE / Passport / National ID',
+    'val.nat': 'Nationality',
+    'val.lex': 'Choice of law (professio iuris)',
+    'val.hijos': 'Please indicate whether you have children (Yes / No)',
+    'val.herederos': 'Main heir(s) / beneficiaries',
+    'val.testprev': 'Please indicate whether you have a previous Will',
+    'val.scope': 'Scope of your new Spanish Will (full revocation / limited)',
+
+    'sum.testator': '👤 Testator',
+    'sum.nat': '🇬🇧 Nationality & applicable law',
+    'sum.family': '👨‍👩‍👧 Family',
+    'sum.heirs': '🏛️ Heirs',
+    'sum.other': '📝 Legacies, previous Wills & wishes',
+    'sum.nombre': 'Full name',
+    'sum.dni': 'NIE / Passport',
+    'sum.fnac': 'Date of birth',
+    'sum.lnac': 'Place of birth',
+    'sum.dom': 'Address',
+    'sum.estado': 'Marital status',
+    'sum.regimen': 'Marital property regime',
+    'sum.conyuge': 'Spouse / civil partner',
+    'sum.padre': "Father's name",
+    'sum.madre': "Mother's name",
+    'sum.nat2': 'Nationality',
+    'sum.uksys': 'UK legal system',
+    'sum.residencia': 'Habitual residence',
+    'sum.lex': 'Choice of law (professio iuris)',
+    'sum.assets': 'Assets abroad',
+    'sum.assetsdetail': 'Description of assets abroad',
+    'sum.hijos': 'Children',
+    'sum.numhijos': 'Number of children',
+    'sum.nomhijos': 'Names',
+    'sum.hijosprev': 'Children from previous relationship',
+    'sum.nietos': 'Grandchildren',
+    'sum.ascend': 'Living parents / grandparents',
+    'sum.herederos': 'Heirs / beneficiaries',
+    'sum.subst': 'Substitutes',
+    'sum.legados': 'Legacies',
+    'sum.albnom': 'Executor',
+    'sum.albdni': "Executor's ID",
+    'sum.testprev': 'Previous Will',
+    'sum.scope': 'Scope of new Will',
+    'sum.sepelio': 'Funeral / organ donation',
+    'sum.obs': 'Other remarks',
+
+    'word.h1': 'NOTARY OFFICE<br>INFORMATION FOR SPANISH WILL<br><span style="font-size:11pt;font-weight:normal">(British / English-speaking client)</span>',
+    'word.dlname': 'Spanish_Will_Information.doc'
+  }
+};
+
+// Mapa para traducir VALORES guardados en radios entre idiomas (al renderizar resumen y Word)
+var VAL_MAP = {
+  'Sí':                                    { es: 'Sí',                                    en: 'Yes' },
+  'No':                                    { es: 'No',                                    en: 'No' },
+  'No sé':                                 { es: 'No sé',                                 en: "I don't know" },
+  'Ley nacional UK':                       { es: 'Ley nacional UK',                       en: 'UK national law' },
+  'Ley nacional otra':                     { es: 'Ley nacional (otro país)',              en: 'National law (other country)' },
+  'Ley española':                          { es: 'Ley española',                          en: 'Spanish law' },
+  'Sí — UK':                               { es: 'Sí — UK',                               en: 'Yes — UK' },
+  'Sí — España':                           { es: 'Sí — España',                           en: 'Yes — Spain' },
+  'Sí — otro país':                        { es: 'Sí — otro país',                        en: 'Yes — another country' },
+  'Revocación total':                      { es: 'Revocación total',                      en: 'Full revocation' },
+  'Limitado a bienes en España':           { es: 'Limitado a bienes en España',           en: 'Limited to Spanish assets' },
+  'Necesito asesoramiento':                { es: 'Necesito asesoramiento',                en: 'Needs advice' }
+};
+
+var currentLang = 'es';
+var step = 0;
+
+// ══════════════════════════════════════════════════════════
+//  i18n — APLICAR IDIOMA
+// ══════════════════════════════════════════════════════════
+function setLang(lang) {
+  if (!I18N[lang]) return;
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  try { localStorage.setItem('test_bi_lang', lang); } catch(e) {}
+
+  // textContent
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    var k = el.getAttribute('data-i18n');
+    if (I18N[lang][k] != null) el.textContent = I18N[lang][k];
+  });
+  // innerHTML (para textos con <strong>, <br>...)
+  document.querySelectorAll('[data-i18n-html]').forEach(function(el) {
+    var k = el.getAttribute('data-i18n-html');
+    if (I18N[lang][k] != null) el.innerHTML = I18N[lang][k];
+  });
+  // placeholders
+  document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
+    var k = el.getAttribute('data-i18n-ph');
+    if (I18N[lang][k] != null) el.placeholder = I18N[lang][k];
+  });
+
+  // Botones de idioma
+  document.querySelectorAll('.lang-btn').forEach(function(b) {
+    b.classList.toggle('on', b.getAttribute('data-lang') === lang);
+  });
+
+  // Si estamos en el resumen, regenerarlo en el nuevo idioma
+  if (step === 3) buildRes();
+}
+
+// Cargar idioma persistido
+(function() {
+  try {
+    var saved = localStorage.getItem('test_bi_lang');
+    if (saved && I18N[saved]) currentLang = saved;
+  } catch(e) {}
+})();
+
+// ══════════════════════════════════════════════════════════
+//  STEP BAR
+// ══════════════════════════════════════════════════════════
+function renderBar() {
+  var labels = [
+    I18N[currentLang]['step.personal'],
+    I18N[currentLang]['step.family'],
+    I18N[currentLang]['step.legacies'],
+    I18N[currentLang]['step.review']
+  ];
+  var b = document.getElementById('stepBar');
+  b.innerHTML = '';
+  labels.forEach(function(l, i) {
+    var d = document.createElement('div');
+    d.className = 'sdot ' + (i < step ? 'done' : i === step ? 'active' : 'pend');
+    d.textContent = i < step ? '✓' : (i + 1);
+    d.title = l;
+    b.appendChild(d);
+    if (i < labels.length - 1) {
+      var ln = document.createElement('div');
+      ln.className = 'sline' + (i < step ? ' done' : '');
+      b.appendChild(ln);
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+//  VALIDACIÓN
+// ══════════════════════════════════════════════════════════
+// Estructura: por paso, lista de campos obligatorios
+var REQUIRED = {
+  0: [
+    { kind: 'text',  id: 'nombre',        wrapId: 'f-nombre',        msgKey: 'val.nombre' },
+    { kind: 'text',  id: 'dni',           wrapId: 'f-dni',           msgKey: 'val.dni' },
+    { kind: 'text',  id: 'nacionalidad',  wrapId: 'f-nacionalidad',  msgKey: 'val.nat' },
+    { kind: 'radio', name: 'ley-aplicable', wrapId: 'f-ley-aplicable', msgKey: 'val.lex' }
+  ],
+  1: [
+    { kind: 'radio', name: 'hijos',       wrapId: 'f-hijos',         msgKey: 'val.hijos' },
+    { kind: 'text',  id: 'herederos',     wrapId: 'f-herederos',     msgKey: 'val.herederos' }
+  ],
+  2: [
+    { kind: 'radio', name: 'test-anterior', wrapId: 'f-test-anterior', msgKey: 'val.testprev' }
+    // alcance se valida condicionalmente abajo
+  ]
+};
+
+function validateStep(s) {
+  var errors = [];
+  var reqs = REQUIRED[s] || [];
+  reqs.forEach(function(r) {
+    if (r.kind === 'text') {
+      var el = document.getElementById(r.id);
+      if (!el || !el.value.trim()) {
+        errors.push({ wrapId: r.wrapId, msg: I18N[currentLang][r.msgKey] });
+      }
+    } else if (r.kind === 'radio') {
+      var sel = document.querySelector('input[name="' + r.name + '"]:checked');
+      if (!sel) {
+        errors.push({ wrapId: r.wrapId, msg: I18N[currentLang][r.msgKey] });
+      }
+    }
+  });
+
+  // Validación condicional del alcance: solo obligatorio si hay testamento previo
+  if (s === 2) {
+    var prev = document.querySelector('input[name="test-anterior"]:checked');
+    if (prev && prev.value !== 'No') {
+      var alc = document.getElementById('alcance');
+      if (!alc || !alc.value) {
+        errors.push({ wrapId: 'f-alcance', msg: I18N[currentLang]['val.scope'] });
+      }
+    }
+  }
+
+  return errors;
+}
+
+function clearValidationUI() {
+  document.querySelectorAll('.field-error').forEach(function(e) { e.classList.remove('field-error'); });
+  document.querySelectorAll('.error-banner').forEach(function(e) { e.remove(); });
+}
+
+function showValidation(s, errors) {
+  clearValidationUI();
+  if (errors.length === 0) return true;
+
+  var screen = document.getElementById('s' + s);
+  var banner = document.createElement('div');
+  banner.className = 'error-banner';
+  banner.innerHTML = '<strong>⚠ ' + I18N[currentLang]['val.title'] + '</strong><ul>' +
+    errors.map(function(e) { return '<li>' + e.msg + '</li>'; }).join('') + '</ul>';
+  screen.insertBefore(banner, screen.firstChild);
+
+  errors.forEach(function(e) {
+    if (e.wrapId) {
+      var w = document.getElementById(e.wrapId);
+      if (w) w.classList.add('field-error');
+    }
+  });
+
+  banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  return false;
+}
+
+// ══════════════════════════════════════════════════════════
+//  NAVEGACIÓN ENTRE PASOS
+// ══════════════════════════════════════════════════════════
+function go(n) {
+  // Solo validamos al avanzar (no al retroceder)
+  if (n > step) {
+    var errors = validateStep(step);
+    if (errors.length > 0) {
+      showValidation(step, errors);
+      return;
+    }
+  }
+  clearValidationUI();
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  step = n;
+  if (n === 3) buildRes();
+  document.getElementById('s' + n).classList.add('active');
+  renderBar();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════════════════════
+//  HELPERS DE LECTURA / TRADUCCIÓN DE VALORES
+// ══════════════════════════════════════════════════════════
+function gv(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function gr(name) { var el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ''; }
+
+// Para selects: devolver el TEXTO de la opción seleccionada (ya traducido por setLang)
+function gs(id) {
+  var el = document.getElementById(id);
+  if (!el || el.selectedIndex < 0) return '';
+  var opt = el.options[el.selectedIndex];
+  return (opt && opt.value) ? opt.textContent.trim() : '';
+}
+
+// Traducir un valor de radio (almacenado en es) al idioma actual
+function trVal(v) {
+  if (!v) return '';
+  if (VAL_MAP[v] && VAL_MAP[v][currentLang]) return VAL_MAP[v][currentLang];
+  return v;
+}
+
+// ══════════════════════════════════════════════════════════
+//  RESUMEN
+// ══════════════════════════════════════════════════════════
+function addRow(h, lbl, val) { if (val) h += '<div class="sr"><span>' + lbl + '</span><span>' + val + '</span></div>'; return h; }
+
+function buildRes() {
+  var T = I18N[currentLang];
+  var h = '';
+
+  h += '<div class="sg"><h3>' + T['sum.testator'] + '</h3>';
+  h = addRow(h, T['sum.nombre'],  gv('nombre'));
+  h = addRow(h, T['sum.dni'],     gv('dni'));
+  h = addRow(h, T['sum.fnac'],    gv('fnac'));
+  h = addRow(h, T['sum.lnac'],    gv('lnac'));
+  h = addRow(h, T['sum.dom'],     gv('domicilio'));
+  h = addRow(h, T['sum.estado'],  gs('estado-civil'));
+  h = addRow(h, T['sum.regimen'], gs('regimen'));
+  h = addRow(h, T['sum.conyuge'], gv('conyuge'));
+  h = addRow(h, T['sum.padre'],   gv('nombre-padre'));
+  h = addRow(h, T['sum.madre'],   gv('nombre-madre'));
+  h += '</div>';
+
+  h += '<div class="sg"><h3>' + T['sum.nat'] + '</h3>';
+  h = addRow(h, T['sum.nat2'],          gv('nacionalidad'));
+  h = addRow(h, T['sum.uksys'],         gs('sistema-uk'));
+  h = addRow(h, T['sum.residencia'],    gs('residencia'));
+  h = addRow(h, T['sum.lex'],           trVal(gr('ley-aplicable')));
+  h = addRow(h, T['sum.assets'],        trVal(gr('bienes-ext')));
+  h = addRow(h, T['sum.assetsdetail'],  gv('bienes-detalle'));
+  h += '</div>';
+
+  h += '<div class="sg"><h3>' + T['sum.family'] + '</h3>';
+  h = addRow(h, T['sum.hijos'],     trVal(gr('hijos')));
+  h = addRow(h, T['sum.numhijos'],  gv('num-hijos'));
+  h = addRow(h, T['sum.nomhijos'],  gv('nombres-hijos'));
+  h = addRow(h, T['sum.hijosprev'], trVal(gr('hijos-previos')));
+  h = addRow(h, T['sum.nietos'],    trVal(gr('nietos')));
+  h = addRow(h, T['sum.ascend'],    trVal(gr('ascendientes')));
+  h += '</div>';
+
+  h += '<div class="sg"><h3>' + T['sum.heirs'] + '</h3>';
+  h = addRow(h, T['sum.herederos'], gv('herederos'));
+  h = addRow(h, T['sum.subst'],     gv('sustitutos'));
+  h += '</div>';
+
+  if (gv('legados') || gv('albacea-nombre') || gr('test-anterior') || gs('alcance') || gv('sepelio-detalle') || gv('observaciones')) {
+    h += '<div class="sg"><h3>' + T['sum.other'] + '</h3>';
+    h = addRow(h, T['sum.legados'],  gv('legados'));
+    h = addRow(h, T['sum.albnom'],   gv('albacea-nombre'));
+    h = addRow(h, T['sum.albdni'],   gv('albacea-dni'));
+    h = addRow(h, T['sum.testprev'], trVal(gr('test-anterior')));
+    h = addRow(h, T['sum.scope'],    gs('alcance'));
+    h = addRow(h, T['sum.sepelio'],  gv('sepelio-detalle'));
+    h = addRow(h, T['sum.obs'],      gv('observaciones'));
+    h += '</div>';
+  }
+
+  document.getElementById('resumen').innerHTML = h;
+}
+
+// ══════════════════════════════════════════════════════════
+//  EXPORTACIÓN A WORD
+// ══════════════════════════════════════════════════════════
+function dlWord() {
+  var T = I18N[currentLang];
+  function p(lbl, val) { return val ? '<p>' + lbl + ': <strong>' + val + '</strong></p>' : ''; }
+
+  var body =
+    '<h2>' + T['sum.testator'].replace(/^[^A-Za-z\u00C0-\u017F]+/, '').toUpperCase() + '</h2>' +
+    p(T['sum.nombre'],  gv('nombre')) +
+    p(T['sum.dni'],     gv('dni')) +
+    p(T['sum.fnac'],    gv('fnac')) +
+    p(T['sum.lnac'],    gv('lnac')) +
+    p(T['sum.dom'],     gv('domicilio')) +
+    p(T['sum.estado'],  gs('estado-civil')) +
+    p(T['sum.regimen'], gs('regimen')) +
+    p(T['sum.conyuge'], gv('conyuge')) +
+    p(T['sum.padre'],   gv('nombre-padre')) +
+    p(T['sum.madre'],   gv('nombre-madre')) +
+    '<br>' +
+    '<h2>' + T['sum.nat'].replace(/^[^A-Za-z\u00C0-\u017F]+/, '').toUpperCase() + '</h2>' +
+    p(T['sum.nat2'],         gv('nacionalidad')) +
+    p(T['sum.uksys'],        gs('sistema-uk')) +
+    p(T['sum.residencia'],   gs('residencia')) +
+    p(T['sum.lex'] + ' (Art. 22 Reg. UE 650/2012)', trVal(gr('ley-aplicable'))) +
+    p(T['sum.assets'],       trVal(gr('bienes-ext'))) +
+    p(T['sum.assetsdetail'], gv('bienes-detalle')) +
+    '<br>' +
+    '<h2>' + T['sum.family'].replace(/^[^A-Za-z\u00C0-\u017F]+/, '').toUpperCase() + '</h2>' +
+    p(T['sum.hijos'],     trVal(gr('hijos'))) +
+    p(T['sum.numhijos'],  gv('num-hijos')) +
+    p(T['sum.nomhijos'],  gv('nombres-hijos')) +
+    p(T['sum.hijosprev'], trVal(gr('hijos-previos'))) +
+    p(T['sum.nietos'],    trVal(gr('nietos'))) +
+    p(T['sum.ascend'],    trVal(gr('ascendientes'))) +
+    '<br>' +
+    '<h2>' + T['sum.heirs'].replace(/^[^A-Za-z\u00C0-\u017F]+/, '').toUpperCase() + '</h2>' +
+    p(T['sum.herederos'], gv('herederos')) +
+    p(T['sum.subst'],     gv('sustitutos')) +
+    '<br>' +
+    '<h2>' + T['sum.other'].replace(/^[^A-Za-z\u00C0-\u017F]+/, '').toUpperCase() + '</h2>' +
+    p(T['sum.legados'],   gv('legados')) +
+    p(T['sum.albnom'],    gv('albacea-nombre')) +
+    p(T['sum.albdni'],    gv('albacea-dni')) +
+    p(T['sum.testprev'],  trVal(gr('test-anterior'))) +
+    p(T['sum.scope'],     gs('alcance')) +
+    p(T['sum.sepelio'],   gv('sepelio-detalle')) +
+    p(T['sum.obs'],       gv('observaciones')) +
+    '<br><p style="font-size:10pt;color:#777">Oficial Notarial IA · ' + new Date().toLocaleDateString(currentLang === 'en' ? 'en-GB' : 'es-ES') + '</p>';
+
+  var w = '<html xmlns:o=\'urn:schemas-microsoft-com:office:office\' xmlns:w=\'urn:schemas-microsoft-com:office:word\'>' +
+    '<head><meta charset=\'utf-8\'><style>' +
+    'body{font-family:\'Times New Roman\',serif;font-size:12pt;line-height:1.7;margin:2cm 1.5cm}' +
+    'h1{text-align:center;font-size:14pt;margin-bottom:20pt}' +
+    'h2{font-size:12pt;margin-top:16pt;border-bottom:1px solid #aaa;padding-bottom:3pt}' +
+    'p{margin:3pt 0}' +
+    '</style></head><body>' +
+    '<h1>' + T['word.h1'] + '</h1>' + body + '</body></html>';
+
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([w], { type: 'application/msword' }));
+  a.download = T['word.dlname'];
+  a.click();
+  document.getElementById('ok').style.display = 'block';
+  document.getElementById('ok').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════════════════════
+//  INICIALIZACIÓN
+// ══════════════════════════════════════════════════════════
+setLang(currentLang);
+renderBar();
+</script>
+</body>
+</html>
