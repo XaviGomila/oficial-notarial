@@ -611,6 +611,31 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
 .hist-item:hover .hist-del-btn{opacity:1;}
 .hist-del-btn:hover{background:var(--red-bg);border-color:var(--red-border);color:var(--red);}
 
+/* ── NOTAS INTERNAS EN HISTORIAL ── */
+.hist-nota-wrap{border-top:0.5px solid var(--border);margin-top:8px;padding-top:7px;}
+.hist-nota-toggle{font-size:10px;color:var(--ink3);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;padding:0;display:inline-flex;align-items:center;gap:4px;transition:color .15s;}
+.hist-nota-toggle:hover{color:var(--gold);}
+.hist-nota-preview{font-size:11px;color:var(--ink3);font-style:italic;cursor:pointer;line-height:1.5;transition:color .15s;}
+.hist-nota-preview:hover{color:var(--gold);}
+.hist-nota-input{width:100%;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink2);background:var(--cream2);border:0.5px solid var(--border);border-radius:6px;padding:7px 10px;outline:none;resize:none;min-height:58px;margin-top:6px;transition:border-color .15s;display:none;}
+.hist-nota-input:focus{border-color:var(--gold);}
+
+/* ── BUSCADOR HISTORIAL ── */
+.hist-search-wrap{padding:12px 22px 6px;position:relative;}
+.hist-search-input{width:100%;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 12px 9px 36px;outline:none;transition:border-color .15s,box-shadow .15s;}
+.hist-search-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(166,124,82,0.11);}
+.hist-search-icon{position:absolute;left:34px;top:50%;transform:translateY(-50%);color:var(--ink3);pointer-events:none;font-size:15px;}
+
+/* ── SELECTOR DE IDIOMA EN BORRADOR ── */
+.idioma-bar{display:flex;align-items:center;gap:6px;padding:8px 15px;border-top:0.5px solid var(--border);flex-wrap:wrap;}
+.idioma-label{font-size:9px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);margin-right:3px;flex-shrink:0;}
+.idioma-btn{font-size:11px;padding:3px 10px;border:0.5px solid var(--border);border-radius:100px;cursor:pointer;color:var(--ink3);background:transparent;font-family:'DM Sans',sans-serif;transition:all .15s;line-height:1.6;}
+.idioma-btn:hover{border-color:var(--gold-mid);color:var(--gold-mid);}
+.idioma-btn.active{background:var(--gold-bg);border-color:var(--gold-mid);color:var(--gold-mid);font-weight:600;}
+[data-theme="dark"] .idioma-btn.active{background:rgba(196,168,74,0.12);color:var(--gold);border-color:rgba(196,168,74,0.35);}
+.idioma-btn:disabled{opacity:.45;cursor:not-allowed;}
+.idioma-traduciendo{font-size:11px;color:var(--ink3);font-style:italic;margin-left:4px;}
+
 /* ── RESPONSIVE: single column on narrow ── */
 @media(max-width:900px){
   .results.on{grid-template-columns:1fr;}
@@ -1297,25 +1322,13 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
                 </div>
               </div>
               <div class="rcard-body" id="emailOut"></div>
-            </div>
-
-            <div class="rcard" id="rcardFormularioCliente" style="display:none;">
-              <div class="rcard-head">
-                <div class="rcard-label">📋 Formulario para el cliente <span id="rcardFormActo" style="font-weight:500;color:var(--ink3);font-size:11px;margin-left:6px;"></span></div>
-                <div style="display:flex;gap:6px;">
-                  <button class="copy-btn" onclick="copiar('rcardFormUrl')">Copiar enlace</button>
-                  <button class="btn-send-email" onclick="abrirFormularioExterno()" style="background:var(--blue-bg);border-color:var(--blue-border);color:var(--blue);">
-                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M11 7v4a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h4M9 2h3v3M6 8l6-6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    Ver formulario
-                  </button>
-                </div>
-              </div>
-              <div class="rcard-body">
-                <div id="rcardFormUrl" style="background:var(--cream2);border:0.5px solid var(--border2);border-radius:6px;padding:9px 11px;font-family:monospace;font-size:11.5px;color:var(--ink2);word-break:break-all;line-height:1.45;"></div>
-                <div style="margin-top:8px;font-size:11px;color:var(--ink3);line-height:1.55;display:flex;gap:6px;align-items:flex-start;">
-                  <span style="color:var(--green);flex-shrink:0;">✓</span>
-                  <span>Este enlace ya está incluido al final del borrador. El cliente lo abrirá, rellenará el formulario y descargará un Word con sus datos para enviarlo de vuelta.</span>
-                </div>
+              <div class="idioma-bar" id="idiomaBar" style="display:none;">
+                <span class="idioma-label">Traducir:</span>
+                <button class="idioma-btn active" id="idiomaES" onclick="traducirEmail('ES')">🇪🇸 ES</button>
+                <button class="idioma-btn" id="idiomaEN" onclick="traducirEmail('EN')">🇬🇧 EN</button>
+                <button class="idioma-btn" id="idiomaDE" onclick="traducirEmail('DE')">🇩🇪 DE</button>
+                <button class="idioma-btn" id="idiomaFR" onclick="traducirEmail('FR')">🇫🇷 FR</button>
+                <span class="idioma-traduciendo" id="idiomaLoading" style="display:none;">Traduciendo…</span>
               </div>
             </div>
           </div>
@@ -1415,6 +1428,10 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
       <div class="topbar-actions">
         <button class="btn-ghost" id="btnBorrarHist" onclick="borrarHistorial()" style="font-size:11px;color:var(--red);border-color:var(--red-border);">🗑 Borrar historial</button>
       </div>
+    </div>
+    <div class="hist-search-wrap">
+      <span class="hist-search-icon">🔍</span>
+      <input class="hist-search-input" id="histSearch" type="text" placeholder="Buscar por cliente, acto, fecha…" oninput="filtrarHistorial()" autocomplete="off">
     </div>
     <div class="content">
       <div class="hist-empty" id="histEmpty">Todavía no has analizado ningún email.<br>Ve a «Analizar email» para empezar.</div>
@@ -1755,9 +1772,13 @@ function limpiar(){
   document.getElementById('statusBar').classList.remove('on');
   document.getElementById('btnPdf').classList.remove('show');
   document.getElementById('resultsActions').classList.remove('show');
-  // Ocultar panel del formulario embebido
-  const cardForm = document.getElementById('rcardFormularioCliente');
-  if(cardForm) cardForm.style.display = 'none';
+  // Reset selector de idioma
+  const idiomaBar = document.getElementById('idiomaBar');
+  if(idiomaBar) idiomaBar.style.display = 'none';
+  window._emailOriginalES = '';
+  document.querySelectorAll('.idioma-btn').forEach(b => { b.classList.remove('active'); b.disabled = false; });
+  const esBtn = document.getElementById('idiomaES');
+  if(esBtn) esBtn.classList.add('active');
   // Reset bloque de decisión
   const db = document.getElementById('decisionBlock');
   if(db) db.className = 'decision-block';
@@ -1910,23 +1931,9 @@ function evaluarInputCalidad(emailRaw, p){
   const email  = (emailRaw || '').trim();
   const words  = email.split(/\s+/).length;
   const certLow = (p.certeza || '').toLowerCase();
-  const actoOk = p.actoNombre && p.actoNombre !== '—' && p.actoNombre.length > 3;
-
-  // OVERRIDE: si el Worker devuelve CERTEZA Alta + acto identificado,
-  // su juicio prevalece sobre la heurística local de longitud del email.
-  // El Worker tiene contexto jurídico (prompt completo) que el frontend
-  // no replica. Las heurísticas de palabras solo se aplican en zona
-  // ambigua (Media/Baja) donde el Worker no se ha comprometido del todo.
-  if(certLow.startsWith('alta') && actoOk){
-    return {
-      estado: 'ok',
-      icon: '✔', label: 'Input interpretable',
-      desc: 'El email contiene información suficiente para el análisis.'
-    };
-  }
 
   // ✖ No interpretable: email demasiado corto o vacío
-  if(words < 15 || !actoOk){
+  if(words < 15 || !p.actoNombre || p.actoNombre === '—'){
     return {
       estado: 'fail',
       icon: '✖', label: 'Input no interpretable',
@@ -1953,7 +1960,7 @@ function evaluarInputCalidad(emailRaw, p){
    Busca señales de múltiples operaciones en el output.
    Si detecta más de una, bloquea la acción automática.  */
 const ACTOS_NOTARIALES = [
-  'compraventa','hipoteca','herencia','donación', 'donacion','poder notarial',
+  'compraventa','hipoteca','herencia','donación','poder notarial',
   'adjudicación','cancelación','permuta','segregación','agrupación',
   'obra nueva','division horizontal','arrendamiento','préstamo','aceptación'
 ];
@@ -2299,29 +2306,21 @@ function poblar(p, emailRaw){
   `;
 
   var emailTexto = p.email || '';
-// Detección unificada del acto y resolución de URL del formulario.
-// detectarActo() ya maneja abstención y fuentes secundarias.
-const actoCodigo  = detectarActo(p);
-const urlFormulario = (actoCodigo && typeof FORM_URLS !== 'undefined') ? (FORM_URLS[actoCodigo] || null) : null;
+var actoParsed = (p.actoNombre || '').toLowerCase();
+var urlFormulario = null;
+if(actoParsed.includes('compraventa'))                               urlFormulario = 'https://oficial-notarial.vercel.app/compraventa.html';
+else if(actoParsed.includes('poder'))                                urlFormulario = 'https://oficial-notarial.vercel.app/poder.html';
+else if(actoParsed.includes('herencia')||actoParsed.includes('adjudicación')) urlFormulario = 'https://oficial-notarial.vercel.app/herencia.html';
+else if(actoParsed.includes('donaci'))                               urlFormulario = 'https://oficial-notarial.vercel.app/donacion.html';
+else if(actoParsed.includes('testamento'))                           urlFormulario = 'https://oficial-notarial.vercel.app/testamento.html';
+else if(actoParsed.includes('renuncia')||actoParsed.includes('repudiaci')) urlFormulario = 'https://oficial-notarial.vercel.app/renuncia.html';
+else if(actoParsed.includes('cancelaci'))                            urlFormulario = 'https://oficial-notarial.vercel.app/cancelacion.html';
+else if(actoParsed.includes('obra nueva'))                           urlFormulario = 'https://oficial-notarial.vercel.app/obranue.html';
 
 if(urlFormulario){
   emailTexto += '\n\nPara agilizar la preparación de su expediente, le rogamos que complete el siguiente formulario y nos envíe el documento Word descargado como adjunto a este email:\n' + urlFormulario;
 }
 document.getElementById('emailOut').textContent = emailTexto;
-
-// Panel embebido del formulario para el cliente (al final del borrador)
-const cardForm = document.getElementById('rcardFormularioCliente');
-if(cardForm){
-  if(urlFormulario){
-    document.getElementById('rcardFormActo').textContent = '— ' + (p.actoNombre || (typeof FORM_LABELS !== 'undefined' ? FORM_LABELS[actoCodigo] : '') || '');
-    document.getElementById('rcardFormUrl').textContent  = urlFormulario;
-    cardForm.style.display = 'block';
-  } else {
-    document.getElementById('rcardFormUrl').textContent  = '';
-    document.getElementById('rcardFormActo').textContent = '';
-    cardForm.style.display = 'none';
-  }
-}
 
   // Documentación recibida (acuse de recibo)
   const rdocs = document.getElementById('rcardDocsRecibida');
@@ -2424,15 +2423,40 @@ function renderHistorial(){
   const arr   = historialLoad();
   const list  = document.getElementById('histList');
   const empty = document.getElementById('histEmpty');
+  const q     = (document.getElementById('histSearch')?.value || '').toLowerCase().trim();
+
+  let filtered = arr;
+  if(q){
+    filtered = arr.filter(h =>
+      (h.interlocutor||'').toLowerCase().includes(q) ||
+      (h.actoNombre||'').toLowerCase().includes(q) ||
+      (h.actoFinalidad||'').toLowerCase().includes(q) ||
+      (h.emailPreview||'').toLowerCase().includes(q) ||
+      (h.fecha||'').includes(q)
+    );
+  }
+
   document.getElementById('histTotal').textContent =
-    arr.length + ' análisis guardados';
-  if(!arr.length){ empty.style.display='block'; list.innerHTML=''; return; }
+    q ? `${filtered.length} de ${arr.length} análisis` : arr.length + ' análisis guardados';
+
+  if(!filtered.length){
+    empty.style.display = 'block';
+    empty.innerHTML = q
+      ? `Sin resultados para "<strong>${q}</strong>". Prueba con otro término.`
+      : 'Todavía no has analizado ningún email.<br>Ve a «Analizar email» para empezar.';
+    list.innerHTML = '';
+    return;
+  }
   empty.style.display = 'none';
-  list.innerHTML = arr.slice().reverse().map((h) => {
+  list.innerHTML = filtered.slice().reverse().map((h) => {
     const idx = h.id || crypto.randomUUID();
     const urg = (h.urgLabel||'').toLowerCase();
     const urgColor = urg.includes('alta') ? 'var(--red)' : urg.includes('media') ? 'var(--orange)' : 'var(--border)';
-    return `<div class="hist-item" onclick="cargarHistorial('${idx}')" style="border-left:3px solid ${urgColor};">
+    const nota = h.nota || '';
+    const notaInner = nota
+      ? `<div class="hist-nota-preview" onclick="abrirNota('${idx}')" title="Editar nota">📝 ${nota.length > 90 ? nota.substring(0,90)+'…' : nota}</div>`
+      : `<button class="hist-nota-toggle" onclick="abrirNota('${idx}')">＋ Añadir nota interna</button>`;
+    return `<div class="hist-item" id="hitem-${idx}" onclick="cargarHistorial('${idx}')" style="border-left:3px solid ${urgColor};">
       <div class="hist-top">
         <div class="hist-pills">
           <span class="cpill cp-blue" style="font-size:10px;">${h.interlocutor||'—'}</span>
@@ -2453,8 +2477,133 @@ function renderHistorial(){
       </div>
       <div class="hist-acto">${h.actoNombre||''}</div>
       <div class="hist-preview">${h.emailPreview}</div>
+      <div class="hist-nota-wrap" onclick="event.stopPropagation()">
+        ${notaInner}
+        <textarea class="hist-nota-input" id="nota-${idx}" placeholder="Nota interna (solo visible aquí, no se envía a nadie)…" onblur="guardarNota('${idx}', this.value)">${nota}</textarea>
+      </div>
     </div>`;
   }).join('');
+}
+
+function filtrarHistorial(){
+  renderHistorial();
+}
+
+function borrarEntrada(evt, idx){
+  evt.stopPropagation();
+  if(!confirm('¿Eliminar este análisis del historial?')) return;
+  let arr = historialLoad();
+  arr = arr.filter(e => e.id !== idx);
+  historialSave(arr);
+  const hc = document.getElementById('histCount');
+  hc.textContent = arr.length || '';
+  if(!arr.length) hc.classList.remove('show');
+  renderHistorial();
+}
+
+function abrirNota(id){
+  const ta = document.getElementById('nota-' + id);
+  if(!ta) return;
+  ta.style.display = 'block';
+  ta.focus();
+  ta.select();
+}
+
+function guardarNota(id, valor){
+  const arr = historialLoad();
+  const h = arr.find(e => e.id === id);
+  if(!h) return;
+  h.nota = valor.trim();
+  historialSave(arr);
+  // Actualizar preview sin re-renderizar todo el historial
+  const ta = document.getElementById('nota-' + id);
+  if(!ta) return;
+  const wrap = ta.parentElement;
+  if(!wrap) return;
+  const prevEl = wrap.querySelector('.hist-nota-preview, .hist-nota-toggle');
+  if(prevEl) wrap.removeChild(prevEl);
+  const nota = h.nota;
+  let newPrev;
+  if(nota){
+    newPrev = document.createElement('div');
+    newPrev.className = 'hist-nota-preview';
+    newPrev.title = 'Editar nota';
+    newPrev.textContent = '📝 ' + (nota.length > 90 ? nota.substring(0,90)+'…' : nota);
+    newPrev.onclick = function(){ abrirNota(id); };
+  } else {
+    newPrev = document.createElement('button');
+    newPrev.className = 'hist-nota-toggle';
+    newPrev.textContent = '＋ Añadir nota interna';
+    newPrev.onclick = function(){ abrirNota(id); };
+  }
+  wrap.insertBefore(newPrev, ta);
+  ta.style.display = 'none';
+}
+
+// ══════════════════════════════════════════════════════
+//  TRADUCCIÓN DE BORRADOR DE EMAIL
+// ══════════════════════════════════════════════════════
+const IDIOMA_NOMBRES = { ES:'español', EN:'inglés', DE:'alemán', FR:'francés' };
+
+async function traducirEmail(lang){
+  const emailOut  = document.getElementById('emailOut');
+  const loading   = document.getElementById('idiomaLoading');
+  const btns      = document.querySelectorAll('.idioma-btn');
+
+  // Guardar texto original en español la primera vez
+  const textoActual = emailOut.textContent.trim();
+  if(!window._emailOriginalES) window._emailOriginalES = textoActual;
+
+  // Si vuelven a ES, restaurar sin llamada API
+  if(lang === 'ES'){
+    if(window._emailOriginalES) emailOut.textContent = window._emailOriginalES;
+    btns.forEach(b => b.classList.remove('active'));
+    document.getElementById('idiomaES').classList.add('active');
+    return;
+  }
+
+  // Si no hay texto original, no hacer nada
+  if(!window._emailOriginalES) return;
+
+  // UI: loading
+  btns.forEach(b => { b.classList.remove('active'); b.disabled = true; });
+  if(loading) loading.style.display = 'inline';
+
+  try {
+    const res = await fetch(WORKER_URL + '/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: window._emailOriginalES,
+        lang: lang,
+        code: codigoAcceso.get() || ''
+      })
+    });
+
+    if(!res.ok){
+      alert('Error al traducir. Inténtalo de nuevo.');
+      // Restaurar ES
+      btns.forEach(b => b.disabled = false);
+      document.getElementById('idiomaES').classList.add('active');
+      if(loading) loading.style.display = 'none';
+      return;
+    }
+
+    const data = await res.json();
+    const traducido = data.translated || '';
+    if(traducido) emailOut.textContent = traducido;
+
+    btns.forEach(b => { b.classList.remove('active'); b.disabled = false; });
+    const btn = document.getElementById('idioma' + lang);
+    if(btn) btn.classList.add('active');
+
+  } catch(e){
+    alert('Error de conexión al traducir.');
+    btns.forEach(b => b.disabled = false);
+    document.getElementById('idiomaES').classList.add('active');
+  } finally {
+    if(loading) loading.style.display = 'none';
+  }
 }
 
 function borrarHistorial(){
@@ -2585,6 +2734,13 @@ _lastParsed = p;
     document.getElementById('btnPdf').classList.add('show');
     document.getElementById('btnFormulario').classList.add('show');
     document.getElementById('resultsActions').classList.add('show');
+    // Mostrar selector de idioma y resetear a ES
+    const idiomaBar = document.getElementById('idiomaBar');
+    if(idiomaBar) idiomaBar.style.display = 'flex';
+    window._emailOriginalES = '';
+    document.querySelectorAll('.idioma-btn').forEach(b => b.classList.remove('active'));
+    const esBtn = document.getElementById('idiomaES');
+    if(esBtn) esBtn.classList.add('active');
 
     const now = new Date();
     historialPush({
@@ -2942,7 +3098,6 @@ const FORM_URLS = {
   poder:       BASE_URL + '/poder.html',
   herencia:    BASE_URL + '/herencia.html',
   donacion:    BASE_URL + '/donacion.html',
-  donación:    BASE_URL + '/donacion.html',
   testamento:  BASE_URL + '/testamento.html',
   renuncia:    BASE_URL + '/renuncia.html',
   cancelacion: BASE_URL + '/cancelacion.html',
@@ -2963,60 +3118,17 @@ const FORM_LABELS = {
 const DISPONIBLES = ['compraventa', 'poder', 'renuncia','testamento', 'cancelacion', 'donación', 'herencia',];
 // Añadir más cuando estén subidos a Vercel
 
-function detectarActo(parsed){
-  parsed = parsed || _lastParsed || {};
-  const actoCampo = (parsed.actoNombre || '').toLowerCase().trim();
-
-  // Detección estricta — para el campo principal actoNombre
-  function detectStrict(s){
-    if(!s) return null;
-    if(s.includes('compraventa'))                                   return 'compraventa';
-    if(s.includes('poder'))                                         return 'poder';
-    if(s.includes('herencia') || s.includes('adjudicación'))        return 'herencia';
-    if(s.includes('donaci'))                                        return 'donacion';
-    if(s.includes('testamento'))                                    return 'testamento';
-    if(s.includes('renuncia') || s.includes('repudiaci'))           return 'renuncia';
-    if(s.includes('cancelaci'))                                     return 'cancelacion';
-    if(s.includes('obra nueva'))                                    return 'obranue';
-    return null;
-  }
-
-  // Detección laxa — para fuentes secundarias combinadas; keywords más específicas
-  // para evitar falsos positivos (ej. "poder hacer" en una compraventa)
-  function detectLoose(s){
-    if(!s) return null;
-    if(s.includes('compraventa'))                                                                                                              return 'compraventa';
-    if(s.includes('apoderamient') || s.includes('poder notarial') || s.includes('poder general') || s.includes('poder especial') || s.includes('poderdante') || s.includes('apoderado'))  return 'poder';
-    if(s.includes('herencia') || s.includes('caudal hereditario') || s.includes('aceptación de herencia') || s.includes('adjudicación hereditaria'))                                       return 'herencia';
-    if(s.includes('donaci'))                                                                                                                   return 'donacion';
-    if(s.includes('testamento') || s.includes('testador') || s.includes('disposiciones testamentarias') || s.includes('última voluntad') || s.includes('testamentari'))                    return 'testamento';
-    if(s.includes('renuncia') || s.includes('repudiaci'))                                                                                      return 'renuncia';
-    if(s.includes('cancelaci') && s.includes('hipotec'))                                                                                       return 'cancelacion';
-    if(s.includes('obra nueva') || s.includes('declaración de edificación'))                                                                   return 'obranue';
-    return null;
-  }
-
-  // El campo se considera vacío en abstención o cuando el Worker no determina el acto
-  const actoVacio = !actoCampo
-    || actoCampo === '—' || actoCampo === '-'
-    || actoCampo.includes('no determin') || actoCampo.includes('no especific')
-    || actoCampo.includes('no aplica');
-
-  // Pasada 1: campo principal con detección estricta
-  if(!actoVacio){
-    const r = detectStrict(actoCampo);
-    if(r) return r;
-  }
-
-  // Pasada 2: combinar fuentes secundarias y aplicar detección laxa.
-  // No incluimos p.email (borrador) porque puede mencionar varios actos a título informativo.
-  const fallback = [
-    parsed.actoNombre   || '',
-    parsed.actoFinalidad|| '',
-    parsed.clObjeto     || ''
-  ].join(' ').toLowerCase();
-
-  return detectLoose(fallback);
+function detectarActo(){
+  const actoRaw = (_lastParsed?.actoNombre || '').toLowerCase();
+  if(actoRaw.includes('compraventa'))                             return 'compraventa';
+  if(actoRaw.includes('poder'))                                   return 'poder';
+  if(actoRaw.includes('herencia')||actoRaw.includes('adjudicación')) return 'herencia';
+  if(actoRaw.includes('donaci'))                                  return 'donacion';
+  if(actoRaw.includes('testamento'))                              return 'testamento';
+  if(actoRaw.includes('renuncia')||actoRaw.includes('repudiaci')) return 'renuncia';
+  if(actoRaw.includes('cancelaci'))                               return 'cancelacion';
+  if(actoRaw.includes('obra nueva'))                              return 'obranue';
+  return null;
 }
 function cerrarFormulario(){
   document.getElementById('formOverlay').classList.remove('open');
@@ -3148,11 +3260,6 @@ function copiarEnlace(url, btn){
 
 function abrirEnlace(url){
   window.open(url, '_blank');
-}
-
-function abrirFormularioExterno(){
-  const url = document.getElementById('rcardFormUrl')?.textContent.trim();
-  if(url) window.open(url, '_blank');
 }
 // ── PANTALLA DE SELECCIÓN ─────────────────────────────────
 function fovSelectHtml(){
