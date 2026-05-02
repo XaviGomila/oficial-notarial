@@ -1932,16 +1932,16 @@ function evaluarInputCalidad(emailRaw, p){
   const words  = email.split(/\s+/).length;
   const certLow = (p.certeza || '').toLowerCase();
 
-  // ✖ No interpretable: email demasiado corto o vacío
-  if(words < 15 || !p.actoNombre || p.actoNombre === '—'){
+  // ✖ No interpretable: email vacío o sin acto notarial detectado
+  if(!email || !p.actoNombre || p.actoNombre === '—'){
     return {
       estado: 'fail',
       icon: '✖', label: 'Input no interpretable',
       desc: 'El email es demasiado corto o no contiene información notarial reconocible.'
     };
   }
-  // ⚠ Ambiguo: certeza baja O muy pocos campos detectados
-  if(certLow.startsWith('baja') || words < 40){
+  // ⚠ Ambiguo: certeza baja O email de menos de 5 palabras
+  if(certLow.startsWith('baja') || words < 5){
     return {
       estado: 'warn',
       icon: '⚠', label: 'Input ambiguo',
