@@ -3277,6 +3277,26 @@ function fovSelectHtml(){
   </div>`;
 }
 
+function fovCargarActo(act){
+  _fovAct = act;
+  var label = FORM_LABELS[act] || act;
+  document.getElementById('fovActLabel').textContent = label;
+  var html = '';
+  if(act === 'compraventa')       html = fovCvHtml();
+  else if(act === 'poder')        html = fovPodHtml();
+  else if(act === 'herencia')     html = fovHerHtml();
+  else if(act === 'donacion')     html = fovDonHtml();
+  else if(act === 'testamento')   html = fovTestHtml();
+  else if(act === 'renuncia')     html = fovRenHtml();
+  else if(act === 'cancelacion')  html = fovCanHtml();
+  else if(act === 'obranue')      html = fovObraHtml();
+  else { html = '<p style="color:var(--ink3);font-size:13px;">Formulario no disponible todavía.</p>'; }
+  document.getElementById('fovContent').innerHTML = '<div style="max-width:560px;margin:0 auto;">' + html + '</div>';
+  document.getElementById('fovContent').scrollTop = 0;
+  if(act==='compraventa'){ fovCvBar(); }
+  else if(act==='donacion'){ fovDonBar(); }
+}
+
 // ── PILLS ─────────────────────────────────────────────────
 function fovPill(el,k,v,ctx){
   el.closest('.fov-card').querySelectorAll('.fov-pill').forEach(p=>p.classList.remove('on'));
