@@ -3098,40 +3098,64 @@ const FOV_DON_L = ['Donante','Donatario','Bien','Tipo','Resumen'];
 const BASE_URL = 'https://oficial-notarial.vercel.app';
 
 const FORM_URLS = {
-  compraventa: BASE_URL + '/compraventa.html',
-  poder:       BASE_URL + '/poder.html',
-  herencia:    BASE_URL + '/herencia.html',
-  donacion:    BASE_URL + '/donacion.html',
-  testamento:  BASE_URL + '/testamento.html',
-  renuncia:    BASE_URL + '/renuncia.html',
-  cancelacion: BASE_URL + '/cancelacion.html',
-  obranue:     BASE_URL + '/obranue.html',
+  compraventa:                   BASE_URL + '/compraventa.html',
+  poder:                         BASE_URL + '/poder.html',
+  herencia:                      BASE_URL + '/herencia.html',
+  donacion:                      BASE_URL + '/donacion.html',
+  testamento:                    BASE_URL + '/testamento.html',
+  renuncia:                      BASE_URL + '/renuncia.html',
+  cancelacion:                   BASE_URL + '/cancelacion.html',
+  obranue:                       BASE_URL + '/obranue.html',
+  hipoteca:                      BASE_URL + '/hipoteca.html',
+  disolucion:                    BASE_URL + '/disolucion.html',
+  'acta-manifestaciones':        BASE_URL + '/acta-manifestaciones.html',
+  'acta-titular-real':           BASE_URL + '/acta-titular-real.html',
+  'acta-notoriedad-abintestato': BASE_URL + '/acta-notoriedad-abintestato.html',
+  'acta-presencia':              BASE_URL + '/acta-presencia.html',
 };
 
 const FORM_LABELS = {
-  compraventa: '🏠 Compraventa',
-  poder:       '✍️ Poder notarial',
-  herencia:    '📜 Herencia',
-  donacion:    '🎁 Donación',
-  testamento:  '📋 Testamento',
-  renuncia:    '🚫 Renuncia / Repudiación',
-  cancelacion: '🏦 Cancelación de hipoteca',
-  obranue:     '🏗️ Obra nueva',
+  compraventa:                   '🏠 Compraventa',
+  poder:                         '✍️ Poder notarial',
+  herencia:                      '📜 Herencia',
+  donacion:                      '🎁 Donación',
+  testamento:                    '📋 Testamento',
+  renuncia:                      '🚫 Renuncia / Repudiación',
+  cancelacion:                   '🏦 Cancelación de hipoteca',
+  obranue:                       '🏗️ Obra nueva',
+  hipoteca:                      '🏦 Hipoteca / Préstamo hipotecario',
+  disolucion:                    '⚖️ Disolución de condominio',
+  'acta-manifestaciones':        '🗣️ Acta de manifestaciones',
+  'acta-titular-real':           '🏢 Acta de titular real (Ley 10/2010)',
+  'acta-notoriedad-abintestato': '👥 Acta de notoriedad — herederos abintestato',
+  'acta-presencia':              '👁️ Acta de presencia',
 };
 
-const DISPONIBLES = ['compraventa', 'poder', 'renuncia', 'testamento', 'cancelacion', 'donacion', 'herencia', 'obranue'];
+const DISPONIBLES = ['compraventa', 'poder', 'renuncia', 'testamento', 'cancelacion', 'donacion', 'herencia', 'obranue', 'hipoteca', 'disolucion', 'acta-manifestaciones'];
 // Añadir más cuando estén subidos a Vercel
 
 function detectarActo(){
   const actoRaw = (_lastParsed?.actoNombre || '').toLowerCase();
-  if(actoRaw.includes('compraventa'))                             return 'compraventa';
-  if(actoRaw.includes('poder'))                                   return 'poder';
-  if(actoRaw.includes('herencia')||actoRaw.includes('adjudicación')) return 'herencia';
-  if(actoRaw.includes('donaci'))                                  return 'donacion';
-  if(actoRaw.includes('testamento'))                              return 'testamento';
-  if(actoRaw.includes('renuncia')||actoRaw.includes('repudiaci')) return 'renuncia';
-  if(actoRaw.includes('cancelaci'))                               return 'cancelacion';
-  if(actoRaw.includes('obra nueva'))                              return 'obranue';
+  if(actoRaw.includes('compraventa'))                                          return 'compraventa';
+  if(actoRaw.includes('poder'))                                                return 'poder';
+  if(actoRaw.includes('herencia')||actoRaw.includes('adjudicación'))           return 'herencia';
+  if(actoRaw.includes('donaci'))                                               return 'donacion';
+  if(actoRaw.includes('testamento'))                                           return 'testamento';
+  if(actoRaw.includes('renuncia')||actoRaw.includes('repudiaci'))              return 'renuncia';
+  if(actoRaw.includes('cancelaci'))                                            return 'cancelacion';
+  if(actoRaw.includes('obra nueva'))                                           return 'obranue';
+  if(actoRaw.includes('condominio')||actoRaw.includes('proindiviso'))          return 'disolucion';
+  if(actoRaw.includes('hipoteca')||actoRaw.includes('préstamo hipotecario'))   return 'hipoteca';
+
+  // Subtipos de actas — solo si actoRaw contiene "acta"
+  if(actoRaw.includes('acta')){
+    if(actoRaw.includes('manifestaci'))                                        return 'acta-manifestaciones';
+    if(actoRaw.includes('titular real'))                                       return 'acta-titular-real';
+    if(actoRaw.includes('notoriedad') && (actoRaw.includes('abintestato')||actoRaw.includes('herederos')))
+                                                                               return 'acta-notoriedad-abintestato';
+    if(actoRaw.includes('presencia'))                                          return 'acta-presencia';
+    return 'acta-selector';
+  }
   return null;
 }
 function cerrarFormulario(){
@@ -3152,6 +3176,27 @@ function abrirFormulario(){
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
         ${Object.entries(FORM_LABELS).map(([k,v])=>`
           <button onclick="seleccionarFormulario('${k}')" style="text-align:left;padding:10px 12px;border:0.5px solid var(--border2);border-radius:8px;background:var(--surface2);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink2);transition:all .15s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border2)'">${v}</button>
+        `).join('')}
+      </div>`;
+  } else if(act === 'acta-selector'){
+    // Subselector de subtipos de acta — el modelo ha detectado un acta pero no el subtipo concreto
+    const SUBTIPOS_ACTA = [
+      ['acta-manifestaciones',        '🗣️ Acta de manifestaciones',                       'Hacer constar declaraciones del compareciente (soltería, domicilio, aceptación de cargo…)'],
+      ['acta-titular-real',           '🏢 Acta de titular real (Ley 10/2010)',             'Identificación del titular real de una sociedad'],
+      ['acta-notoriedad-abintestato', '👥 Acta de notoriedad — herederos abintestato',     'Declaración notarial de herederos sin testamento (Ley 15/2015)'],
+      ['acta-presencia',              '👁️ Acta de presencia',                             'Constatación notarial de un hecho presenciado por el notario'],
+    ];
+    contenido = `
+      <div style="background:var(--blue-bg);border:0.5px solid var(--blue-border);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+        <div style="font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Acta detectada</div>
+        <div style="font-size:13px;color:var(--ink2);">Indique el <strong>subtipo concreto</strong> para abrir el formulario correcto:</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr;gap:8px;">
+        ${SUBTIPOS_ACTA.map(([k,lbl,desc])=>`
+          <button onclick="seleccionarFormulario('${k}')" style="text-align:left;padding:12px 14px;border:0.5px solid var(--border2);border-radius:8px;background:var(--surface2);cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--ink2);transition:all .15s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border2)'">
+            <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:3px;">${lbl}</div>
+            <div style="font-size:11px;color:var(--ink3);line-height:1.4;">${desc}</div>
+          </button>
         `).join('')}
       </div>`;
   } else {
