@@ -121,6 +121,37 @@ body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-heigh
         <button class="pill" onclick="pill(this,'nC','3+')">Más de 2</button>
       </div>
     </div>
+
+    <!-- ═══ Tarjeta opcional — Inmobiliaria ═══ -->
+    <div class="card" style="background:#fefaf0;border-left:4px solid #c9a84c;">
+      <h2 style="color:#8c6830">🏢 ¿Rellena este formulario una agencia inmobiliaria?</h2>
+      <p style="font-size:0.83rem;color:#6b6258;line-height:1.5;margin-bottom:10px;">Marque "Sí" solo si es agente inmobiliario o gestor profesional. Si es un particular, deje "No".</p>
+      <div class="rg">
+        <label><input type="radio" name="esInmob" value="No" checked onclick="document.getElementById('inmob-w').classList.add('hidden')"> No, soy un particular</label>
+        <label><input type="radio" name="esInmob" value="Sí" onclick="document.getElementById('inmob-w').classList.remove('hidden')"> Sí, agencia inmobiliaria</label>
+      </div>
+      <div id="inmob-w" class="hidden" style="margin-top:14px;">
+        <div class="field">
+          <label>Nombre de la agencia *</label>
+          <input type="text" id="inmob-nombre" placeholder="Ej: Inmobiliaria Mediterránea S.L.">
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>Persona de contacto</label>
+            <input type="text" id="inmob-contacto" placeholder="Nombre y apellidos">
+          </div>
+          <div class="field">
+            <label>Teléfono</label>
+            <input type="text" id="inmob-tel" placeholder="971 000 000">
+          </div>
+        </div>
+        <div class="field">
+          <label>Email de contacto</label>
+          <input type="text" id="inmob-email" placeholder="contacto@inmobiliaria.com">
+        </div>
+      </div>
+    </div>
+
     <div class="nav"><button class="btn-p" onclick="go(1)">Continuar →</button></div>
   </div>
 
@@ -455,6 +486,16 @@ function gr(name) { var el = document.querySelector('input[name=' + name + ']:ch
 function buildRes() {
   var h = '';
 
+  // Inmobiliaria (si aplica)
+  if (gr('esInmob') === 'Sí' && gv('inmob-nombre')) {
+    h += '<div class="sg"><h3>🏢 Inmobiliaria</h3>' +
+      '<div class="sr"><span>Agencia</span><span>' + gv('inmob-nombre') + '</span></div>';
+    if (gv('inmob-contacto')) h += '<div class="sr"><span>Persona de contacto</span><span>' + gv('inmob-contacto') + '</span></div>';
+    if (gv('inmob-tel'))      h += '<div class="sr"><span>Teléfono</span><span>' + gv('inmob-tel') + '</span></div>';
+    if (gv('inmob-email'))    h += '<div class="sr"><span>Email</span><span>' + gv('inmob-email') + '</span></div>';
+    h += '</div>';
+  }
+
   // Fincas
   var fincas = collectBlock('fincasWrap');
   fincas.forEach(function(rows, i) {
@@ -541,13 +582,65 @@ function dlWord() {
   var body = fBody +
     wBlock('VENDEDOR/ES', collectBlock('vendWrap')) +
     wBlock('COMPRADOR/ES', collectBlock('compWrap')) +
-    pBody +
-    '<p style="font-size:10pt;color:#777">Documento generado por Oficial Notarial IA · ' + new Date().toLocaleDateString('es-ES') + '</p>';
+    pBody;
+
+  // ══ BANNER SUPERIOR — Inmobiliaria (si aplica) ══
+  var bannerTop = '';
+  if (gr('esInmob') === 'Sí' && gv('inmob-nombre')) {
+    var contactoLine = '';
+    if (gv('inmob-contacto')) {
+      contactoLine = '<p align="center" style="margin:8pt 0 0 0;text-align:center;"><font face="Arial" color="#ffffff" size="2">Contacto: ' + gv('inmob-contacto') + '</font></p>';
+    }
+    var bottomLine = [gv('inmob-email'), gv('inmob-tel')].filter(Boolean).join(' · ');
+    var bottomLineHtml = '';
+    if (bottomLine) {
+      bottomLineHtml = '<p align="center" style="margin:3pt 0 0 0;text-align:center;"><font face="Arial" color="#ffffff" size="2">' + bottomLine + '</font></p>';
+    }
+    bannerTop =
+      '<table width="100%" cellpadding="0" cellspacing="0" border="0" align="center" style="margin-bottom:20pt;border:2pt solid #c9a84c;">' +
+        '<tr><td bgcolor="#1a3a5c" align="center" valign="middle" style="background-color:#1a3a5c;padding:16pt;text-align:center;">' +
+          '<p align="center" style="margin:0;text-align:center;"><font face="Arial" color="#c9a84c" size="2"><b>DOCUMENTO PREPARADO POR</b></font></p>' +
+          '<p align="center" style="margin:10pt 0 0 0;text-align:center;"><font face="Georgia" color="#ffffff" size="5"><b>' + gv('inmob-nombre') + '</b></font></p>' +
+          contactoLine +
+          bottomLineHtml +
+        '</td></tr>' +
+      '</table>';
+  }
+
+  // ══ BANNER INFERIOR — Branding Oficial Notarial IA (siempre) ══
+  var bannerBottom =
+    '<br>' +
+    '<table width="100%" cellpadding="0" cellspacing="0" border="0" align="center" style="margin-top:24pt;border:3pt solid #c9a84c;page-break-inside:avoid;">' +
+      '<tr><td bgcolor="#1a3a5c" align="center" valign="middle" style="background-color:#1a3a5c;padding:22pt;text-align:center;">' +
+        '<p align="center" style="margin:0;text-align:center;"><font face="Arial" color="#c9a84c" size="2"><b>DOCUMENTO GENERADO CON</b></font></p>' +
+        '<p align="center" style="margin:12pt 0 6pt 0;text-align:center;"><font face="Georgia" color="#ffffff" size="6"><b>OFICIAL NOTARIAL IA</b></font></p>' +
+        '<p align="center" style="margin:0 0 16pt 0;text-align:center;"><font face="Georgia" color="#c9a84c" size="3"><i>Inteligencia Artificial al servicio de las notarías españolas</i></font></p>' +
+        '<table width="92%" cellpadding="6" cellspacing="0" border="0" align="center" style="margin:0 auto;">' +
+          '<tr>' +
+            '<td width="33%" align="center" valign="top" style="text-align:center;"><font face="Arial" color="#ffffff" size="2"><b>Análisis<br>de correos</b></font></td>' +
+            '<td width="33%" align="center" valign="top" style="text-align:center;"><font face="Arial" color="#ffffff" size="2"><b>Checklist<br>jurídico</b></font></td>' +
+            '<td width="33%" align="center" valign="top" style="text-align:center;"><font face="Arial" color="#ffffff" size="2"><b>Borradores<br>de respuesta</b></font></td>' +
+          '</tr>' +
+        '</table>' +
+        '<p align="center" style="margin:16pt 0 0 0;text-align:center;"><font face="Arial" color="#c9a84c" size="3"><b>oficial-notarial.vercel.app</b></font></p>' +
+      '</td></tr>' +
+    '</table>' +
+    '<p align="center" style="margin-top:10pt;text-align:center;"><font face="Arial" color="#999999" size="1">Generado el ' + new Date().toLocaleDateString('es-ES') + '</font></p>';
+
+  body = bannerTop + body + bannerBottom;
 
   var w = '<html xmlns:o=\'urn:schemas-microsoft-com:office:office\' xmlns:w=\'urn:schemas-microsoft-com:office:word\'>' +
-    '<head><meta charset=\'utf-8\'><style>body{font-family:\'Times New Roman\',serif;font-size:12pt;line-height:1.9;margin:3cm}' +
-    'h1{text-align:center;font-size:14pt;margin-bottom:20pt}h2{font-size:12pt;margin-top:16pt;border-bottom:1px solid #aaa;padding-bottom:3pt}p{margin:3pt 0}' +
-    '</style></head><body><h1>NOTARÍA<br>DATOS PARA ESCRITURA DE COMPRAVENTA</h1>' + body + '</body></html>';
+    '<head><meta charset=\'utf-8\'><style>' +
+    '@page{margin:2.5cm}' +
+    'body{font-family:\'Times New Roman\',serif;font-size:12pt;line-height:1.7}' +
+    'h1{text-align:center;font-size:16pt;margin:0 0 6pt 0;font-weight:bold}' +
+    'h2{text-align:left;font-size:12pt;margin-top:18pt;margin-bottom:8pt;border-bottom:1pt solid #888;padding-bottom:3pt;font-weight:bold;text-transform:uppercase;letter-spacing:0.5pt}' +
+    'p{margin:4pt 0}' +
+    '</style></head><body>' +
+    '<h1 align="center" style="text-align:center;">NOTARÍA</h1>' +
+    '<p align="center" style="text-align:center;font-size:13pt;margin:0 0 24pt 0;"><b>DATOS PARA ESCRITURA DE COMPRAVENTA</b></p>' +
+    body +
+    '</body></html>';
 
   var a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([w], {type: 'application/msword'}));
