@@ -2733,6 +2733,9 @@ async function analizar(){
     const data = await res.json();
     if(data.error){ alert('Error: ' + (data.error.message || data.error)); return; }
 
+    // UUID del análisis para el widget de feedback (proviene del Worker)
+    window.__lastAnalysisUUID = data.uuid || null;
+
     const raw = data.content.map(b => b.text || '').join('');
     const p   = parsear(raw);
 _lastParsed = p;
@@ -2766,7 +2769,7 @@ _lastParsed = p;
 
     // Actualizar contador desde el servidor (fuente de verdad real)
     if(data._trial && data._trial.remaining !== null && data._trial.remaining !== undefined){
-      actualizarSidebarTrialServidor(data._trial.remaining, data._trial.limit);
+      actualizarSidebarTrialServidor(data._trial.remaining, data._trial.limit, data._trial.daysRemaining);
     }
 
   } catch(e){
@@ -2788,6 +2791,10 @@ _lastParsed = p;
 function trialMostrarWallServidor(mensaje){
   document.getElementById('trialWallMsg').textContent = mensaje || 'Has agotado el período de prueba.';
 
+  // Ocultar banner superior si estuviera visible (evita coexistencia visual con el wall)
+  const banner = document.getElementById('trialBanner');
+  if(banner) banner.classList.remove('on');
+
   const contacto = TRIAL.contacto || '';
   const emailM = contacto.match(/[\w.+-]+@[\w-]+\.[a-z]{2,}/i);
   const telM   = contacto.match(/[\d\s.+()-]{7,}/);
@@ -2817,164 +2824,105 @@ function trialMostrarWallServidor(mensaje){
   document.getElementById('trialWall').classList.add('on');
 }
 
-// Actualiza el sidebar con el dato real que devuelve el servidor
-function actualizarSidebarTrialServidor(remaining, limit){
-  const el = document.getElementById('sidebarTrial');
-  if(!el) return;
+// Actualiza el sidebar y el banner con los datos reales del servidor
+function actualizarSidebarTrialServidor(remaining, limit, daysRemaining){
+  // Compatibilidad: si no llega daysRemaining, asumimos sin urgencia temporal
+  if(daysRemaining === undefined || daysRemaining === null) daysRemaining = 99;
 
   const usos = limit - remaining;
   const pct  = Math.min(100, Math.round((usos / limit) * 100));
-  const isCrit = remaining <= 0;
-  const isWarn = remaining <= 2 && !isCrit;
-  const mostrar = remaining <= 5;
+  const isCrit = remaining <= 0 || daysRemaining <= 0;
+  const isWarn = (remaining <= 2 || daysRemaining <= 3) && !isCrit;
+  const mostrar = remaining <= 5 || daysRemaining <= 7;
 
-  el.style.display = mostrar ? 'block' : 'none';
-  if(!mostrar) return;
+  // ── Sidebar ─────────────────────────────────────────────
+  const el = document.getElementById('sidebarTrial');
+  if(el){
+    el.style.display = mostrar ? 'block' : 'none';
+    if(mostrar){
+      const numEl = document.getElementById('sidebarTrialNum');
+      const barEl = document.getElementById('sidebarTrialBar');
+      const msgEl = document.getElementById('sidebarTrialMsg');
 
-  const numEl = document.getElementById('sidebarTrialNum');
-  const barEl = document.getElementById('sidebarTrialBar');
-  const msgEl = document.getElementById('sidebarTrialMsg');
+      if(numEl){
+        numEl.textContent = `${usos}/${limit}`;
+        numEl.className = 'trial-counter-num' + (isCrit ? ' crit' : isWarn ? ' warn' : '');
+      }
+      if(barEl){
+        barEl.style.width = `${pct}%`;
+        barEl.className = 'trial-bar-fill' + (isCrit ? ' crit' : isWarn ? ' warn' : '');
+      }
+      if(msgEl){
+        msgEl.className = 'trial-remaining' + (isCrit ? ' crit' : '');
+        let msg = isCrit ? 'Sin disponibilidad'
+                : remaining === 1 ? '1 análisis restante'
+                : `${remaining} análisis restantes`;
+        if(daysRemaining <= 7 && daysRemaining > 0){
+          msg += ` · ${daysRemaining} día${daysRemaining !== 1 ? 's' : ''} de prueba`;
+        }
+        msgEl.textContent = msg;
+      }
+    }
+  }
 
-  numEl.textContent = `${usos}/${limit}`;
-  barEl.style.width = `${pct}%`;
-  numEl.className = 'trial-counter-num' + (isCrit ? ' crit' : isWarn ? ' warn' : '');
-  barEl.className = 'trial-bar-fill' + (isCrit ? ' crit' : isWarn ? ' warn' : '');
-  msgEl.className = 'trial-remaining' + (isCrit ? ' crit' : '');
-  msgEl.textContent = isCrit
-    ? 'Límite alcanzado'
-    : remaining === 1
-    ? '1 análisis restante'
-    : `${remaining} análisis restantes`;
+  // ── Banner superior ─────────────────────────────────────
+  const banner = document.getElementById('trialBanner');
+  if(!banner) return;
+
+  if(isCrit || !mostrar){
+    banner.classList.remove('on');
+  } else {
+    banner.classList.add('on');
+    const bMsg = document.getElementById('trialBannerMsg');
+    const bUso = document.getElementById('trialBannerUso');
+    if(bMsg){
+      bMsg.textContent = daysRemaining > 0
+        ? `${daysRemaining} día${daysRemaining !== 1 ? 's' : ''} restante${daysRemaining !== 1 ? 's' : ''} · ${remaining} análisis`
+        : `${remaining} análisis restantes`;
+    }
+    if(bUso) bUso.textContent = `${usos} / ${limit} análisis usados`;
+  }
 }
 
 // ══════════════════════════════════════════════════════
-//  CONFIGURACIÓN DE PRUEBA — EDITAR ANTES DE ENVIAR
+//  CONFIGURACIÓN DE CONTACTO (usada por el wall del trial)
+//  El control real del trial es 100% server-side (Worker + KV).
 // ══════════════════════════════════════════════════════
 const TRIAL = {
-  activo:        true,          // false = sin límite (versión de producción)
-  dias:          15,             // días de prueba desde la primera apertura
-  maxAnalisis:   5,             // máximo de análisis permitidos durante la prueba
   contacto:      'xavigomilaorfila@gmail.com · Tel. 679 688 642',  // datos de contacto al caducar
-  nombreNotaria: 'Oficial Notarial IA',                 // nombre para personalizar mensaje
+  nombreNotaria: 'Oficial Notarial IA',                            // nombre para personalizar mensaje
 };
 // ══════════════════════════════════════════════════════
 
-function trialCheck(){
-  if(!TRIAL.activo) return { ok: true };
+// Consulta el estado del trial en el servidor SIN consumir un análisis.
+// Reutiliza /validate-code que ya devuelve { valid, remaining, limit, daysRemaining }.
+// Sincroniza sidebar y banner. Si el código está agotado/caducado, muestra el wall.
+async function verificarTrialEnServidor(){
+  const code = codigoAcceso.get();
+  if(!code) return;
 
-  const ahora   = Date.now();
-  let inicio    = localStorage.getItem('trl_ini');
-  let usos      = parseInt(localStorage.getItem('trl_usos') || '0', 10);
+  try {
+    const res = await fetch(`${WORKER_URL}/validate-code`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code })
+    });
+    if(!res.ok) return;
+    const data = await res.json();
 
-  // Primer acceso: registrar fecha de inicio
-  if(!inicio){
-    inicio = ahora.toString();
-    localStorage.setItem('trl_ini', inicio);
+    if(data.valid === false){
+      // Código inválido o caducado/agotado: el Worker incluye 'error' con el motivo
+      trialMostrarWallServidor(data.error || 'El período de prueba ha finalizado.');
+      return;
+    }
+
+    if(data.valid && typeof data.remaining === 'number' && typeof data.limit === 'number'){
+      actualizarSidebarTrialServidor(data.remaining, data.limit, data.daysRemaining);
+    }
+  } catch(e){
+    // Silencioso: si el servidor no responde, dejamos la UI tal cual estaba.
+    console.warn('No se pudo verificar el trial en el servidor', e);
   }
-
-  const msTranscurridos = ahora - parseInt(inicio, 10);
-  const diasTranscurridos = msTranscurridos / (1000 * 60 * 60 * 24);
-  const diasRestantes = Math.max(0, Math.ceil(TRIAL.dias - diasTranscurridos));
-  const usosRestantes = Math.max(0, TRIAL.maxAnalisis - usos);
-  const caducadoDias  = diasTranscurridos >= TRIAL.dias;
-  const caducadoUsos  = usos >= TRIAL.maxAnalisis;
-  const caducado      = caducadoDias || caducadoUsos;
-
-  return { ok: !caducado, diasRestantes, usosRestantes, usos, caducadoDias, caducadoUsos };
-}
-
-function trialRegistrarUso(){
-  if(!TRIAL.activo) return;
-  const usos = parseInt(localStorage.getItem('trl_usos') || '0', 10);
-  localStorage.setItem('trl_usos', (usos + 1).toString());
-}
-
-function trialActualizarBanner(){
-  if(!TRIAL.activo) return;
-  const st = trialCheck();
-  const banner = document.getElementById('trialBanner');
-  if(!st.ok){ banner.classList.remove('on'); return; }
-
-  // Mostrar banner solo cuando la situación es relevante (≤7 días o ≤5 usos)
-  const mostrarBanner = st.diasRestantes <= 7 || st.usosRestantes <= 5;
-  if(!mostrarBanner){ banner.classList.remove('on'); actualizarSidebarTrial(st); return; }
-
-  banner.classList.add('on');
-  document.getElementById('trialBannerMsg').textContent =
-    `${st.diasRestantes} día${st.diasRestantes !== 1 ? 's' : ''} restante${st.diasRestantes !== 1 ? 's' : ''}`;
-  document.getElementById('trialBannerUso').textContent =
-    `${st.usos} / ${TRIAL.maxAnalisis} análisis usados`;
-  actualizarSidebarTrial(st);
-}
-
-function actualizarSidebarTrial(st){
-  if(!TRIAL.activo) return;
-  const el = document.getElementById('sidebarTrial');
-  if(!el) return;
-  const usos = st ? st.usos : parseInt(localStorage.getItem('trl_usos')||'0',10);
-  const max  = TRIAL.maxAnalisis;
-  const pct  = Math.min(100, Math.round((usos/max)*100));
-  const rest = Math.max(0, max - usos);
-
-  // Mostrar el contador SOLO cuando queden ≤5 usos o 0 restantes (evita ansiedad innecesaria)
-  const isCrit = rest <= 0;
-  const isWarn = rest <= 3 && !isCrit;
-  const mostrar = rest <= 5; // umbral de visibilidad
-  el.style.display = mostrar ? 'block' : 'none';
-  if(!mostrar) return;
-
-  const numEl  = document.getElementById('sidebarTrialNum');
-  const barEl  = document.getElementById('sidebarTrialBar');
-  const msgEl  = document.getElementById('sidebarTrialMsg');
-
-  numEl.textContent = `${usos}/${max}`;
-  barEl.style.width = `${pct}%`;
-  numEl.className = 'trial-counter-num' + (isCrit ? ' crit' : isWarn ? ' warn' : '');
-  barEl.className = 'trial-bar-fill' + (isCrit ? ' crit' : isWarn ? ' warn' : '');
-  msgEl.className = 'trial-remaining' + (isCrit ? ' crit' : '');
-  msgEl.textContent = isCrit ? 'Límite alcanzado' : rest === 1 ? '1 análisis restante' : `${rest} análisis restantes`;
-}
-
-function trialMostrarWall(st){
-  let motivo = '';
-  if(st.caducadoDias && st.caducadoUsos)
-    motivo = `Han transcurrido los ${TRIAL.dias} días de prueba y se han agotado los ${TRIAL.maxAnalisis} análisis disponibles.`;
-  else if(st.caducadoDias)
-    motivo = `Han transcurrido los ${TRIAL.dias} días del período de evaluación.`;
-  else
-    motivo = `Se han utilizado los ${TRIAL.maxAnalisis} análisis incluidos en la prueba.`;
-
-  document.getElementById('trialWallMsg').textContent = motivo;
-
-  // Extraer email y teléfono de TRIAL.contacto para CTA real
-  const contacto = TRIAL.contacto || '';
-  const emailM = contacto.match(/[\w.+-]+@[\w-]+\.[a-z]{2,}/i);
-  const telM   = contacto.match(/[\d\s.+()-]{7,}/);
-  const emailBtn = document.getElementById('trialEmailBtn');
-  const ctaArea  = document.getElementById('trialCtaArea');
-
-  if(emailM){
-    emailBtn.href = `mailto:${emailM[0]}?subject=Licencia%20Oficial%20Notarial%20IA&body=Hola%2C%20quisiera%20adquirir%20la%20licencia%20completa%20de%20Oficial%20Notarial%20IA.`;
-    emailBtn.style.display = 'flex';
-  } else {
-    emailBtn.style.display = 'none';
-  }
-
-  // Añadir teléfono si existe
-  const existingTel = document.getElementById('trialTelBtn');
-  if(existingTel) existingTel.remove();
-  if(telM){
-    const tel = telM[0].trim().replace(/\s+/g,' ');
-    const telBtn = document.createElement('a');
-    telBtn.id = 'trialTelBtn';
-    telBtn.href = `tel:${tel.replace(/[\s.-]/g,'')}`;
-    telBtn.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;background:transparent;color:var(--ink);border:1px solid var(--border2);border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;font-family:\'DM Sans\',sans-serif;';
-    telBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.03 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg> ${tel}`;
-    ctaArea.appendChild(telBtn);
-  }
-
-  document.getElementById('trialContactInfo').textContent = contacto;
-  document.getElementById('trialWall').classList.add('on');
 }
 
 // ══════════════════════════════════════════════════════
@@ -3034,6 +2982,10 @@ async function validarCodigoDesdeModal(){
     codigoAcceso.set(codigo);
     status.textContent = '✓ Acceso concedido. Cargando aplicación…';
     status.className = 'codigo-status ok';
+    // Sincronizar sidebar y banner con los datos que ya devuelve /validate-code
+    if(typeof r.remaining === 'number' && typeof r.limit === 'number'){
+      actualizarSidebarTrialServidor(r.remaining, r.limit, r.daysRemaining);
+    }
     setTimeout(() => { cerrarModalCodigo(); }, 800);
   } else {
     status.textContent = r.error || 'Código no válido.';
@@ -3049,14 +3001,17 @@ async function validarCodigoDesdeModal(){
   sincronizarToggle();
   actualizarAPI();
 
-  // ── Si no hay código guardado, mostrar modal de entrada ─────
-  if(!codigoAcceso.get()){
+  // ── Si hay código guardado: verificar trial en servidor (sincroniza sidebar/banner).
+  //    Si no hay código: mostrar modal de entrada. ─────────────────
+  if(codigoAcceso.get()){
+    verificarTrialEnServidor();
+  } else {
     mostrarModalCodigo();
   }
   // ────────────────────────────────────────────────────────────
 
   // NOTA: El control de trial es 100% server-side. El contador del sidebar
-  // se rellena tras el primer análisis con datos reales del servidor.
+  // se sincroniza al cargar (verificarTrialEnServidor) y tras cada análisis.
 
   // Mostrar contador del historial guardado
   const savedCount = historialLoad().length;
@@ -4269,6 +4224,23 @@ async function outlookAbrirPreview(idx){
   var loading = document.getElementById('opreviewLoading');
   var pcont   = document.getElementById('opreviewContent');
   if(empty)   empty.style.display   = 'none';
+
+  // ── Caché: si ya hemos cargado este email antes, renderizamos sin volver a Graph ──
+  if(m._cachedTexto !== undefined && m._cachedHtml !== undefined){
+    outlookPreviewTexto = m._cachedTexto;
+    var bodyElCached = document.getElementById('opreviewBody');
+    if(bodyElCached) bodyElCached.innerHTML = m._cachedHtml;
+    if(loading) loading.style.display = 'none';
+    if(pcont)   pcont.style.display   = 'flex';
+    // Adjuntos sí se recargan (pueden haber cambiado)
+    if(m.hasAttachments) outlookCargarAdjuntos(m.id);
+    else {
+      const za = document.getElementById('opreviewAdjuntos');
+      if(za) za.style.display = 'none';
+    }
+    return;
+  }
+
   if(loading) loading.style.display = 'flex';
   if(pcont)   pcont.style.display   = 'none';
 
@@ -4289,10 +4261,13 @@ async function outlookAbrirPreview(idx){
 
     // ── Renderizar HTML sanitizado en el preview ──
     var bodyEl = document.getElementById('opreviewBody');
+    const htmlLimpio = sanitizarEmailHtml(data.body ? data.body.content : '', data.body ? data.body.contentType : '');
     if(bodyEl){
-      const htmlLimpio = sanitizarEmailHtml(data.body ? data.body.content : '', data.body ? data.body.contentType : '');
       bodyEl.innerHTML = htmlLimpio;
     }
+    // Guardar en caché para evitar segunda llamada a Graph en clicks futuros
+    m._cachedTexto = outlookPreviewTexto;
+    m._cachedHtml  = htmlLimpio;
     if(pcont) pcont.style.display = 'flex';
   } catch(e){
     var bodyEl = document.getElementById('opreviewBody');
