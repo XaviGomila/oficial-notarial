@@ -93,7 +93,14 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
 .topbar-title{font-family:'Lora',serif;font-size:16px;font-weight:500;color:var(--ink);letter-spacing:-0.01em;}
 .topbar-sub{font-size:10px;color:var(--ink3);letter-spacing:0.04em;text-transform:uppercase;}
 .topbar-actions{display:flex;gap:7px;align-items:center;}
-.topbar-user{font-size:10px;font-weight:600;letter-spacing:0.06em;color:var(--ink3);background:var(--surface);border:0.5px solid var(--border);border-radius:4px;padding:3px 8px;text-transform:uppercase;user-select:none;}
+.topbar-user{font-size:10px;font-weight:600;letter-spacing:0.06em;color:var(--ink3);background:var(--surface);border:0.5px solid var(--border);border-radius:4px;padding:3px 8px;text-transform:uppercase;user-select:none;cursor:pointer;position:relative;}
+.topbar-user:hover{border-color:var(--ink3);}
+.topbar-user-menu{display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--surface);border:0.5px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,0.12);min-width:140px;z-index:100;overflow:hidden;}
+.topbar-user-menu.open{display:block;}
+.topbar-user-menu-item{padding:9px 14px;font-size:11px;color:var(--ink2);cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:8px;}
+.topbar-user-menu-item:hover{background:var(--cream2);color:var(--ink);}
+.topbar-user-menu-item.danger{color:var(--red);}
+.topbar-user-menu-item.danger:hover{background:rgba(208,80,72,0.07);}
 
 /* STATUS BAR — debajo del topbar, solo visible con resultados */
 .status-bar{background:var(--cream2);border-bottom:0.5px solid var(--border);padding:0 22px;display:none;align-items:center;gap:0;}
@@ -1214,7 +1221,12 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
         <div class="topbar-sub">Análisis de correspondencia notarial</div>
       </div>
       <div class="topbar-actions">
-        <span class="topbar-user" id="topbarUser" style="display:none;"></span>
+        <span class="topbar-user" id="topbarUser" style="display:none;" onclick="toggleUserMenu(event)">
+          <span id="topbarUserLabel"></span>
+          <div class="topbar-user-menu" id="topbarUserMenu">
+            <div class="topbar-user-menu-item danger" onclick="cerrarSesion()">↩ Cerrar sesión</div>
+          </div>
+        </span>
         <button class="btn-pdf" id="btnPdf" onclick="imprimirFicha()">
           <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 5h6M4 7h6M4 9h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
           Ficha PDF
@@ -3039,12 +3051,25 @@ function cerrarModalCodigo(){
 function mostrarUsuarioTopbar(){
   var codigo = codigoAcceso.get();
   var el = document.getElementById('topbarUser');
+  var label = document.getElementById('topbarUserLabel');
   if(!el) return;
   if(!codigo){ el.style.display = 'none'; return; }
   var partes = codigo.split('-');
   var sufijo = partes[partes.length - 1];
-  el.textContent = 'Beta ' + sufijo;
+  if(label) label.textContent = 'Beta ' + sufijo;
   el.style.display = '';
+}
+
+function toggleUserMenu(e){
+  e.stopPropagation();
+  var menu = document.getElementById('topbarUserMenu');
+  if(!menu) return;
+  menu.classList.toggle('open');
+}
+
+function cerrarSesion(){
+  codigoAcceso.clear();
+  location.reload();
 }
 
 async function validarCodigoDesdeModal(){
@@ -3975,6 +4000,11 @@ function fovDlWord(){
 // Cerrar con Escape
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&document.getElementById('formOverlay')?.classList.contains('open'))cerrarFormulario();
+  if(e.key==='Escape'){var m=document.getElementById('topbarUserMenu');if(m)m.classList.remove('open');}
+});
+// Cerrar menú usuario al clicar fuera
+document.addEventListener('click',function(){
+  var m=document.getElementById('topbarUserMenu');if(m)m.classList.remove('open');
 });
 </script>
 
