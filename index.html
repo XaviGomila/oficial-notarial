@@ -93,6 +93,7 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
 .topbar-title{font-family:'Lora',serif;font-size:16px;font-weight:500;color:var(--ink);letter-spacing:-0.01em;}
 .topbar-sub{font-size:10px;color:var(--ink3);letter-spacing:0.04em;text-transform:uppercase;}
 .topbar-actions{display:flex;gap:7px;align-items:center;}
+.topbar-user{font-size:10px;font-weight:600;letter-spacing:0.06em;color:var(--ink3);background:var(--surface);border:0.5px solid var(--border);border-radius:4px;padding:3px 8px;text-transform:uppercase;user-select:none;}
 
 /* STATUS BAR — debajo del topbar, solo visible con resultados */
 .status-bar{background:var(--cream2);border-bottom:0.5px solid var(--border);padding:0 22px;display:none;align-items:center;gap:0;}
@@ -1213,6 +1214,7 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
         <div class="topbar-sub">Análisis de correspondencia notarial</div>
       </div>
       <div class="topbar-actions">
+        <span class="topbar-user" id="topbarUser" style="display:none;"></span>
         <button class="btn-pdf" id="btnPdf" onclick="imprimirFicha()">
           <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 5h6M4 7h6M4 9h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
           Ficha PDF
@@ -3034,6 +3036,17 @@ function cerrarModalCodigo(){
   document.getElementById('codigoModal').classList.remove('on');
 }
 
+function mostrarUsuarioTopbar(){
+  var codigo = codigoAcceso.get();
+  var el = document.getElementById('topbarUser');
+  if(!el) return;
+  if(!codigo){ el.style.display = 'none'; return; }
+  var partes = codigo.split('-');
+  var sufijo = partes[partes.length - 1];
+  el.textContent = 'Beta ' + sufijo;
+  el.style.display = '';
+}
+
 async function validarCodigoDesdeModal(){
   const input = document.getElementById('codigoInput');
   const status = document.getElementById('codigoStatus');
@@ -3060,7 +3073,7 @@ async function validarCodigoDesdeModal(){
     if(typeof r.remaining === 'number' && typeof r.limit === 'number'){
       actualizarSidebarTrialServidor(r.remaining, r.limit, r.daysRemaining);
     }
-    setTimeout(() => { cerrarModalCodigo(); }, 800);
+    setTimeout(() => { cerrarModalCodigo(); mostrarUsuarioTopbar(); }, 800);
   } else {
     status.textContent = r.error || 'Código no válido.';
     status.className = 'codigo-status error';
@@ -3079,6 +3092,7 @@ async function validarCodigoDesdeModal(){
   //    Si no hay código: mostrar modal de entrada. ─────────────────
   if(codigoAcceso.get()){
     verificarTrialEnServidor();
+    mostrarUsuarioTopbar();
   } else {
     mostrarModalCodigo();
   }
