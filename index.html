@@ -265,7 +265,21 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
 /* ── TRIAL WALL ── */
 .trial-wall{position:fixed;inset:0;z-index:2000;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(5,8,16,0.97);}
 .trial-wall.on{display:flex;}
-.trial-box{background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:38px;width:460px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,0.40);text-align:center;}
+.trial-box{background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:38px;width:820px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.40);text-align:center;}
+.trial-plans{display:flex;gap:14px;margin:20px 0 16px;}
+.trial-plan{flex:1;border:0.5px solid var(--border);border-radius:10px;padding:20px 18px;text-align:left;position:relative;}
+.trial-plan.featured{border-color:#C9A84C;border-width:1.5px;}
+.trial-plan-tag{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#C9A84C;color:#1a1a2e;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:100px;white-space:nowrap;}
+.trial-plan-name{font-size:11px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+.trial-plan-price{font-family:'Lora',serif;font-size:28px;color:var(--ink);line-height:1;}
+.trial-plan-price span{font-size:12px;font-family:'DM Sans',sans-serif;color:var(--ink3);font-weight:400;}
+.trial-plan-desc{font-size:11px;color:var(--ink3);margin:8px 0 12px;line-height:1.5;}
+.trial-plan-features{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:5px;}
+.trial-plan-features li{font-size:11px;color:var(--ink2);display:flex;align-items:flex-start;gap:6px;}
+.trial-plan-features li::before{content:'✓';color:#4CAF50;font-weight:700;flex-shrink:0;}
+.trial-web-link{font-size:12px;color:var(--ink3);margin-top:4px;}
+.trial-web-link a{color:#C9A84C;text-decoration:none;font-weight:600;}
+.trial-web-link a:hover{text-decoration:underline;}
 .trial-seal{width:60px;height:60px;border-radius:50%;background:var(--red-bg);border:2px solid var(--red-border);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 20px;}
 .trial-title{font-family:'Lora',serif;font-size:22px;font-weight:500;color:var(--ink);margin-bottom:8px;}
 .trial-sub{font-size:13px;color:var(--ink3);line-height:1.65;margin-bottom:24px;}
@@ -1634,15 +1648,46 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
     <div class="trial-sub" id="trialWallMsg">El período de evaluación ha concluido. Gracias por probar Oficial Notarial IA.</div>
     <hr class="trial-divider">
     <div class="trial-contact">
-      <strong>¿Te ha resultado útil?</strong>
-      <span style="display:block;margin-bottom:16px;font-size:13px;color:var(--ink3);">Contacta para adquirir la licencia completa y seguir usando la herramienta sin límites.</span>
-      <div id="trialCtaArea" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+      <strong>Contrata y sigue usando la herramienta</strong>
+      <div class="trial-plans">
+        <div class="trial-plan">
+          <div class="trial-plan-name">Individual</div>
+          <div class="trial-plan-price">€99<span> /mes</span></div>
+          <div class="trial-plan-desc">Un notario titular y su equipo de oficiales. Análisis ilimitados.</div>
+          <ul class="trial-plan-features">
+            <li>Análisis de email ilimitados</li>
+            <li>Los 15 actos notariales</li>
+            <li>Derecho foral autonómico</li>
+            <li>Motor ITP determinista</li>
+            <li>Bandeja Outlook integrada</li>
+            <li>Traducción ES/EN/DE/FR</li>
+            <li>Historial con notas y buscador</li>
+            <li>Soporte por email</li>
+          </ul>
+        </div>
+        <div class="trial-plan featured">
+          <div class="trial-plan-tag">Más vendido</div>
+          <div class="trial-plan-name">Despacho compartido</div>
+          <div class="trial-plan-price">€159<span> /mes</span></div>
+          <div class="trial-plan-desc">De 2 a 4 notarios titulares que comparten infraestructura y oficiales.</div>
+          <ul class="trial-plan-features">
+            <li>Todo lo del plan Individual</li>
+            <li>Hasta 4 notarios en el mismo acceso</li>
+            <li>Período de prueba extendido</li>
+            <li>Soporte prioritario</li>
+            <li>Acceso anticipado a nuevas funciones</li>
+            <li>Onboarding personalizado</li>
+          </ul>
+        </div>
+      </div>
+      <div id="trialCtaArea" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
         <a id="trialEmailBtn" href="/cdn-cgi/l/email-protection#31585f575e715f5e45504358501f5442" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 20px;background:var(--ink);color:#F5F0E8;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;transition:opacity .15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 4l6 4.5L13 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
           Solicitar licencia completa
         </a>
       </div>
-      <div id="trialContactInfo" style="font-size:12px;color:var(--ink3);">Contacta con tu distribuidor para obtener acceso completo.</div>
+      <div class="trial-web-link">¿Quieres saber más? <a href="https://landing-oficial-notarial.pages.dev/" target="_blank" rel="noopener">Visita nuestra web →</a></div>
+      <div id="trialContactInfo" style="display:none;"></div>
     </div>
   </div>
 </div>
