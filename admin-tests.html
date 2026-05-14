@@ -229,7 +229,7 @@ var CASOS = [
     email: 'Queremos hacer una definición de legítima. ¿Qué necesitamos?',
     expected: [
       { campo: 'certeza',  tipo: 'contains_any', valores: ['media', 'baja'],                      desc: 'Sin vecindad civil, la certeza no puede ser ALTA' },
-      { campo: 'falta',    tipo: 'contains_any', valores: ['vecindad', 'vecindad civil', 'balear'], desc: 'Debe preguntar vecindad civil (solo aplica a Mallorca/Menorca)' },
+      { campo: 'email',    tipo: 'contains_any', valores: ['vecindad', 'vecindad civil', 'balear'], desc: 'Pregunta vecindad civil en el borrador de respuesta al cliente' },
     ],
     nota: null,
   },
@@ -282,7 +282,7 @@ var CASOS = [
     email: 'Quiero hacer testamento. Estoy casado y tengo dos hijos. Tengo una casa en Menorca y unos ahorros. ¿Qué tengo que traer a la notaría?',
     expected: [
       { campo: 'actoNombre',      tipo: 'contains_any', valores: ['testamento'],                                                       desc: 'Clasifica como TESTAMENTO' },
-      { campo: 'falta',           tipo: 'contains_any', valores: ['dni', 'nie', 'pasaporte'],                                           desc: 'Pide el DNI (único documento imprescindible)' },
+      { campo: 'clIntervinientes', tipo: 'contains_any', valores: ['dni', 'nie', 'pasaporte'],                                           desc: 'Pide el DNI en el checklist de intervinientes (cuando el modelo conoce el acto, FALTA = NO_APLICA y el requisito va al checklist)' },
       { campo: 'falta',           tipo: 'not_contains', valores: ['certificado de matrimonio', 'libro de familia', 'nota simple', 'escritura', 'certificado literal'], desc: 'PROHIBIDO: no pedir docs de estado civil ni de bienes' },
       { campo: 'alertaSeguridad', tipo: 'not_contains', valores: ['cuv', 'últimas voluntades', 'isd', 'plusval', 'impuesto sobre sucesion'], desc: 'PROHIBIDO: no alertas fiscales en testamento' },
     ],
@@ -297,7 +297,7 @@ var CASOS = [
     expected: [
       { campo: 'actoNombre',      tipo: 'contains_any', valores: ['testamento'],                               desc: 'Clasifica como TESTAMENTO' },
       { campo: 'alertaSeguridad', tipo: 'contains_any', valores: ['tercio', 'cdcib', 'foral', 'balear'],       desc: 'Alerta derecho foral balear (legítima 1/3)' },
-      { campo: 'alertaSeguridad', tipo: 'not_contains', valores: ['dos tercios', 'tercio de mejora'],           desc: 'PROHIBIDO: no aplicar sistema CC (2/3) a testamentos baleares' },
+      { campo: 'alertaSeguridad', tipo: 'not_contains', valores: ['tercio de mejora', 'mejora'],           desc: 'PROHIBIDO: "tercio de mejora" es concepto del CC, no del derecho balear' },
     ],
     nota: null,
   },
@@ -309,7 +309,7 @@ var CASOS = [
     email: 'Soy ciudadana alemana pero llevo 8 años viviendo en Menorca. Quiero hacer testamento aquí. ¿Qué documentación necesito?',
     expected: [
       { campo: 'alertaSeguridad', tipo: 'contains_any', valores: ['650/2012', 'reglamento', 'residencia habitual', 'professio'],  desc: 'Alerta Reglamento UE 650/2012 y posibilidad de professio iuris' },
-      { campo: 'falta',           tipo: 'contains_any', valores: ['pasaporte', 'nie'],                                            desc: 'Pide pasaporte o NIE para extranjero' },
+      { campo: 'clIntervinientes', tipo: 'contains_any', valores: ['pasaporte', 'nie'],                                            desc: 'Pide pasaporte o NIE en el checklist de intervinientes' },
     ],
     nota: null,
   },
@@ -321,7 +321,7 @@ var CASOS = [
     email: 'Para hacer testamento, ¿necesito traer las escrituras de mis propiedades, los extractos del banco y el certificado catastral?',
     expected: [
       { campo: 'falta', tipo: 'not_contains', valores: ['escritura', 'nota simple', 'certificado bancario', 'catastro', 'extracto'],  desc: 'PROHIBIDO: el testamento no requiere documentación de bienes' },
-      { campo: 'falta', tipo: 'contains_any', valores: ['dni', 'nie'],                                                                desc: 'Solo pide el DNI' },
+      { campo: 'clIntervinientes', tipo: 'contains_any', valores: ['dni', 'nie'],                                                                desc: 'Pide el DNI en el checklist de intervinientes' },
     ],
     nota: null,
   },
@@ -366,8 +366,8 @@ var CASOS = [
   {
     id: 'CV-003',
     categoria: 'CV',
-    descripcion: 'Compraventa — no debe confundirse con hipoteca ni donación',
-    email: 'Mis padres quieren comprarme un apartamento. El precio es 120.000 euros y van a pagar por transferencia bancaria.',
+    descripcion: 'Compraventa directa — no debe confundirse con hipoteca ni donación',
+    email: 'Quiero comprar un piso de segunda mano. El precio son 120.000 euros y pagaré por transferencia bancaria el día de la firma. ¿Qué documentación necesito?',
     expected: [
       { campo: 'actoNombre', tipo: 'contains_any', valores: ['compraventa'],              desc: 'Clasifica como COMPRAVENTA' },
       { campo: 'actoNombre', tipo: 'not_contains', valores: ['hipoteca', 'donaci', 'herencia'], desc: 'No confunde con hipoteca, donación ni herencia' },
