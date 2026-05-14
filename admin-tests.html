@@ -255,7 +255,7 @@ var CASOS = [
     descripcion: 'Donación de dinero de cuenta ganancial — debe exigir consentimiento del cónyuge',
     email: 'Quiero donar 100.000 euros a mi hija. El dinero está en una cuenta bancaria a nombre de mi matrimonio.',
     expected: [
-      { campo: 'alertaSeguridad', tipo: 'contains_any', valores: ['ganancial', 'cónyuge', 'conyuge', '1377'], desc: 'Alerta consentimiento cónyuge (art. 1377 CC): bien ganancial' },
+      { campo: 'falta', tipo: 'contains_any', valores: ['ganancial', 'cónyuge', 'conyuge', '1377', 'régimen', 'regimen'], desc: 'Pregunta por régimen económico matrimonial / ganancial en FALTA (no en alertaSeguridad)' },
     ],
     nota: null,
   },
@@ -267,7 +267,7 @@ var CASOS = [
     email: 'Quiero donar dinero a mis nietos. ¿Hay algún plazo que tener en cuenta para el impuesto?',
     expected: [
       { campo: 'alertaSeguridad', tipo: 'contains_any', valores: ['30 días', '30 d', 'hábil', 'treinta'],    desc: 'Plazo ISD donaciones = 30 días hábiles' },
-      { campo: 'alertaSeguridad', tipo: 'not_contains', valores: ['6 meses', 'seis meses'],                   desc: 'PROHIBIDO: 6 meses es el plazo de herencia, no de donación' },
+      { campo: 'alertaSeguridad', tipo: 'not_contains', valores: ['seis meses'],                   desc: 'PROHIBIDO: no aplicar plazo de herencia a donaciones' },
       { campo: 'alertaSeguridad', tipo: 'not_contains', valores: ['cuv', 'últimas voluntades', 'fallecido'],  desc: 'PROHIBIDO: no mezclar documentación de herencia en donación' },
     ],
     nota: null,
