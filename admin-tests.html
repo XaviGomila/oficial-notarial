@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Batería de Tests — Oficial Notarial IA</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:#F5F2EC;color:#1A1510;min-height:100vh;padding:32px 20px;}
+    .wrap{max-width:980px;margin:0 auto;}
+    .header{margin-bottom:32px;}
+    .header h1{font-size:22px;font-weight:700;color:#1A1510;margin-bottom:4px;}
+    .header p{font-size:13px;color:#7A726A;}
+
+    /* Login */
+    .login-box{background:#fff;border:1px solid #DDD6CA;border-radius:12px;padding:32px;max-width:420px;margin:80px auto;}
+    .login-box h2{font-size:17px;font-weight:600;margin-bottom:8px;color:#1A1510;}
+    .login-box p{font-size:13px;color:#7A726A;margin-bottom:24px;line-height:1.5;}
+    .login-box input{width:100%;padding:10px 14px;border:1px solid #DDD6CA;border-radius:8px;font-size:14px;color:#1A1510;background:#F5F2EC;outline:none;font-family:inherit;transition:border-color .15s;}
+    .login-box input:focus{border-color:#8C6830;}
+    .login-box button{margin-top:12px;width:100%;padding:11px;background:#1A1510;color:#F5F0E8;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .15s;}
+    .login-box button:hover{opacity:.85;}
+    .login-err{margin-top:10px;font-size:12px;color:#C0392B;display:none;}
+    .login-err.show{display:block;}
+
+    /* Panel principal */
+    .actions{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+    .btn-run{display:flex;align-items:center;gap:8px;padding:10px 20px;background:#1A1510;color:#F5F0E8;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .15s;}
+    .btn-run:hover{opacity:.8;}
+    .btn-run:disabled{opacity:.4;cursor:not-allowed;}
+    .btn-logout{font-size:12px;color:#7A726A;background:transparent;border:1px solid #DDD6CA;border-radius:6px;padding:6px 12px;cursor:pointer;font-family:inherit;}
+    .btn-logout:hover{background:#EDE8DE;}
+
+    /* Resumen */
+    .summary-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+    .s-card{background:#fff;border:1px solid #DDD6CA;border-radius:10px;padding:16px 18px;}
+    .s-label{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#7A726A;margin-bottom:6px;}
+    .s-val{font-size:26px;font-weight:700;color:#1A1510;}
+    .s-val.green{color:#2E7D32;}
+    .s-val.red{color:#C62828;}
+
+    /* Barra de progreso */
+    .progress-wrap{background:#fff;border:1px solid #DDD6CA;border-radius:10px;padding:16px 20px;margin-bottom:20px;display:none;}
+    .progress-label{font-size:13px;color:#3D3830;margin-bottom:8px;}
+    .progress-bar-bg{background:#EDE8DE;border-radius:20px;height:8px;overflow:hidden;}
+    .progress-bar-fill{height:100%;background:#2E7D32;border-radius:20px;transition:width .3s ease;width:0%;}
+    .progress-status{font-size:12px;color:#7A726A;margin-top:8px;}
+
+    /* Filtros de categoría */
+    .filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+    .filter-btn{font-size:12px;font-weight:600;padding:5px 12px;border-radius:20px;border:1px solid #DDD6CA;background:#fff;color:#3D3830;cursor:pointer;font-family:inherit;transition:all .15s;}
+    .filter-btn.active{background:#1A1510;color:#F5F0E8;border-color:#1A1510;}
+    .filter-btn:hover:not(.active){background:#EDE8DE;}
+
+    /* Tarjeta de caso */
+    .case-card{background:#fff;border:1px solid #DDD6CA;border-radius:10px;margin-bottom:12px;overflow:hidden;}
+    .case-header{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;}
+    .case-header:hover{background:#FAFAF7;}
+    .case-status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;background:#C8C0B4;}
+    .case-status-dot.pass{background:#2E7D32;}
+    .case-status-dot.fail{background:#C62828;}
+    .case-status-dot.error{background:#E67E22;}
+    .case-status-dot.running{background:#2980B9;animation:pulse 1s infinite;}
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+    .case-id{font-family:monospace;font-size:12px;background:#F5F2EC;padding:3px 8px;border-radius:5px;color:#3D3830;border:1px solid #DDD6CA;flex-shrink:0;}
+    .case-desc{font-size:13px;color:#1A1510;flex:1;}
+    .case-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;flex-shrink:0;}
+    .case-badge.pass{background:#E8F5E9;color:#2E7D32;}
+    .case-badge.fail{background:#FDECEA;color:#C62828;}
+    .case-badge.error{background:#FEF3E2;color:#E67E22;}
+    .case-badge.pending{background:#F5F2EC;color:#7A726A;}
+    .case-expand{font-size:16px;color:#7A726A;flex-shrink:0;transition:transform .15s;}
+    .case-expand.open{transform:rotate(90deg);}
+
+    /* Detalle del caso */
+    .case-detail{display:none;border-top:1px solid #EDE8DE;padding:16px 18px;}
+    .case-detail.open{display:block;}
+    .detail-section{margin-bottom:14px;}
+    .detail-section:last-child{margin-bottom:0;}
+    .detail-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#7A726A;margin-bottom:6px;}
+    .detail-email{font-size:13px;color:#3D3830;background:#F5F2EC;border-radius:7px;padding:10px 12px;line-height:1.5;font-style:italic;}
+
+    /* Tabla de assertions */
+    .assert-table{width:100%;border-collapse:collapse;}
+    .assert-table th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#7A726A;padding:6px 10px;text-align:left;background:#F5F2EC;border-bottom:1px solid #DDD6CA;}
+    .assert-table td{font-size:12px;padding:8px 10px;border-bottom:1px solid #EDE8DE;vertical-align:top;}
+    .assert-table tr:last-child td{border-bottom:none;}
+    .assert-pass{color:#2E7D32;font-weight:600;}
+    .assert-fail{color:#C62828;font-weight:600;}
+    .assert-campo{font-family:monospace;font-size:11px;color:#3D3830;}
+    .assert-tipo{font-size:11px;color:#7A726A;font-style:italic;}
+    .assert-valores{font-size:11px;color:#3D3830;}
+    .assert-valores code{background:#F5F2EC;padding:1px 5px;border-radius:3px;font-family:monospace;}
+
+    /* Raw output */
+    .raw-toggle{font-size:12px;color:#8C6830;cursor:pointer;text-decoration:underline;margin-top:8px;display:inline-block;}
+    .raw-output{display:none;margin-top:8px;font-size:11px;font-family:monospace;background:#1A1510;color:#F5F0E8;padding:12px;border-radius:7px;white-space:pre-wrap;word-break:break-all;max-height:300px;overflow-y:auto;}
+    .raw-output.show{display:block;}
+
+    /* Nota REVISAR */
+    .nota-revisar{font-size:11px;color:#8C6830;background:#FEF9F0;border:1px solid #E8D5A3;border-radius:6px;padding:6px 10px;margin-top:8px;}
+
+    .generated{font-size:11px;color:#7A726A;margin-top:20px;text-align:right;}
+    .no-results{text-align:center;color:#7A726A;padding:40px;font-size:13px;}
+
+    @media(max-width:640px){
+      .summary-cards{grid-template-columns:1fr 1fr;}
+      .case-desc{display:none;}
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <h1>🧪 Batería de Tests — D1</h1>
+    <p>Oficial Notarial IA · Panel privado de calidad</p>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="login-box" id="loginBox">
+    <h2>Acceso privado</h2>
+    <p>Introduce tu clave de administrador (DEV_BYPASS_SECRET de Cloudflare).</p>
+    <input type="password" id="secretInput" placeholder="Tu clave secreta..."
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <button onclick="doLogin()">Acceder</button>
+    <div class="login-err" id="loginErr">Clave incorrecta o error de conexión.</div>
+  </div>
+
+  <!-- PANEL TESTS -->
+  <div id="testsPanel" style="display:none;">
+
+    <div class="actions">
+      <button class="btn-run" id="btnRun" onclick="ejecutarBateria()">
+        ▶ Ejecutar batería completa (16 casos)
+      </button>
+      <button class="btn-logout" onclick="doLogout()">Cerrar sesión</button>
+    </div>
+
+    <!-- Resumen -->
+    <div class="summary-cards" id="summaryCards">
+      <div class="s-card">
+        <div class="s-label">Total casos</div>
+        <div class="s-val" id="sumTotal">16</div>
+      </div>
+      <div class="s-card">
+        <div class="s-label">PASS</div>
+        <div class="s-val green" id="sumPass">—</div>
+      </div>
+      <div class="s-card">
+        <div class="s-label">FAIL</div>
+        <div class="s-val red" id="sumFail">—</div>
+      </div>
+      <div class="s-card">
+        <div class="s-label">Tasa de éxito</div>
+        <div class="s-val" id="sumRate">—</div>
+      </div>
+    </div>
+
+    <!-- Barra de progreso -->
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-label">Ejecutando casos...</div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <div class="progress-status" id="progressStatus">0 / 16</div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters">
+      <button class="filter-btn active" onclick="filtrarCategoria('TODOS', this)">Todos (16)</button>
+      <button class="filter-btn" onclick="filtrarCategoria('DON-DEF', this)">Donación · Definició (3)</button>
+      <button class="filter-btn" onclick="filtrarCategoria('DON-DIN', this)">Donación · Dineraria (3)</button>
+      <button class="filter-btn" onclick="filtrarCategoria('TEST', this)">Testamento (5)</button>
+      <button class="filter-btn" onclick="filtrarCategoria('CV', this)">Compraventa (5)</button>
+    </div>
+
+    <!-- Lista de casos -->
+    <div id="casosList"></div>
+
+    <div class="generated" id="generatedTs"></div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  CONFIGURACIÓN
+// ═══════════════════════════════════════════════════════════════
+var WORKER_URL = 'https://oficial-notaria.xavigomilaorfila.workers.dev';
+var _secret    = '';
+
+// ═══════════════════════════════════════════════════════════════
+//  CASOS DE TEST — 16 casos sobre 4 categorías
+// ═══════════════════════════════════════════════════════════════
+var CASOS = [
+
+  // ── DONACIÓN · DEFINICIÓ ────────────────────────────────────
+
+  {
+    id: 'DON-DEF-001',
+    categoria: 'DON-DEF',
+    descripcion: 'Definición de legítima en Menorca — alerta irrevocabilidad, IRPF, ISD',
+    email: 'Buenos días, soy de Menorca y quisiera hacer una definición de legítima. Tengo dos hijos mayores de edad y quiero donar la casa familiar a mi hijo mayor para que renuncie a su legítima futura. ¿Qué documentación necesitamos?',
+    expected: [
+      { campo: 'actoNombre',      tipo: 'contains_any', valores: ['donaci', 'defini'], desc: 'Clasifica como DONACIÓN o DEFINICIÓ' },
+      { campo: 'certeza',         tipo: 'contains_any', valores: ['alta', 'media'],   desc: 'Certeza no es BAJA' },
+      { campo: 'alertaSeguridad', tipo: 'contains',     valores: ['irrevoc'],         desc: 'Alerta irrevocabilidad del pacto' },
+      { campo: 'alertaSeguridad', tipo: 'contains',     valores: ['irpf'],            desc: 'Alerta IRPF del donante (ganancia patrimonial)' },
+      { campo: 'alertaSeguridad', tipo: 'contains_any', valores: ['isd', '651'],      desc: 'Alerta ISD del donatario (30 días hábiles)' },
+      { campo: 'clIntervinientes',tipo: 'not_empty',    valores: [],                  desc: 'Checklist intervinientes no vacío' },
+    ],
+    nota: null,
+  },
+
+  {
+    id: 'DON-DEF-002',
+    categoria: 'DON-DEF',
+    descripcion: 'Definición con donatario menor de edad — debe alertar requisito mayoría de edad',
+    email: 'Mi hijo tiene 17 años y quiero hacerle una definición de legítima, dándole una cantidad de dinero para que renuncie a la herencia futura.',
+    expected: [
+      { campo: 'alertaSeguridad', tipo: 'contains_any', valores: ['mayor de edad', 'edad', 'capacidad', 'menor', 'represent'], desc: 'Alerta sobre incapacidad del menor para suscribir definició' },
+    ],
+    nota: 'La definició requiere capacidad de obrar plena (art. 50 CDCIB). Si el sistema no detecta el problema, hay un gap en el prompt.',
+  },
+
+  {
+    id: 'DON-DEF-003',
+    categoria: 'DON-DEF',
+    descripcion: 'Definición sin datos de vecindad civil — certeza no debe ser ALTA',
+    email: 'Queremos hacer una definición de legítima. ¿Qué necesitamos?',
+    expected: [
+      { campo: 'certeza',  tipo: 'contains_any', valores: ['media', 'baja'],                      desc: 'Sin vecindad civil, la certeza no puede ser ALTA' },
+      { campo: 'falta',    tipo: 'contains_any', valores: ['vecindad', 'vecindad civil', 'balear'], desc: 'Debe preguntar vecindad civil (solo aplica a Mallorca/Menorca)' },
+    ],
+    nota: null,
+  },
+
+  // ── DONACIÓN · DINERARIA ─────────────────────────────────────
+
+  {
+    id: 'DON-DIN-001',
+    categoria: 'DON-DIN',
+    descripcion: 'Donación dineraria hijos — ISD obligatorio, PROHIBIDO ITP ni retención 3%',
+    email: 'Buenos días. Mis padres quieren donarme 50.000 euros para ayudarme a comprar un piso. ¿Qué trámites hay que hacer?',
+    expected: [
+      { campo: 'actoNombre',      tipo: 'contains_any', valores: ['donaci'],                       desc: 'Clasifica como DONACIÓN' },
+      { campo: 'alertaSeguridad', tipo: 'contains_any', valores: ['isd', '651', '30 días', '30 d'], desc: 'Alerta ISD del donatario, plazo 30 días hábiles' },
+      { campo: 'alertaSeguridad', tipo: 'not_contains', valores: ['itp', 'retenci', '3%'],          desc: 'PROHIBIDO: no debe aplicar ITP ni retención 3% a donaciones' },
+    ],
+    nota: '[REVISAR] El prompt dice que la alerta IRPF es "OBLIGATORIA — SIN EXCEPCIÓN", pero en donación dineraria no hay ganancia patrimonial (el dinero vale siempre su valor nominal). Si el sistema activa IRPF en este caso, revisar el prompt para excluir donaciones dinerarias puras de esa alerta.',
+  },
+
+  {
+    id: 'DON-DIN-002',
+    categoria: 'DON-DIN',
+    descripcion: 'Donación de dinero de cuenta ganancial — debe exigir consentimiento del cónyuge',
+    email: 'Quiero donar 100.000 euros a mi hija. El dinero está en una cuenta bancaria a nombre de mi matrimonio.',
+    expected: [
+      { campo: 'alertaSeguridad', tipo: 'contains_any', valores: ['ganancial', 'cónyuge', 'conyuge', '1377'], desc: 'Alerta consentimiento cónyuge (art. 1377 CC): bien ganancial' },
+    ],
+    nota: null,
+  },
+
+  {
+    id: 'DON-DIN-003',
+    categoria: 'DON-DIN',
+    descripcion: 'Donación dineraria — plazo ISD es 30 días hábiles, NO 6 meses (herencia)',
+    email: 'Quiero donar dinero a mis nietos. ¿Hay algún plazo que tener en cuenta para el impuesto?',
+    expected: [
+      { campo: 'alertaSeguridad', tipo: 'contains_any', valores: ['30 días', '30 d', 'hábil', 'treinta'],    desc: 'Plazo ISD donaciones = 30 días hábiles' },
+      { campo: 'alertaSeguridad', tipo: 'not_contains', valores: ['6 meses', 'seis meses'],                   desc: 'PROHIBIDO: 6 meses es el plazo de herencia, no de donación' },
+      { campo: 'alertaSeguridad', tipo: 'not_contains', valores: ['cuv', 'últimas voluntades', 'fallecido'],  desc: 'PROHIBIDO: no mezclar documentación de herencia en donación' },
+    ],
+    nota: null,
+  },
+
+  // ── TESTAMENTO ───────────────────────────────────────────────
+
+  {
+    id: 'TEST-001',
+    categoria: 'TEST',
+    descripcion: 'Testamento básico — PROHIBIDO pedir certificado de matrimonio, escrituras o docs de bienes',
+    email: 'Quiero hacer testamento. Estoy casado y tengo dos hijos. Tengo una casa en Menorca y unos ahorros. ¿Qué tengo que traer a la notaría?',
+    expected: [
+      { campo: 'actoNombre',      tipo: 'contains_any', valores: ['testamento'],                                                       desc: 'Clasifica como TESTAMENTO' },
+      { campo: 'falta',           tipo: 'contains_any', valores: ['dni', 'nie', 'pasaporte'],                                           desc: 'Pide el DNI (único documento imprescindible)' },
+      { campo: 'falta',           tipo: 'not_contains', valores: ['certificado de matrimonio', 'libro de familia', 'nota simple', 'escritura', 'certificado literal'], desc: 'PROHIBIDO: no pedir docs de estado civil ni de bienes' },
+      { campo: 'alertaSeguridad', tipo: 'not_contains', valores: ['cuv', 'últimas voluntades', 'isd', 'plusval', 'impuesto sobre sucesion'], desc: 'PROHIBIDO: no alertas fiscales en testamento' },
+    ],
+    nota: null,
+  },
+
+  {
+    id: 'TEST-002',
+    categoria: 'TEST',
+    descripcion: 'Testamento con vecindad civil balear — debe activar derecho foral (1/3 legítima)',
+    email: 'Vivo en Menorca desde siempre, soy de aquí. Quiero hacer testamento y tengo claro a quién quiero dejar mis bienes.',
+    expected: [
+      { campo: 'actoNombre',      tipo: 'contains_any', valores: ['testamento'],                               desc: 'Clasifica como TESTAMENTO' },
+      { campo: 'alertaSeguridad', tipo: 'contains_any', valores: ['tercio', 'cdcib', 'foral', 'balear'],       desc: 'Alerta derecho foral balear (legítima 1/3)' },
+      { campo: 'alertaSeguridad', tipo: 'not_contains', valores: ['dos tercios', 'tercio de mejora'],           desc: 'PROHIBIDO: no aplicar sistema CC (2/3) a testamentos baleares' },
+    ],
+    nota: null,
+  },
+
+  {
+    id: 'TEST-003',
+    categoria: 'TEST',
+    descripcion: 'Testamento con testadora extranjera residente — debe activar Reglamento UE 650/2012',
+    email: 'Soy ciudadana alemana pero llevo 8 años viviendo en Menorca. Quiero hacer testamento aquí. ¿Qué documentación necesito?',
+    expected: [
+      { campo: 'alertaSeguridad', tipo: 'contains_any', valores: ['650/2012', 'reglamento', 'residencia habitual', 'professio'],  desc: 'Alerta Reglamento UE 650/2012 y posibilidad de professio iuris' },
+      { campo: 'falta',           tipo: 'contains_any', valores: ['pasaporte', 'nie'],                                            desc: 'Pide pasaporte o NIE para extranjero' },
+    ],
+    nota: null,
+  },
+
+  {
+    id: 'TEST-004',
+    categoria: 'TEST',
+    descripcion: 'Testamento — cliente pregunta si debe traer escrituras: respuesta correcta es NO',
+    email: 'Para hacer testamento, ¿necesito traer las escrituras de mis propiedades, los extractos del banco y el certificado catastral?',
+    expected: [
+      { campo: 'falta', tipo: 'not_contains', valores: ['escritura', 'nota simple', 'certificado bancario', 'catastro', 'extracto'],  desc: 'PROHIBIDO: el testamento no requiere documentación de bienes' },
+      { campo: 'falta', tipo: 'contains_any', valores: ['dni', 'nie'],                                                                desc: 'Solo pide el DNI' },
+    ],
+    nota: null,
+  },
+
+  {
+    id: 'TEST-005',
+    categoria: 'TEST',
+    descripcion: 'Testamento Formentera sin institución de heredero — debe alertar riesgo ineficacia',
+    email: 'Soy de Formentera y quiero hacer testamento. Quiero repartir mis bienes entre mis sobrinos en partes iguales, pero no quiero nombrar a uno solo como heredero principal.',
+    expected: [
+      { campo: 'alertaSeguridad', tipo: 'contains_any', valores: ['heredero', 'hereu', 'ibiza', 'formentera', 'pitiuso', 'ineficaz', 'institución'], desc: 'Alerta testamento pitiuso sin institución de heredero universal' },
+    ],
+    nota: null,
+  },
+
+  // ── COMPRAVENTA ──────────────────────────────────────────────
+
+  {
+    id: 'CV-001',
+    categoria: 'CV',
+    descripcion: 'Compraventa con pago parcial en efectivo — debe alertar Ley 7/2012',
+    email: 'Quiero vender mi piso por 160.000 euros. El comprador quiere pagar una parte en efectivo el día de la firma. ¿Hay algún problema?',
+    expected: [
+      { campo: 'actoNombre',      tipo: 'contains_any', valores: ['compraventa'],           desc: 'Clasifica como COMPRAVENTA' },
+      { campo: 'alertaSeguridad', tipo: 'contains_any', valores: ['efectivo', '7/2012', '1.000', 'límite'], desc: 'Alerta Ley 7/2012 límite efectivo' },
+    ],
+    nota: null,
+  },
+
+  {
+    id: 'CV-002',
+    categoria: 'CV',
+    descripcion: 'Compraventa vendedor no residente — debe alertar retención 3% LIRNR y NIE',
+    email: 'Soy ciudadano inglés y vivo en Londres. Quiero vender mi apartamento en Menorca por 200.000 euros. ¿Qué trámites hay?',
+    expected: [
+      { campo: 'alertaSeguridad', tipo: 'contains_any', valores: ['3%', '211', 'lirnr', 'no residente', 'retenci', 'irnr'],  desc: 'Alerta retención 3% LIRNR (art. 25.2), modelo 211' },
+      { campo: 'falta',           tipo: 'contains_any', valores: ['nie'],                                                     desc: 'Pide NIE del vendedor no residente' },
+    ],
+    nota: null,
+  },
+
+  {
+    id: 'CV-003',
+    categoria: 'CV',
+    descripcion: 'Compraventa — no debe confundirse con hipoteca ni donación',
+    email: 'Mis padres quieren comprarme un apartamento. El precio es 120.000 euros y van a pagar por transferencia bancaria.',
+    expected: [
+      { campo: 'actoNombre', tipo: 'contains_any', valores: ['compraventa'],              desc: 'Clasifica como COMPRAVENTA' },
+      { campo: 'actoNombre', tipo: 'not_contains', valores: ['hipoteca', 'donaci', 'herencia'], desc: 'No confunde con hipoteca, donación ni herencia' },
+    ],
+    nota: null,
+  },
+
+  {
+    id: 'CV-004',
+    categoria: 'CV',
+    descripcion: 'Compraventa de plaza de garaje — PROHIBIDO pedir CEE, cédula ni destino habitual',
+    email: 'Quiero vender mi plaza de garaje. ¿Qué documentación necesito?',
+    expected: [
+      { campo: 'actoNombre', tipo: 'contains_any', valores: ['compraventa'],                                                                  desc: 'Clasifica como COMPRAVENTA' },
+      { campo: 'falta',      tipo: 'not_contains', valores: ['certificado energético', 'cee', 'cédula', 'cedula', 'destino habitual', 'residencia habitual'], desc: 'PROHIBIDO: CEE ni cédula ni destino habitual en garaje' },
+    ],
+    nota: '[REVISAR] El motor ITP tuvo un bug previo enviando preguntas de destino habitual a garajes. Si este caso falla, el bug puede haber reaparecido.',
+  },
+
+  {
+    id: 'CV-005',
+    categoria: 'CV',
+    descripcion: 'Compraventa — cliente aporta docs clave, sistema no debe volver a pedirlos',
+    email: 'Buenos días. Adjunto nota simple, referencia catastral y certificado energético. Somos comprador y vendedor de un piso por 130.000 euros, pagaremos por transferencia bancaria el día de la firma.',
+    expected: [
+      { campo: 'docsRecibida', tipo: 'not_empty',    valores: [],                                                                         desc: 'Registra documentos ya recibidos' },
+      { campo: 'falta',        tipo: 'not_contains', valores: ['nota simple', 'referencia catastral', 'certificado energético', 'cee'],    desc: 'PROHIBIDO: no repedir lo que el cliente ya ha aportado' },
+    ],
+    nota: null,
+  },
+
+];
+
+// ═══════════════════════════════════════════════════════════════
+//  PARSER — idéntico al del index.html
+// ═══════════════════════════════════════════════════════════════
+function parsear(txt) {
+  var g = function(tag) {
+    var re = new RegExp('===' + tag + '===\\s*([\\s\\S]*?)(?====|$)');
+    var m = (txt || '').match(re);
+    return m ? m[1].trim() : '';
+  };
+  var opRaw = g('OPERACION');
+  var actoM  = opRaw.match(/ACTO\s*A\s*OTORGAR\s*[:\-·]\s*(.+)/i);
+  var finalM = opRaw.match(/FINALIDAD\s*[:\-·]\s*(.+)/i);
+  return {
+    certeza:          g('CERTEZA'),
+    interlocutor:     g('INTERLOCUTOR'),
+    operacion:        opRaw,
+    actoNombre:       actoM  ? actoM[1].trim()  : opRaw.split('\n')[0].replace(/^·\s*/, '').trim(),
+    actoFinalidad:    finalM ? finalM[1].trim()  : '',
+    urgLabel:         g('URG_LABEL'),
+    urgMotivo:        g('URG_MOTIVO'),
+    nivel:            g('NIVEL'),
+    email:            g('EMAIL').replace(/<!--[\s\S]*?-->/g, '').trim(),
+    clIntervinientes: g('CHECKLIST_INTERVINIENTES'),
+    clObjeto:         g('CHECKLIST_OBJETO'),
+    clCargas:         g('CHECKLIST_CARGAS'),
+    docsRecibida:     g('DOCS_RECIBIDA'),
+    falta:            g('FALTA'),
+    alertaSeguridad:  g('ALERTA_SEGURIDAD'),
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  MOTOR DE VERIFICACIÓN DETERMINISTA
+// ═══════════════════════════════════════════════════════════════
+function verificarAssertion(parsed, assertion) {
+  var rawValor = parsed[assertion.campo] || '';
+  var valor = rawValor.toLowerCase().trim();
+
+  if (assertion.tipo === 'contains') {
+    for (var i = 0; i < assertion.valores.length; i++) {
+      if (valor.indexOf(assertion.valores[i].toLowerCase()) === -1) return false;
+    }
+    return true;
+  }
+
+  if (assertion.tipo === 'contains_any') {
+    for (var i = 0; i < assertion.valores.length; i++) {
+      if (valor.indexOf(assertion.valores[i].toLowerCase()) !== -1) return true;
+    }
+    return false;
+  }
+
+  if (assertion.tipo === 'not_contains') {
+    for (var i = 0; i < assertion.valores.length; i++) {
+      if (valor.indexOf(assertion.valores[i].toLowerCase()) !== -1) return false;
+    }
+    return true;
+  }
+
+  if (assertion.tipo === 'not_empty') {
+    return valor.length > 0 && valor !== 'no_aplica' && valor !== '—' && valor !== '-';
+  }
+
+  return false;
+}
+
+function evaluarCaso(caso, rawOutput) {
+  var parsed   = parsear(rawOutput);
+  var resultados = [];
+  var allPass  = true;
+
+  for (var i = 0; i < caso.expected.length; i++) {
+    var a = caso.expected[i];
+    var ok = verificarAssertion(parsed, a);
+    if (!ok) allPass = false;
+    resultados.push({ assertion: a, ok: ok, campoValor: (parsed[a.campo] || '').substring(0, 200) });
+  }
+
+  return { ok: allPass, resultados: resultados, parsed: parsed };
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ESTADO DE LA UI
+// ═══════════════════════════════════════════════════════════════
+var _resultados = {};   // { id: { status:'pass'|'fail'|'error'|'pending', eval, raw, err } }
+var _filtroActual = 'TODOS';
+
+CASOS.forEach(function(c) {
+  _resultados[c.id] = { status: 'pending', eval: null, raw: '', err: null };
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════════════════════
+function doLogin() {
+  var val = document.getElementById('secretInput').value.trim();
+  if (!val) return;
+  _secret = val;
+  document.getElementById('loginErr').classList.remove('show');
+  // Verificar con un ping rápido a /admin/stats
+  fetch(WORKER_URL + '/admin/stats', { headers: { 'X-Dev-Bypass': _secret } })
+    .then(function(r) {
+      if (r.ok) {
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('testsPanel').style.display = 'block';
+        renderCasos();
+      } else {
+        document.getElementById('loginErr').classList.add('show');
+        _secret = '';
+      }
+    })
+    .catch(function() {
+      document.getElementById('loginErr').classList.add('show');
+      _secret = '';
+    });
+}
+
+function doLogout() {
+  _secret = '';
+  document.getElementById('testsPanel').style.display = 'none';
+  document.getElementById('loginBox').style.display = 'block';
+  document.getElementById('secretInput').value = '';
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  EJECUCIÓN DE LA BATERÍA
+// ═══════════════════════════════════════════════════════════════
+function ejecutarBateria() {
+  var btn = document.getElementById('btnRun');
+  btn.disabled = true;
+  btn.textContent = 'Ejecutando...';
+
+  // Reset resultados
+  CASOS.forEach(function(c) {
+    _resultados[c.id] = { status: 'running', eval: null, raw: '', err: null };
+  });
+
+  document.getElementById('progressWrap').style.display = 'block';
+  actualizarProgress(0);
+  renderCasos();
+
+  var ejecutados = 0;
+
+  function ejecutarSiguiente(idx) {
+    if (idx >= CASOS.length) {
+      btn.disabled = false;
+      btn.textContent = '▶ Ejecutar batería completa (16 casos)';
+      document.getElementById('generatedTs').textContent =
+        'Última ejecución: ' + new Date().toLocaleString('es-ES');
+      actualizarResumen();
+      return;
+    }
+
+    var caso = CASOS[idx];
+    _resultados[caso.id].status = 'running';
+    renderCaso(caso);
+
+    fetch(WORKER_URL + '/admin/run-tests', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Dev-Bypass':  _secret,
+      },
+      body: JSON.stringify({ casos: [{ id: caso.id, descripcion: caso.descripcion, email: caso.email }] }),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var res = data.resultados && data.resultados[0] ? data.resultados[0] : null;
+      if (!res || res.error) {
+        _resultados[caso.id] = { status: 'error', eval: null, raw: '', err: (res && res.error) || 'Sin respuesta del worker' };
+      } else {
+        var ev = evaluarCaso(caso, res.rawOutput);
+        _resultados[caso.id] = {
+          status: ev.ok ? 'pass' : 'fail',
+          eval:   ev,
+          raw:    res.rawOutput,
+          err:    null,
+        };
+      }
+      ejecutados++;
+      actualizarProgress(ejecutados);
+      renderCaso(caso);
+      ejecutarSiguiente(idx + 1);
+    })
+    .catch(function(err) {
+      _resultados[caso.id] = { status: 'error', eval: null, raw: '', err: err.message || 'Error de red' };
+      ejecutados++;
+      actualizarProgress(ejecutados);
+      renderCaso(caso);
+      ejecutarSiguiente(idx + 1);
+    });
+  }
+
+  ejecutarSiguiente(0);
+}
+
+function actualizarProgress(n) {
+  var total = CASOS.length;
+  var pct   = Math.round((n / total) * 100);
+  document.getElementById('progressFill').style.width   = pct + '%';
+  document.getElementById('progressStatus').textContent = n + ' / ' + total + ' casos completados';
+}
+
+function actualizarResumen() {
+  var pass = 0, fail = 0, err = 0;
+  CASOS.forEach(function(c) {
+    var s = _resultados[c.id].status;
+    if (s === 'pass') pass++;
+    else if (s === 'fail') fail++;
+    else if (s === 'error') err++;
+  });
+  var total    = CASOS.length;
+  var ejecutados = pass + fail + err;
+  var rate     = ejecutados > 0 ? Math.round((pass / ejecutados) * 100) + '%' : '—';
+
+  document.getElementById('sumPass').textContent = pass;
+  document.getElementById('sumFail').textContent = fail + (err > 0 ? ' (+' + err + ' errores)' : '');
+  document.getElementById('sumRate').textContent = rate;
+
+  document.getElementById('sumPass').className = 's-val ' + (pass === total ? 'green' : '');
+  document.getElementById('sumFail').className = 's-val ' + (fail + err > 0 ? 'red' : '');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════════════════
+function filtrarCategoria(cat, btn) {
+  _filtroActual = cat;
+  document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderCasos();
+}
+
+function renderCasos() {
+  var casosFiltrados = _filtroActual === 'TODOS'
+    ? CASOS
+    : CASOS.filter(function(c) { return c.id.startsWith(_filtroActual); });
+
+  var html = '';
+  casosFiltrados.forEach(function(c) { html += buildCasoHTML(c); });
+  document.getElementById('casosList').innerHTML = html || '<div class="no-results">No hay casos para esta categoría.</div>';
+}
+
+function renderCaso(caso) {
+  var existente = document.getElementById('card-' + caso.id);
+  if (!existente) return;
+  var div = document.createElement('div');
+  div.innerHTML = buildCasoHTML(caso);
+  existente.outerHTML = div.firstElementChild.outerHTML;
+}
+
+function buildCasoHTML(caso) {
+  var res = _resultados[caso.id];
+  var status = res.status;
+
+  var dotClass   = 'case-status-dot ' + status;
+  var badgeClass = 'case-badge ' + status;
+  var badgeText  = status === 'pass' ? '✓ PASS' : status === 'fail' ? '✗ FAIL' : status === 'error' ? '⚠ ERROR' : '· Pendiente';
+
+  var assertRows = '';
+  if (res.eval && res.eval.resultados) {
+    assertRows = res.eval.resultados.map(function(r) {
+      var icon    = r.ok ? '✓' : '✗';
+      var cls     = r.ok ? 'assert-pass' : 'assert-fail';
+      var valores = r.assertion.valores && r.assertion.valores.length
+        ? r.assertion.valores.map(function(v) { return '<code>' + v + '</code>'; }).join(', ')
+        : '—';
+      return '<tr>'
+        + '<td><span class="' + cls + '">' + icon + '</span></td>'
+        + '<td><span class="assert-campo">' + r.assertion.campo + '</span></td>'
+        + '<td><span class="assert-tipo">' + r.assertion.tipo + '</span> ' + valores + '</td>'
+        + '<td class="assert-valores">' + r.assertion.desc + '</td>'
+        + '</tr>';
+    }).join('');
+  }
+
+  var detailContent = '';
+  if (status !== 'pending') {
+    var emailPreview = '<div class="detail-section"><div class="detail-label">Email sintético</div><div class="detail-email">' + esc(caso.email) + '</div></div>';
+
+    var assertTable = assertRows
+      ? '<div class="detail-section"><div class="detail-label">Assertions (' + res.eval.resultados.length + ')</div>'
+        + '<table class="assert-table"><thead><tr><th></th><th>Campo</th><th>Regla</th><th>Descripción</th></tr></thead>'
+        + '<tbody>' + assertRows + '</tbody></table></div>'
+      : '';
+
+    var errMsg = res.err
+      ? '<div class="detail-section"><div class="detail-label">Error</div><div style="color:#C62828;font-size:13px;">' + esc(res.err) + '</div></div>'
+      : '';
+
+    var notaMsg = caso.nota
+      ? '<div class="nota-revisar">⚠ ' + esc(caso.nota) + '</div>'
+      : '';
+
+    var rawId = 'raw-' + caso.id;
+    var rawSection = res.raw
+      ? '<div class="detail-section"><span class="raw-toggle" onclick="toggleRaw(\'' + rawId + '\')">Ver output crudo del modelo</span>'
+        + '<div class="raw-output" id="' + rawId + '">' + esc(res.raw) + '</div></div>'
+      : '';
+
+    detailContent = emailPreview + assertTable + errMsg + notaMsg + rawSection;
+  }
+
+  return '<div class="case-card" id="card-' + caso.id + '">'
+    + '<div class="case-header" onclick="toggleCard(\'' + caso.id + '\')">'
+    + '<div class="' + dotClass + '"></div>'
+    + '<span class="case-id">' + caso.id + '</span>'
+    + '<span class="case-desc">' + esc(caso.descripcion) + '</span>'
+    + '<span class="' + badgeClass + '">' + badgeText + '</span>'
+    + '<span class="case-expand" id="exp-' + caso.id + '">›</span>'
+    + '</div>'
+    + '<div class="case-detail" id="det-' + caso.id + '">' + detailContent + '</div>'
+    + '</div>';
+}
+
+function toggleCard(id) {
+  var det = document.getElementById('det-' + id);
+  var exp = document.getElementById('exp-' + id);
+  if (!det) return;
+  var open = det.classList.contains('open');
+  det.classList.toggle('open', !open);
+  exp.classList.toggle('open', !open);
+}
+
+function toggleRaw(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.toggle('show');
+}
+
+function esc(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════════
+document.getElementById('sumTotal').textContent = CASOS.length;
+</script>
+</body>
+</html>
