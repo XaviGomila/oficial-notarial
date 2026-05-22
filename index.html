@@ -3230,6 +3230,7 @@ const FORM_URLS = {
   'acta-titular-real':           BASE_URL + '/acta-titular-real.html',
   'acta-notoriedad-abintestato': BASE_URL + '/acta-notoriedad-abintestato.html',
   'acta-presencia':              BASE_URL + '/acta-presencia.html',
+  'division-horizontal':         BASE_URL + '/division-horizontal.html',
 };
 
 const FORM_LABELS = {
@@ -3247,10 +3248,10 @@ const FORM_LABELS = {
   'acta-titular-real':           '🏢 Acta de titular real (Ley 10/2010)',
   'acta-notoriedad-abintestato': '👥 Acta de notoriedad — herederos abintestato',
   'acta-presencia':              '👁️ Acta de presencia',
+  'division-horizontal':         '🏢 División horizontal / Segregación',
 };
 
-const DISPONIBLES = ['compraventa', 'poder', 'renuncia', 'testamento', 'cancelacion', 'donacion', 'herencia', 'obranue', 'hipoteca', 'disolucion', 'acta-manifestaciones'];
-// Añadir más cuando estén subidos a Vercel
+const DISPONIBLES = ['compraventa', 'poder', 'renuncia', 'testamento', 'cancelacion', 'donacion', 'herencia', 'obranue', 'hipoteca', 'disolucion', 'acta-manifestaciones', 'acta-titular-real', 'acta-notoriedad-abintestato', 'acta-presencia', 'division-horizontal'];
 
 function detectarActo(){
   const actoRaw = (_lastParsed?.actoNombre || '').toLowerCase();
@@ -3264,6 +3265,7 @@ function detectarActo(){
   if(actoRaw.includes('obra nueva'))                                           return 'obranue';
   if(actoRaw.includes('condominio')||actoRaw.includes('proindiviso'))          return 'disolucion';
   if(actoRaw.includes('hipoteca')||actoRaw.includes('préstamo hipotecario'))   return 'hipoteca';
+  if(actoRaw.includes('división horizontal')||actoRaw.includes('division horizontal')||actoRaw.includes('segregaci'))  return 'division-horizontal';
 
   // Subtipos de actas — solo si actoRaw contiene "acta"
   if(actoRaw.includes('acta')){
