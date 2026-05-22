@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notaría · División Horizontal / Segregación</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-height:100vh}
+.header{background:#1a3a5c;color:#fff;padding:20px 24px 18px}
+.header-inner{max-width:620px;margin:0 auto}
+.header-seal{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.seal-icon{width:38px;height:38px;border-radius:8px;border:1px solid rgba(196,168,74,0.5);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.header h1{font-family:'Lora',serif;font-size:1.15rem;font-weight:500}
+.header p{font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:3px}
+.acto-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(196,168,74,0.15);border:1px solid rgba(196,168,74,0.3);border-radius:100px;padding:4px 12px;font-size:0.78rem;color:#c9a84c;margin-top:10px}
+.wrap{max-width:620px;margin:24px auto;padding:0 16px 60px}
+.notice{background:#eef3f9;border-left:3px solid #1a3a5c;border-radius:0 8px 8px 0;padding:11px 16px;font-size:0.83rem;color:#2c4a6a;line-height:1.6;margin-bottom:18px}
+.warn{background:#fef6e4;border-left:3px solid #c9a84c;border-radius:0 8px 8px 0;padding:9px 14px;font-size:0.78rem;color:#8c6830;line-height:1.5;margin-bottom:10px}
+.info{background:#edf7f1;border-left:3px solid #185535;border-radius:0 8px 8px 0;padding:9px 14px;font-size:0.78rem;color:#185535;line-height:1.5;margin-bottom:10px}
+.step-bar{display:flex;align-items:center;margin-bottom:22px}
+.sdot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;transition:all .3s}
+.sdot.done{background:#1a3a5c;color:#fff}
+.sdot.active{background:#c9a84c;color:#1a1510;box-shadow:0 0 0 4px rgba(201,168,76,0.2)}
+.sdot.pend{background:#ddd;color:#999}
+.sline{flex:1;height:2px;background:#ddd}
+.sline.done{background:#1a3a5c}
+.screen{display:none}
+.screen.active{display:block}
+.card{background:#fff;border-radius:10px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.07);margin-bottom:14px;border:0.5px solid #e8e2d8}
+.card h2{font-size:0.82rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px;padding-bottom:9px;border-bottom:1.5px solid #f0ebe0}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:0.79rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6b6258;margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:#1a1510;background:#faf8f4;border:1.5px solid #ddd8ce;border-radius:7px;padding:10px 12px;outline:none;transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#1a3a5c;background:#fff}
+.field .hint{font-size:0.75rem;color:#8c6830;margin-top:4px;font-style:italic}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px}
+.rg{display:flex;gap:14px;flex-wrap:wrap;margin-top:5px}
+.rg label{display:flex;align-items:center;gap:6px;font-size:0.88rem;cursor:pointer;color:#3d3830}
+.rg input{accent-color:#1a3a5c}
+.hidden{display:none}
+.nav{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap}
+.btn-p{background:#1a3a5c;color:#fff;border:none;padding:12px 22px;border-radius:7px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;flex:1;transition:opacity .15s}
+.btn-p:hover{opacity:.88}
+.btn-s{background:#f0ebe0;color:#3d3830;border:1px solid #ddd8ce;padding:12px 18px;border-radius:7px;font-size:0.88rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-s:hover{background:#e8e0d0}
+.btn-w{background:#2b579a;color:#fff;border:none;padding:12px 20px;border-radius:7px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .15s}
+.btn-w:hover{opacity:.88}
+.btn-add{background:#eef3f9;color:#1a3a5c;border:1.5px dashed #1a3a5c;padding:9px 16px;border-radius:7px;font-size:0.84rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;margin-top:4px;transition:background .15s}
+.btn-add:hover{background:#dce8f5}
+.sg{margin-bottom:12px}
+.sg h3{font-size:0.78rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px}
+.sr{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0ebe0;font-size:0.83rem}
+.sr span:first-child{color:#6b6258}
+.sr span:last-child{font-weight:500;text-align:right;max-width:65%}
+.success{background:#e8f5e9;border:1.5px solid #81c784;border-radius:10px;padding:20px;text-align:center;color:#2e7d32;margin-top:16px}
+.success h3{font-size:1rem;margin-bottom:6px;font-family:'Lora',serif}
+.success p{font-size:0.85rem;line-height:1.5}
+.footer{text-align:center;padding:24px 16px;font-size:0.75rem;color:#a09585;border-top:1px solid #e8e2d8;margin-top:8px}
+.bloque-elem{background:#faf8f4;border:1px solid #e8e2d8;border-radius:8px;padding:14px;margin-bottom:10px}
+.bloque-elem h4{font-size:0.78rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px}
+@media(max-width:480px){.row2{grid-template-columns:1fr}.row3{grid-template-columns:1fr 1fr}.nav{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-seal">
+      <div class="seal-icon">🏢</div>
+      <div>
+        <h1>Notaría · División Horizontal / Segregación</h1>
+        <p>Complete sus datos para la tramitación del acto</p>
+      </div>
+    </div>
+    <div class="acto-badge">🏢 División horizontal / Segregación — LPH y Ley Hipotecaria</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="notice">
+    <strong>Dos actos distintos:</strong> La <strong>división horizontal</strong> crea una comunidad de propietarios al dividir un edificio en elementos independientes (pisos, locales, garajes). La <strong>segregación</strong> separa una parte de una finca para crear una nueva finca registral independiente. Pueden hacerse conjuntamente.
+  </div>
+  <div class="step-bar" id="stepBar"></div>
+
+  <!-- PASO 0 — Propietario y finca matriz -->
+  <div class="screen active" id="s0">
+    <div class="card">
+      <h2>👤 Propietario / Promotor</h2>
+      <div class="row2">
+        <div class="field"><label>Nombre / Razón social *</label><input type="text" id="prop-nombre" placeholder="Persona física o sociedad"></div>
+        <div class="field"><label>DNI / NIE / CIF *</label><input type="text" id="prop-dni" placeholder="12345678A o B12345678"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Teléfono</label><input type="text" id="prop-tel" placeholder="971 000 000"></div>
+        <div class="field"><label>Email</label><input type="text" id="prop-email" placeholder="correo@ejemplo.com"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🏠 Finca matriz (finca original en el Registro)</h2>
+      <div class="field"><label>Descripción de la finca *</label>
+        <textarea id="fin-desc" rows="3" placeholder="Ej: Solar/edificio sito en calle..., con una superficie de... m². Consta de... plantas."></textarea>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Registro de la Propiedad *</label>
+          <select id="fin-rp">
+            <option value="">— Seleccione —</option>
+            <option>Mahón nº 1</option>
+            <option>Mahón nº 2</option>
+            <option>Ciutadella</option>
+            <option>Inca</option>
+            <option>Manacor</option>
+            <option>Palma nº 1</option>
+            <option>Palma nº 2</option>
+            <option>Palma nº 3</option>
+            <option>Palma nº 4</option>
+            <option>Palma nº 5</option>
+            <option>Otro (indicar abajo)</option>
+          </select>
+        </div>
+        <div class="field"><label>Número de finca registral *</label><input type="text" id="fin-num" placeholder="Ej: 12345"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Referencia catastral</label><input type="text" id="fin-cat" placeholder="20 caracteres alfanuméricos"></div>
+        <div class="field"><label>Superficie total (m²)</label><input type="number" id="fin-sup" placeholder="Ej: 350"></div>
+      </div>
+      <div class="field"><label>¿Hay hipoteca o carga sobre la finca matriz?</label>
+        <div class="rg">
+          <label><input type="radio" name="cargas" value="No"> No</label>
+          <label><input type="radio" name="cargas" value="Sí"> Sí</label>
+          <label><input type="radio" name="cargas" value="No lo sé"> No lo sé</label>
+        </div>
+        <div class="hint">Si hay cargas, es necesario coordinarse con la entidad acreedora para distribuirlas entre los nuevos elementos.</div>
+      </div>
+    </div>
+
+    <div class="nav"><button class="btn-p" onclick="go(1)">Continuar →</button></div>
+  </div>
+
+  <!-- PASO 1 — Tipo de acto -->
+  <div class="screen" id="s1">
+    <div class="card">
+      <h2>⚙️ Tipo de acto</h2>
+      <div class="field"><label>¿Qué operación quiere realizar? *</label>
+        <div class="rg">
+          <label><input type="radio" name="tipo-acto" value="División horizontal" onclick="toggleTipoActo()"> División horizontal</label>
+          <label><input type="radio" name="tipo-acto" value="Segregación" onclick="toggleTipoActo()"> Segregación</label>
+          <label><input type="radio" name="tipo-acto" value="División horizontal y segregación" onclick="toggleTipoActo()"> Ambas (DH + segregación)</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bloque DH -->
+    <div id="bloque-dh" class="hidden">
+      <div class="card">
+        <h2>🏗️ División horizontal — descripción del edificio</h2>
+        <div class="warn">⚠ Para la división horizontal es necesario contar con la descripción técnica del arquitecto o aparejador, y el libro del edificio si existe. La notaría necesitará esos documentos.</div>
+        <div class="field"><label>Número total de plantas</label><input type="number" id="dh-plantas" placeholder="Ej: 3 (incluida planta baja)"></div>
+        <div class="field"><label>¿Incluye elementos comunes privativos (garajes, trasteros)?</label>
+          <div class="rg">
+            <label><input type="radio" name="elem-comunes" value="No"> No</label>
+            <label><input type="radio" name="elem-comunes" value="Sí"> Sí</label>
+          </div>
+        </div>
+        <div class="field"><label>Descripción general del edificio</label>
+          <textarea id="dh-desc-edif" rows="3" placeholder="Ej: Edificio de 3 plantas + sótano. Planta baja: local comercial. Plantas 1ª y 2ª: 2 viviendas por planta. Sótano: 4 plazas de garaje."></textarea>
+        </div>
+        <div class="field"><label>¿Tiene licencia de obras o certificado de fin de obra?</label>
+          <div class="rg">
+            <label><input type="radio" name="lic-obras" value="Sí, tengo licencia de obras"> Sí, licencia de obras</label>
+            <label><input type="radio" name="lic-obras" value="Sí, tengo certificado de fin de obra"> Sí, certificado fin de obra</label>
+            <label><input type="radio" name="lic-obras" value="Ambos"> Ambos</label>
+            <label><input type="radio" name="lic-obras" value="No"> No</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🔢 Elementos privativos</h2>
+        <div class="notice" style="margin-bottom:14px">Describa cada elemento que resultará de la división (viviendas, locales, garajes, trasteros). La cuota de participación debe sumar 100%.</div>
+        <div id="contenedor-elem">
+          <div class="bloque-elem" id="elem-0">
+            <h4>Elemento 1</h4>
+            <div class="row2">
+              <div class="field"><label>Tipo *</label>
+                <select id="e0-tipo"><option value="">— Seleccione —</option><option>Vivienda</option><option>Local comercial</option><option>Plaza de garaje</option><option>Trastero</option><option>Oficina</option><option>Otro</option></select>
+              </div>
+              <div class="field"><label>Identificación</label><input type="text" id="e0-id" placeholder="Ej: Piso 1º A, Local 1..."></div>
+            </div>
+            <div class="row3">
+              <div class="field"><label>Sup. útil (m²)</label><input type="number" id="e0-sup" placeholder="Ej: 85"></div>
+              <div class="field"><label>Cuota (%)</label><input type="number" id="e0-cuota" placeholder="Ej: 25.00" step="0.01"></div>
+              <div class="field"><label>Planta</label><input type="text" id="e0-planta" placeholder="Ej: 1ª"></div>
+            </div>
+          </div>
+        </div>
+        <button class="btn-add" onclick="addElem()">+ Añadir elemento</button>
+      </div>
+    </div>
+
+    <!-- Bloque Segregación -->
+    <div id="bloque-seg" class="hidden">
+      <div class="card">
+        <h2>✂️ Segregación — descripción de la porción</h2>
+        <div class="warn">⚠ Para segregar es necesario licencia municipal de segregación o declaración de innecesariedad del Ayuntamiento, salvo excepciones legales.</div>
+        <div class="field"><label>Descripción de la porción que se segrega *</label>
+          <textarea id="seg-desc" rows="3" placeholder="Ej: Porción de terreno de 500 m² sita en el extremo norte de la finca matriz, con frente a calle..."></textarea>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Superficie de la porción (m²) *</label><input type="number" id="seg-sup" placeholder="Ej: 500"></div>
+          <div class="field"><label>Superficie del resto de finca (m²)</label><input type="number" id="seg-resto" placeholder="Ej: 1.200"></div>
+        </div>
+        <div class="field"><label>¿Tiene licencia de segregación o declaración de innecesariedad?</label>
+          <div class="rg">
+            <label><input type="radio" name="lic-seg" value="Sí, licencia de segregación"> Sí, licencia de segregación</label>
+            <label><input type="radio" name="lic-seg" value="Sí, declaración de innecesariedad"> Sí, decl. innecesariedad</label>
+            <label><input type="radio" name="lic-seg" value="No"> No</label>
+            <label><input type="radio" name="lic-seg" value="En trámite"> En trámite</label>
+          </div>
+          <div class="hint">Sin este documento el Registro no inscribirá la segregación (art. 26 LS y art. 78 RH).</div>
+        </div>
+        <div class="field"><label>Destino previsto de la porción segregada</label>
+          <input type="text" id="seg-destino" placeholder="Ej: venta a tercero, construcción de vivienda unifamiliar, aparcamiento...">
+        </div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-s" onclick="go(0)">← Atrás</button>
+      <button class="btn-p" onclick="go(2)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- PASO 2 — Técnico y licencias -->
+  <div class="screen" id="s2">
+    <div class="card">
+      <h2>🔧 Técnico redactor</h2>
+      <div class="notice" style="margin-bottom:14px">La descripción técnica de los elementos (superficies, cuotas, linderos) debe ser elaborada por un arquitecto o aparejador. Sus datos ayudan a coordinar la tramitación.</div>
+      <div class="row2">
+        <div class="field"><label>Nombre del técnico</label><input type="text" id="tec-nombre" placeholder="Arquitecto / Aparejador"></div>
+        <div class="field"><label>Colegio profesional nº</label><input type="text" id="tec-col" placeholder="Ej: Col. Arq. Balears nº 1234"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Teléfono del técnico</label><input type="text" id="tec-tel" placeholder="971 000 000"></div>
+        <div class="field"><label>Email del técnico</label><input type="text" id="tec-email" placeholder="tecnico@ejemplo.com"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📋 Documentación y datos complementarios</h2>
+      <div class="field"><label>¿Hay comunidad de propietarios existente que deba aprobar el acto?</label>
+        <div class="rg">
+          <label><input type="radio" name="ccpp" value="No"> No (finca sin comunidad constituida)</label>
+          <label><input type="radio" name="ccpp" value="Sí"> Sí (hay comunidad constituida)</label>
+        </div>
+      </div>
+      <div class="field"><label>¿El propietario actúa en nombre propio o en representación de una sociedad?</label>
+        <div class="rg">
+          <label><input type="radio" name="rep" value="En nombre propio"> En nombre propio</label>
+          <label><input type="radio" name="rep" value="En representación de sociedad"> En representación de sociedad</label>
+        </div>
+      </div>
+      <div class="field"><label>¿Tiene informe de eficiencia energética o libro del edificio?</label>
+        <div class="rg">
+          <label><input type="radio" name="energia" value="Sí"> Sí</label>
+          <label><input type="radio" name="energia" value="No"> No</label>
+          <label><input type="radio" name="energia" value="En trámite"> En trámite</label>
+        </div>
+      </div>
+      <div class="field"><label>Observaciones adicionales</label>
+        <textarea id="obs" rows="3" placeholder="Cualquier información relevante: existencia de hipotecas sobre elementos concretos, condiciones urbanísticas especiales..."></textarea>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-s" onclick="go(1)">← Atrás</button>
+      <button class="btn-p" onclick="go(3)">Revisar →</button>
+    </div>
+  </div>
+
+  <!-- PASO 3 — Resumen -->
+  <div class="screen" id="s3">
+    <div class="card">
+      <h2>📋 Revise sus datos antes de descargar</h2>
+      <div id="resumen"></div>
+    </div>
+    <div class="notice">Si hay algún error, pulse "Corregir" para volver atrás.</div>
+    <div class="nav">
+      <button class="btn-s" onclick="go(2)">← Corregir</button>
+      <button class="btn-w" onclick="dlWord()">⬇️ Descargar Word y enviar a la notaría</button>
+    </div>
+    <div class="success" id="ok" style="display:none">
+      <h3>✅ Documento descargado</h3>
+      <p>Adjunte el archivo Word en su respuesta al email de la notaría.<br>Le contactaremos para revisar la documentación técnica y coordinar la firma.</p>
+    </div>
+  </div>
+
+  <div class="footer">Oficial Notarial IA · Sus datos se procesan localmente y no se almacenan en ningún servidor.</div>
+</div>
+
+<script>
+var LABELS = ['Propietario / Finca','Tipo y Elementos','Técnico / Licencias','Resumen'];
+var step = 0;
+var nElem = 1;
+
+function renderBar(){
+  var b = document.getElementById('stepBar'); b.innerHTML = '';
+  LABELS.forEach(function(l, i){
+    var d = document.createElement('div');
+    d.className = 'sdot ' + (i < step ? 'done' : i === step ? 'active' : 'pend');
+    d.textContent = i < step ? '✓' : (i + 1); d.title = l; b.appendChild(d);
+    if(i < LABELS.length - 1){ var ln = document.createElement('div'); ln.className = 'sline' + (i < step ? ' done' : ''); b.appendChild(ln); }
+  });
+}
+
+function go(n){
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  step = n;
+  if(n === 3) buildRes();
+  document.getElementById('s' + n).classList.add('active');
+  renderBar();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function toggleTipoActo(){
+  var v = gr('tipo-acto');
+  var esDH = v === 'División horizontal' || v === 'División horizontal y segregación';
+  var esSeg = v === 'Segregación' || v === 'División horizontal y segregación';
+  document.getElementById('bloque-dh').classList.toggle('hidden', !esDH);
+  document.getElementById('bloque-seg').classList.toggle('hidden', !esSeg);
+}
+
+function addElem(){
+  var idx = nElem;
+  nElem++;
+  var div = document.createElement('div');
+  div.className = 'bloque-elem';
+  div.innerHTML = '<h4>Elemento ' + (idx+1) + '</h4>' +
+    '<div class="row2">' +
+      '<div class="field"><label>Tipo *</label><select id="e' + idx + '-tipo"><option value="">— Seleccione —</option><option>Vivienda</option><option>Local comercial</option><option>Plaza de garaje</option><option>Trastero</option><option>Oficina</option><option>Otro</option></select></div>' +
+      '<div class="field"><label>Identificación</label><input type="text" id="e' + idx + '-id" placeholder="Ej: Piso 2º B, Local 2..."></div>' +
+    '</div>' +
+    '<div class="row3">' +
+      '<div class="field"><label>Sup. útil (m²)</label><input type="number" id="e' + idx + '-sup" placeholder="Ej: 75"></div>' +
+      '<div class="field"><label>Cuota (%)</label><input type="number" id="e' + idx + '-cuota" placeholder="Ej: 20.00" step="0.01"></div>' +
+      '<div class="field"><label>Planta</label><input type="text" id="e' + idx + '-planta" placeholder="Ej: 2ª"></div>' +
+    '</div>';
+  document.getElementById('contenedor-elem').appendChild(div);
+}
+
+function gv(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function gr(name){ var el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ''; }
+function addRow(h, lbl, val){ if(val) h += '<div class="sr"><span>' + lbl + '</span><span>' + val + '</span></div>'; return h; }
+
+function buildRes(){
+  var tipoActo = gr('tipo-acto');
+  var h = '<div class="sg"><h3>👤 Propietario / Promotor</h3>';
+  h = addRow(h, 'Nombre / Razón social', gv('prop-nombre'));
+  h = addRow(h, 'DNI / NIE / CIF', gv('prop-dni'));
+  h += '</div>';
+
+  h += '<div class="sg"><h3>🏠 Finca matriz</h3>';
+  h = addRow(h, 'Descripción', gv('fin-desc'));
+  h = addRow(h, 'Registro de la Propiedad', gv('fin-rp'));
+  h = addRow(h, 'Nº de finca registral', gv('fin-num'));
+  h = addRow(h, 'Referencia catastral', gv('fin-cat'));
+  h = addRow(h, 'Superficie total', gv('fin-sup') ? gv('fin-sup') + ' m²' : '');
+  h = addRow(h, 'Cargas', gr('cargas'));
+  h += '</div>';
+
+  h += '<div class="sg"><h3>⚙️ Tipo de acto</h3>';
+  h = addRow(h, 'Operación', tipoActo);
+  h += '</div>';
+
+  if(tipoActo === 'División horizontal' || tipoActo === 'División horizontal y segregación'){
+    h += '<div class="sg"><h3>🔢 Elementos privativos</h3>';
+    for(var i = 0; i < nElem; i++){
+      var tipo = gv('e' + i + '-tipo');
+      var id = gv('e' + i + '-id');
+      var sup = gv('e' + i + '-sup');
+      var cuota = gv('e' + i + '-cuota');
+      if(tipo) h = addRow(h, 'Elemento ' + (i+1), tipo + (id ? ' — ' + id : '') + (sup ? ' — ' + sup + 'm²' : '') + (cuota ? ' — ' + cuota + '%' : ''));
+    }
+    h = addRow(h, 'Nº de plantas', gv('dh-plantas'));
+    h = addRow(h, 'Licencia / Fin de obra', gr('lic-obras'));
+    h += '</div>';
+  }
+
+  if(tipoActo === 'Segregación' || tipoActo === 'División horizontal y segregación'){
+    h += '<div class="sg"><h3>✂️ Segregación</h3>';
+    h = addRow(h, 'Descripción porción', gv('seg-desc'));
+    h = addRow(h, 'Superficie porción', gv('seg-sup') ? gv('seg-sup') + ' m²' : '');
+    h = addRow(h, 'Superficie resto finca', gv('seg-resto') ? gv('seg-resto') + ' m²' : '');
+    h = addRow(h, 'Licencia segregación', gr('lic-seg'));
+    h = addRow(h, 'Destino previsto', gv('seg-destino'));
+    h += '</div>';
+  }
+
+  h += '<div class="sg"><h3>🔧 Técnico y licencias</h3>';
+  h = addRow(h, 'Técnico', gv('tec-nombre'));
+  h = addRow(h, 'Colegio profesional', gv('tec-col'));
+  h = addRow(h, 'Comunidad de propietarios', gr('ccpp'));
+  h = addRow(h, 'Representación', gr('rep'));
+  h = addRow(h, 'Cert. eficiencia energética', gr('energia'));
+  h = addRow(h, 'Observaciones', gv('obs'));
+  h += '</div>';
+
+  document.getElementById('resumen').innerHTML = h;
+}
+
+function dlWord(){
+  function p(lbl, val){ return val ? '<p>' + lbl + ': <strong>' + val + '</strong></p>' : ''; }
+  function r(name){ var el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ''; }
+
+  var tipoActo = r('tipo-acto');
+
+  var elemTxt = '';
+  if(tipoActo === 'División horizontal' || tipoActo === 'División horizontal y segregación'){
+    for(var i = 0; i < nElem; i++){
+      var tipo = gv('e' + i + '-tipo');
+      if(tipo){
+        elemTxt += '<p><strong>Elemento ' + (i+1) + ': ' + tipo + '</strong>' +
+          (gv('e' + i + '-id') ? ' — ' + gv('e' + i + '-id') : '') + '</p>';
+        elemTxt += p('Superficie útil', gv('e' + i + '-sup') ? gv('e' + i + '-sup') + ' m²' : '');
+        elemTxt += p('Cuota de participación', gv('e' + i + '-cuota') ? gv('e' + i + '-cuota') + '%' : '');
+        elemTxt += p('Planta', gv('e' + i + '-planta'));
+        elemTxt += '<br>';
+      }
+    }
+  }
+
+  var body =
+    '<h2>PROPIETARIO / PROMOTOR</h2>' +
+    p('Nombre / Razón social', gv('prop-nombre')) +
+    p('DNI / NIE / CIF', gv('prop-dni')) +
+    p('Teléfono', gv('prop-tel')) +
+    p('Email', gv('prop-email')) +
+    '<br><h2>FINCA MATRIZ</h2>' +
+    p('Descripción de la finca', gv('fin-desc')) +
+    p('Registro de la Propiedad', gv('fin-rp')) +
+    p('Número de finca registral', gv('fin-num')) +
+    p('Referencia catastral', gv('fin-cat')) +
+    p('Superficie total', gv('fin-sup') ? gv('fin-sup') + ' m²' : '') +
+    p('Cargas o hipotecas', r('cargas')) +
+    '<br><h2>TIPO DE OPERACIÓN</h2>' +
+    p('Operación solicitada', tipoActo) +
+    (tipoActo === 'División horizontal' || tipoActo === 'División horizontal y segregación' ?
+      '<br><h2>DIVISIÓN HORIZONTAL — ELEMENTOS PRIVATIVOS</h2>' +
+      p('Número de plantas', gv('dh-plantas')) +
+      p('Descripción del edificio', gv('dh-desc-edif')) +
+      p('Elementos comunes privativos', r('elem-comunes')) +
+      p('Licencia de obras / fin de obra', r('lic-obras')) +
+      elemTxt : '') +
+    (tipoActo === 'Segregación' || tipoActo === 'División horizontal y segregación' ?
+      '<br><h2>SEGREGACIÓN</h2>' +
+      p('Descripción de la porción segregada', gv('seg-desc')) +
+      p('Superficie de la porción', gv('seg-sup') ? gv('seg-sup') + ' m²' : '') +
+      p('Superficie del resto de finca', gv('seg-resto') ? gv('seg-resto') + ' m²' : '') +
+      p('Licencia de segregación / innecesariedad', r('lic-seg')) +
+      p('Destino previsto', gv('seg-destino')) : '') +
+    '<br><h2>TÉCNICO REDACTOR</h2>' +
+    p('Nombre del técnico', gv('tec-nombre')) +
+    p('Colegio profesional', gv('tec-col')) +
+    p('Teléfono del técnico', gv('tec-tel')) +
+    p('Email del técnico', gv('tec-email')) +
+    '<br><h2>DATOS COMPLEMENTARIOS</h2>' +
+    p('Comunidad de propietarios existente', r('ccpp')) +
+    p('Representación del propietario', r('rep')) +
+    p('Certificado eficiencia energética', r('energia')) +
+    p('Observaciones', gv('obs')) +
+    '<br><p style="font-size:10pt;color:#777">Documento generado por Oficial Notarial IA · ' + new Date().toLocaleDateString('es-ES') + '</p>';
+
+  var w = '<html xmlns:o=\'urn:schemas-microsoft-com:office:office\' xmlns:w=\'urn:schemas-microsoft-com:office:word\'>' +
+    '<head><meta charset=\'utf-8\'><style>' +
+    'body{font-family:\'Times New Roman\',serif;font-size:12pt;line-height:1.7;margin:2cm 1.5cm}' +
+    'h1{text-align:center;font-size:14pt;margin-bottom:20pt}' +
+    'h2{font-size:12pt;margin-top:16pt;border-bottom:1px solid #aaa;padding-bottom:3pt}' +
+    'p{margin:3pt 0}' +
+    '</style></head><body>' +
+    '<h1>NOTARÍA<br>DIVISIÓN HORIZONTAL / SEGREGACIÓN</h1>' + body + '</body></html>';
+
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([w], {type: 'application/msword'}));
+  a.download = 'Datos_Division_Horizontal_Segregacion.doc';
+  a.click();
+  document.getElementById('ok').style.display = 'block';
+  document.getElementById('ok').scrollIntoView({behavior: 'smooth'});
+}
+
+renderBar();
+</script>
+</body>
+</html>

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notaría · Acta de Titularidad Real</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-height:100vh}
+.header{background:#1a3a5c;color:#fff;padding:20px 24px 18px}
+.header-inner{max-width:620px;margin:0 auto}
+.header-seal{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.seal-icon{width:38px;height:38px;border-radius:8px;border:1px solid rgba(196,168,74,0.5);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.header h1{font-family:'Lora',serif;font-size:1.15rem;font-weight:500}
+.header p{font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:3px}
+.acto-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(196,168,74,0.15);border:1px solid rgba(196,168,74,0.3);border-radius:100px;padding:4px 12px;font-size:0.78rem;color:#c9a84c;margin-top:10px}
+.wrap{max-width:620px;margin:24px auto;padding:0 16px 60px}
+.notice{background:#eef3f9;border-left:3px solid #1a3a5c;border-radius:0 8px 8px 0;padding:11px 16px;font-size:0.83rem;color:#2c4a6a;line-height:1.6;margin-bottom:18px}
+.warn{background:#fef6e4;border-left:3px solid #c9a84c;border-radius:0 8px 8px 0;padding:9px 14px;font-size:0.78rem;color:#8c6830;line-height:1.5;margin-bottom:10px}
+.info{background:#edf7f1;border-left:3px solid #185535;border-radius:0 8px 8px 0;padding:9px 14px;font-size:0.78rem;color:#185535;line-height:1.5;margin-bottom:10px}
+.step-bar{display:flex;align-items:center;margin-bottom:22px}
+.sdot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;transition:all .3s}
+.sdot.done{background:#1a3a5c;color:#fff}
+.sdot.active{background:#c9a84c;color:#1a1510;box-shadow:0 0 0 4px rgba(201,168,76,0.2)}
+.sdot.pend{background:#ddd;color:#999}
+.sline{flex:1;height:2px;background:#ddd}
+.sline.done{background:#1a3a5c}
+.screen{display:none}
+.screen.active{display:block}
+.card{background:#fff;border-radius:10px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.07);margin-bottom:14px;border:0.5px solid #e8e2d8}
+.card h2{font-size:0.82rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px;padding-bottom:9px;border-bottom:1.5px solid #f0ebe0}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:0.79rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6b6258;margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:#1a1510;background:#faf8f4;border:1.5px solid #ddd8ce;border-radius:7px;padding:10px 12px;outline:none;transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#1a3a5c;background:#fff}
+.field .hint{font-size:0.75rem;color:#8c6830;margin-top:4px;font-style:italic}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.rg{display:flex;gap:14px;flex-wrap:wrap;margin-top:5px}
+.rg label{display:flex;align-items:center;gap:6px;font-size:0.88rem;cursor:pointer;color:#3d3830}
+.rg input{accent-color:#1a3a5c}
+.hidden{display:none}
+.nav{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap}
+.btn-p{background:#1a3a5c;color:#fff;border:none;padding:12px 22px;border-radius:7px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;flex:1;transition:opacity .15s}
+.btn-p:hover{opacity:.88}
+.btn-s{background:#f0ebe0;color:#3d3830;border:1px solid #ddd8ce;padding:12px 18px;border-radius:7px;font-size:0.88rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-s:hover{background:#e8e0d0}
+.btn-w{background:#2b579a;color:#fff;border:none;padding:12px 20px;border-radius:7px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .15s}
+.btn-w:hover{opacity:.88}
+.btn-add{background:#eef3f9;color:#1a3a5c;border:1.5px dashed #1a3a5c;padding:9px 16px;border-radius:7px;font-size:0.84rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;margin-top:4px;transition:background .15s}
+.btn-add:hover{background:#dce8f5}
+.sg{margin-bottom:12px}
+.sg h3{font-size:0.78rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px}
+.sr{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0ebe0;font-size:0.83rem}
+.sr span:first-child{color:#6b6258}
+.sr span:last-child{font-weight:500;text-align:right;max-width:65%}
+.success{background:#e8f5e9;border:1.5px solid #81c784;border-radius:10px;padding:20px;text-align:center;color:#2e7d32;margin-top:16px}
+.success h3{font-size:1rem;margin-bottom:6px;font-family:'Lora',serif}
+.success p{font-size:0.85rem;line-height:1.5}
+.footer{text-align:center;padding:24px 16px;font-size:0.75rem;color:#a09585;border-top:1px solid #e8e2d8;margin-top:8px}
+.bloque-tr{background:#faf8f4;border:1px solid #e8e2d8;border-radius:8px;padding:14px;margin-bottom:10px}
+.bloque-tr h4{font-size:0.78rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px}
+@media(max-width:480px){.row2{grid-template-columns:1fr}.nav{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-seal">
+      <div class="seal-icon">🏛</div>
+      <div>
+        <h1>Notaría · Acta de Titularidad Real</h1>
+        <p>Identificación del titular real — Ley 10/2010 de prevención del blanqueo</p>
+      </div>
+    </div>
+    <div class="acto-badge">🏛 Titularidad real — PBC art. 4 y Reglamento art. 30</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="notice">
+    <strong>¿Para qué sirve esta acta?</strong> La normativa de prevención del blanqueo de capitales obliga a identificar al titular real de las personas jurídicas en toda operación notarial. Esta acta recoge esa declaración de forma fehaciente.
+  </div>
+  <div class="step-bar" id="stepBar"></div>
+
+  <!-- PASO 0 — Declarante -->
+  <div class="screen active" id="s0">
+    <div class="card">
+      <h2>👤 Datos del declarante</h2>
+      <div class="notice" style="margin-bottom:14px">El declarante es la persona física que va a comparecer ante el notario para hacer la declaración de titularidad real.</div>
+      <div class="row2">
+        <div class="field"><label>Nombre y apellidos *</label><input type="text" id="dec-nombre" placeholder="Nombre completo"></div>
+        <div class="field"><label>DNI / NIE *</label><input type="text" id="dec-dni" placeholder="12345678A"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Cargo o posición *</label>
+          <select id="dec-cargo">
+            <option value="">— Seleccione —</option>
+            <option>Administrador único</option>
+            <option>Administrador solidario</option>
+            <option>Administrador mancomunado</option>
+            <option>Consejero delegado</option>
+            <option>Apoderado con facultades suficientes</option>
+            <option>Socio titular</option>
+            <option>Persona física (actúa en nombre propio)</option>
+          </select>
+        </div>
+        <div class="field"><label>Teléfono</label><input type="text" id="dec-tel" placeholder="971 000 000"></div>
+      </div>
+      <div class="field"><label>Email</label><input type="text" id="dec-email" placeholder="correo@ejemplo.com"></div>
+    </div>
+
+    <div class="card">
+      <h2>¿Actúa por cuenta propia o de tercero?</h2>
+      <div class="field">
+        <div class="rg">
+          <label><input type="radio" name="cuenta" value="Por cuenta propia" onclick="toggleCuenta()"> Por cuenta propia</label>
+          <label><input type="radio" name="cuenta" value="En representación de una persona jurídica" onclick="toggleCuenta()"> En representación de una persona jurídica</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav"><button class="btn-p" onclick="go(1)">Continuar →</button></div>
+  </div>
+
+  <!-- PASO 1 — Entidad -->
+  <div class="screen" id="s1">
+    <div class="card">
+      <h2>🏢 Datos de la entidad representada</h2>
+      <div class="notice" style="margin-bottom:14px">Datos de la sociedad o entidad de la que se declara la titularidad real.</div>
+      <div class="row2">
+        <div class="field"><label>Denominación social *</label><input type="text" id="ent-nombre" placeholder="Nombre de la sociedad, S.L. / S.A."></div>
+        <div class="field"><label>CIF *</label><input type="text" id="ent-cif" placeholder="B12345678"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Forma jurídica</label>
+          <select id="ent-forma">
+            <option value="">— Seleccione —</option>
+            <option>Sociedad Limitada (S.L.)</option>
+            <option>Sociedad Anónima (S.A.)</option>
+            <option>Sociedad Civil</option>
+            <option>Comunidad de Bienes</option>
+            <option>Fundación</option>
+            <option>Asociación</option>
+            <option>Otra</option>
+          </select>
+        </div>
+        <div class="field"><label>Domicilio social</label><input type="text" id="ent-dom" placeholder="Calle, número, municipio"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Registro Mercantil / Tomo</label><input type="text" id="ent-rm" placeholder="Ej: RM Illes Balears, T. 2500"></div>
+        <div class="field"><label>Actividad principal</label><input type="text" id="ent-act" placeholder="Ej: promoción inmobiliaria, hostelería..."></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🌍 Estructura de control</h2>
+      <div class="field"><label>¿Existe alguna sociedad intermedia en la cadena de control?</label>
+        <div class="rg">
+          <label><input type="radio" name="soc-inter" value="No"> No, el control es directo</label>
+          <label><input type="radio" name="soc-inter" value="Sí"> Sí (estructura con holding o filiales)</label>
+        </div>
+        <div class="hint">Indique si hay otras sociedades entre el titular real persona física y la entidad declarante.</div>
+      </div>
+      <div class="field"><label>Descripción de la estructura (si aplica)</label>
+        <textarea id="ent-estructura" rows="3" placeholder="Ej: La entidad X es participada en un 100% por la sociedad Y, cuyos socios son..."></textarea>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-s" onclick="go(0)">← Atrás</button>
+      <button class="btn-p" onclick="go(2)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- PASO 2 — Titulares reales -->
+  <div class="screen" id="s2">
+    <div class="notice">Se considera <strong>titular real</strong> toda persona física que posea o controle, directa o indirectamente, un porcentaje igual o superior al <strong>25%</strong> del capital o los derechos de voto, o que por otros medios ejerza el control de la entidad (art. 4 Ley 10/2010).</div>
+    <div class="card">
+      <h2>🎯 Titulares reales identificados</h2>
+      <div id="contenedor-tr">
+        <div class="bloque-tr" id="tr-0">
+          <h4>Titular real 1</h4>
+          <div class="row2">
+            <div class="field"><label>Nombre y apellidos *</label><input type="text" id="tr0-nombre" placeholder="Nombre completo"></div>
+            <div class="field"><label>DNI / NIE / Pasaporte *</label><input type="text" id="tr0-dni" placeholder="12345678A"></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label>Nacionalidad</label><input type="text" id="tr0-nac" placeholder="Española"></div>
+            <div class="field"><label>% de participación o control *</label><input type="number" id="tr0-pct" placeholder="Ej: 50" min="0" max="100"></div>
+          </div>
+          <div class="field"><label>Mecanismo de control</label>
+            <select id="tr0-mec">
+              <option value="">— Seleccione —</option>
+              <option>Participación directa en el capital</option>
+              <option>Participación indirecta (a través de sociedad)</option>
+              <option>Control por derecho de voto</option>
+              <option>Control por acuerdo de accionistas</option>
+              <option>Cargo de administrador sin participación significativa</option>
+            </select>
+          </div>
+          <div class="field"><label>¿Es persona políticamente expuesta (PEP)?</label>
+            <div class="rg">
+              <label><input type="radio" name="tr0-pep" value="No"> No</label>
+              <label><input type="radio" name="tr0-pep" value="Sí"> Sí</label>
+              <label><input type="radio" name="tr0-pep" value="No lo sé"> No lo sé</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-add" onclick="addTR()">+ Añadir otro titular real</button>
+    </div>
+
+    <div class="card">
+      <h2>📋 Declaración complementaria</h2>
+      <div class="field"><label>¿Opera en nombre propio o existe algún beneficiario final distinto?</label>
+        <div class="rg">
+          <label><input type="radio" name="benef-final" value="Actúa en nombre propio"> En nombre propio</label>
+          <label><input type="radio" name="benef-final" value="Existe beneficiario final distinto"> Existe beneficiario final distinto</label>
+        </div>
+      </div>
+      <div class="field"><label>Observaciones o aclaraciones</label>
+        <textarea id="obs" rows="3" placeholder="Cualquier aclaración adicional sobre la estructura de control o titularidad..."></textarea>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-s" onclick="go(1)">← Atrás</button>
+      <button class="btn-p" onclick="go(3)">Revisar →</button>
+    </div>
+  </div>
+
+  <!-- PASO 3 — Resumen -->
+  <div class="screen" id="s3">
+    <div class="card">
+      <h2>📋 Revise sus datos antes de descargar</h2>
+      <div id="resumen"></div>
+    </div>
+    <div class="notice">Si hay algún error, pulse "Corregir" para volver atrás.</div>
+    <div class="nav">
+      <button class="btn-s" onclick="go(2)">← Corregir</button>
+      <button class="btn-w" onclick="dlWord()">⬇️ Descargar Word y enviar a la notaría</button>
+    </div>
+    <div class="success" id="ok" style="display:none">
+      <h3>✅ Documento descargado</h3>
+      <p>Adjunte el archivo Word en su respuesta al email de la notaría.<br>Le contactaremos para confirmar la fecha de comparecencia.</p>
+    </div>
+  </div>
+
+  <div class="footer">Oficial Notarial IA · Sus datos se procesan localmente y no se almacenan en ningún servidor.</div>
+</div>
+
+<script>
+var LABELS = ['Declarante','Entidad','Titular/es Real/es','Resumen'];
+var step = 0;
+var nTR = 1;
+
+function renderBar(){
+  var b = document.getElementById('stepBar'); b.innerHTML = '';
+  LABELS.forEach(function(l, i){
+    var d = document.createElement('div');
+    d.className = 'sdot ' + (i < step ? 'done' : i === step ? 'active' : 'pend');
+    d.textContent = i < step ? '✓' : (i + 1); d.title = l; b.appendChild(d);
+    if(i < LABELS.length - 1){ var ln = document.createElement('div'); ln.className = 'sline' + (i < step ? ' done' : ''); b.appendChild(ln); }
+  });
+}
+
+function go(n){
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  step = n;
+  if(n === 3) buildRes();
+  document.getElementById('s' + n).classList.add('active');
+  renderBar();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function gv(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function gr(name){ var el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ''; }
+function addRow(h, lbl, val){ if(val) h += '<div class="sr"><span>' + lbl + '</span><span>' + val + '</span></div>'; return h; }
+
+function toggleCuenta(){
+  // Visual cue only — step 1 always shows entity fields
+}
+
+function addTR(){
+  var idx = nTR;
+  nTR++;
+  var div = document.createElement('div');
+  div.className = 'bloque-tr';
+  div.innerHTML = '<h4>Titular real ' + (idx+1) + '</h4>' +
+    '<div class="row2">' +
+      '<div class="field"><label>Nombre y apellidos *</label><input type="text" id="tr' + idx + '-nombre" placeholder="Nombre completo"></div>' +
+      '<div class="field"><label>DNI / NIE / Pasaporte *</label><input type="text" id="tr' + idx + '-dni" placeholder="12345678A"></div>' +
+    '</div>' +
+    '<div class="row2">' +
+      '<div class="field"><label>Nacionalidad</label><input type="text" id="tr' + idx + '-nac" placeholder="Española"></div>' +
+      '<div class="field"><label>% de participación o control *</label><input type="number" id="tr' + idx + '-pct" placeholder="Ej: 50" min="0" max="100"></div>' +
+    '</div>' +
+    '<div class="field"><label>Mecanismo de control</label>' +
+      '<select id="tr' + idx + '-mec"><option value="">— Seleccione —</option><option>Participación directa en el capital</option><option>Participación indirecta</option><option>Control por derecho de voto</option><option>Control por acuerdo de accionistas</option><option>Cargo de administrador</option></select>' +
+    '</div>';
+  document.getElementById('contenedor-tr').appendChild(div);
+}
+
+function buildRes(){
+  var h = '<div class="sg"><h3>👤 Declarante</h3>';
+  h = addRow(h, 'Nombre', gv('dec-nombre'));
+  h = addRow(h, 'DNI / NIE', gv('dec-dni'));
+  h = addRow(h, 'Cargo', gv('dec-cargo'));
+  h = addRow(h, 'Actúa', gr('cuenta'));
+  h += '</div>';
+
+  h += '<div class="sg"><h3>🏢 Entidad</h3>';
+  h = addRow(h, 'Denominación social', gv('ent-nombre'));
+  h = addRow(h, 'CIF', gv('ent-cif'));
+  h = addRow(h, 'Forma jurídica', gv('ent-forma'));
+  h = addRow(h, 'Domicilio social', gv('ent-dom'));
+  h = addRow(h, 'Registro Mercantil', gv('ent-rm'));
+  h = addRow(h, 'Actividad', gv('ent-act'));
+  h = addRow(h, 'Sociedad intermedia', gr('soc-inter'));
+  h = addRow(h, 'Estructura', gv('ent-estructura'));
+  h += '</div>';
+
+  h += '<div class="sg"><h3>🎯 Titulares reales</h3>';
+  for(var i = 0; i < nTR; i++){
+    var n = gv('tr' + i + '-nombre');
+    var pct = gv('tr' + i + '-pct');
+    if(n) h = addRow(h, 'Titular ' + (i+1), n + (pct ? ' — ' + pct + '%' : ''));
+    var mec = gv('tr' + i + '-mec');
+    if(mec) h = addRow(h, 'Mecanismo T' + (i+1), mec);
+  }
+  h = addRow(h, 'Beneficiario final', gr('benef-final'));
+  h = addRow(h, 'Observaciones', gv('obs'));
+  h += '</div>';
+
+  document.getElementById('resumen').innerHTML = h;
+}
+
+function dlWord(){
+  function p(lbl, val){ return val ? '<p>' + lbl + ': <strong>' + val + '</strong></p>' : ''; }
+  function r(name){ var el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ''; }
+
+  var trTxt = '';
+  for(var i = 0; i < nTR; i++){
+    var n = gv('tr' + i + '-nombre');
+    if(n){
+      trTxt += '<p><strong>Titular real ' + (i+1) + ': ' + n + '</strong></p>';
+      trTxt += p('DNI / NIE / Pasaporte', gv('tr' + i + '-dni'));
+      trTxt += p('Nacionalidad', gv('tr' + i + '-nac'));
+      trTxt += p('Porcentaje de control', gv('tr' + i + '-pct') ? gv('tr' + i + '-pct') + '%' : '');
+      trTxt += p('Mecanismo de control', gv('tr' + i + '-mec'));
+      trTxt += '<br>';
+    }
+  }
+
+  var body =
+    '<h2>DATOS DEL DECLARANTE</h2>' +
+    p('Nombre y apellidos', gv('dec-nombre')) +
+    p('DNI / NIE', gv('dec-dni')) +
+    p('Cargo o posición', gv('dec-cargo')) +
+    p('Teléfono', gv('dec-tel')) +
+    p('Email', gv('dec-email')) +
+    p('Actúa', r('cuenta')) +
+    '<br><h2>DATOS DE LA ENTIDAD</h2>' +
+    p('Denominación social', gv('ent-nombre')) +
+    p('CIF', gv('ent-cif')) +
+    p('Forma jurídica', gv('ent-forma')) +
+    p('Domicilio social', gv('ent-dom')) +
+    p('Registro Mercantil', gv('ent-rm')) +
+    p('Actividad principal', gv('ent-act')) +
+    p('¿Existe sociedad intermedia?', r('soc-inter')) +
+    p('Descripción de estructura', gv('ent-estructura')) +
+    '<br><h2>TITULARES REALES IDENTIFICADOS</h2>' +
+    trTxt +
+    p('Declaración de beneficiario final', r('benef-final')) +
+    p('Observaciones', gv('obs')) +
+    '<br><p style="font-size:10pt;color:#777">Documento generado por Oficial Notarial IA · ' + new Date().toLocaleDateString('es-ES') + '</p>';
+
+  var w = '<html xmlns:o=\'urn:schemas-microsoft-com:office:office\' xmlns:w=\'urn:schemas-microsoft-com:office:word\'>' +
+    '<head><meta charset=\'utf-8\'><style>' +
+    'body{font-family:\'Times New Roman\',serif;font-size:12pt;line-height:1.7;margin:2cm 1.5cm}' +
+    'h1{text-align:center;font-size:14pt;margin-bottom:20pt}' +
+    'h2{font-size:12pt;margin-top:16pt;border-bottom:1px solid #aaa;padding-bottom:3pt}' +
+    'p{margin:3pt 0}' +
+    '</style></head><body>' +
+    '<h1>NOTARÍA<br>ACTA DE TITULARIDAD REAL</h1>' + body + '</body></html>';
+
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([w], {type: 'application/msword'}));
+  a.download = 'Datos_Acta_Titularidad_Real.doc';
+  a.click();
+  document.getElementById('ok').style.display = 'block';
+  document.getElementById('ok').scrollIntoView({behavior: 'smooth'});
+}
+
+renderBar();
+</script>
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notaría · Acta de Presencia</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-height:100vh}
+.header{background:#1a3a5c;color:#fff;padding:20px 24px 18px}
+.header-inner{max-width:620px;margin:0 auto}
+.header-seal{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.seal-icon{width:38px;height:38px;border-radius:8px;border:1px solid rgba(196,168,74,0.5);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.header h1{font-family:'Lora',serif;font-size:1.15rem;font-weight:500}
+.header p{font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:3px}
+.acto-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(196,168,74,0.15);border:1px solid rgba(196,168,74,0.3);border-radius:100px;padding:4px 12px;font-size:0.78rem;color:#c9a84c;margin-top:10px}
+.wrap{max-width:620px;margin:24px auto;padding:0 16px 60px}
+.notice{background:#eef3f9;border-left:3px solid #1a3a5c;border-radius:0 8px 8px 0;padding:11px 16px;font-size:0.83rem;color:#2c4a6a;line-height:1.6;margin-bottom:18px}
+.warn{background:#fef6e4;border-left:3px solid #c9a84c;border-radius:0 8px 8px 0;padding:9px 14px;font-size:0.78rem;color:#8c6830;line-height:1.5;margin-bottom:10px}
+.info{background:#edf7f1;border-left:3px solid #185535;border-radius:0 8px 8px 0;padding:9px 14px;font-size:0.78rem;color:#185535;line-height:1.5;margin-bottom:10px}
+.step-bar{display:flex;align-items:center;margin-bottom:22px}
+.sdot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;transition:all .3s}
+.sdot.done{background:#1a3a5c;color:#fff}
+.sdot.active{background:#c9a84c;color:#1a1510;box-shadow:0 0 0 4px rgba(201,168,76,0.2)}
+.sdot.pend{background:#ddd;color:#999}
+.sline{flex:1;height:2px;background:#ddd}
+.sline.done{background:#1a3a5c}
+.screen{display:none}
+.screen.active{display:block}
+.card{background:#fff;border-radius:10px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.07);margin-bottom:14px;border:0.5px solid #e8e2d8}
+.card h2{font-size:0.82rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px;padding-bottom:9px;border-bottom:1.5px solid #f0ebe0}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:0.79rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6b6258;margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:#1a1510;background:#faf8f4;border:1.5px solid #ddd8ce;border-radius:7px;padding:10px 12px;outline:none;transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#1a3a5c;background:#fff}
+.field .hint{font-size:0.75rem;color:#8c6830;margin-top:4px;font-style:italic}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.rg{display:flex;gap:14px;flex-wrap:wrap;margin-top:5px}
+.rg label{display:flex;align-items:center;gap:6px;font-size:0.88rem;cursor:pointer;color:#3d3830}
+.rg input{accent-color:#1a3a5c}
+.hidden{display:none}
+.nav{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap}
+.btn-p{background:#1a3a5c;color:#fff;border:none;padding:12px 22px;border-radius:7px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;flex:1;transition:opacity .15s}
+.btn-p:hover{opacity:.88}
+.btn-s{background:#f0ebe0;color:#3d3830;border:1px solid #ddd8ce;padding:12px 18px;border-radius:7px;font-size:0.88rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-s:hover{background:#e8e0d0}
+.btn-w{background:#2b579a;color:#fff;border:none;padding:12px 20px;border-radius:7px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .15s}
+.btn-w:hover{opacity:.88}
+.sg{margin-bottom:12px}
+.sg h3{font-size:0.78rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px}
+.sr{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0ebe0;font-size:0.83rem}
+.sr span:first-child{color:#6b6258}
+.sr span:last-child{font-weight:500;text-align:right;max-width:65%}
+.success{background:#e8f5e9;border:1.5px solid #81c784;border-radius:10px;padding:20px;text-align:center;color:#2e7d32;margin-top:16px}
+.success h3{font-size:1rem;margin-bottom:6px;font-family:'Lora',serif}
+.success p{font-size:0.85rem;line-height:1.5}
+.footer{text-align:center;padding:24px 16px;font-size:0.75rem;color:#a09585;border-top:1px solid #e8e2d8;margin-top:8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{background:#eef3f9;border:1.5px solid #c0d4ea;border-radius:100px;padding:6px 14px;font-size:0.82rem;cursor:pointer;color:#1a3a5c;transition:all .15s;user-select:none}
+.chip.on{background:#1a3a5c;color:#fff;border-color:#1a3a5c}
+@media(max-width:480px){.row2{grid-template-columns:1fr}.nav{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-seal">
+      <div class="seal-icon">👁</div>
+      <div>
+        <h1>Notaría · Acta de Presencia</h1>
+        <p>Constatación notarial de hechos y situaciones</p>
+      </div>
+    </div>
+    <div class="acto-badge">👁 Acta de presencia — Ley del Notariado art. 17 bis</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="notice">
+    <strong>¿Para qué sirve?</strong> El notario acude al lugar indicado y deja constancia fehaciente de lo que percibe directamente por sus sentidos: el estado de un inmueble, una entrega, un sorteo, el contenido de una web en un momento concreto, la apertura de una plica, etc.
+  </div>
+  <div class="step-bar" id="stepBar"></div>
+
+  <!-- PASO 0 — Solicitante y objeto -->
+  <div class="screen active" id="s0">
+    <div class="card">
+      <h2>👤 Solicitante</h2>
+      <div class="row2">
+        <div class="field"><label>Nombre / Razón social *</label><input type="text" id="sol-nombre" placeholder="Persona o entidad solicitante"></div>
+        <div class="field"><label>DNI / NIE / CIF *</label><input type="text" id="sol-dni" placeholder="12345678A"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Teléfono *</label><input type="text" id="sol-tel" placeholder="971 000 000"></div>
+        <div class="field"><label>Email *</label><input type="text" id="sol-email" placeholder="correo@ejemplo.com"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🎯 Objeto del acta — ¿Qué quiere que constate el notario?</h2>
+      <div class="field"><label>Tipo de hecho a constatar *</label>
+        <div class="chips" id="chips-tipo">
+          <div class="chip" onclick="toggleChip(this,'Estado de inmueble')">🏠 Estado de inmueble</div>
+          <div class="chip" onclick="toggleChip(this,'Entrega de llaves / posesión')">🔑 Entrega de llaves / posesión</div>
+          <div class="chip" onclick="toggleChip(this,'Contenido de página web')">🌐 Contenido web en fecha concreta</div>
+          <div class="chip" onclick="toggleChip(this,'Sorteo o rifado')">🎲 Sorteo o rifado</div>
+          <div class="chip" onclick="toggleChip(this,'Apertura de plicas o sobres')">📩 Apertura de plicas o sobres</div>
+          <div class="chip" onclick="toggleChip(this,'Realización de obras')">🏗️ Realización de obras</div>
+          <div class="chip" onclick="toggleChip(this,'Otro (describir abajo)')">✏️ Otro</div>
+        </div>
+        <input type="hidden" id="tipo-val" value="">
+      </div>
+      <div class="field"><label>Descripción detallada de lo que debe constatar el notario *</label>
+        <textarea id="descripcion" rows="5" placeholder="Describa con el máximo detalle posible qué quiere que el notario observe y documente. Cuanto más preciso sea, más eficaz será el acta."></textarea>
+        <div class="hint">El notario solo puede constatar lo que percibe directamente. No puede emitir opiniones ni valoraciones jurídicas dentro del acta de presencia.</div>
+      </div>
+    </div>
+
+    <div class="nav"><button class="btn-p" onclick="go(1)">Continuar →</button></div>
+  </div>
+
+  <!-- PASO 1 — Lugar y fecha -->
+  <div class="screen" id="s1">
+    <div class="card">
+      <h2>📍 Lugar donde debe acudir el notario</h2>
+      <div class="field"><label>Dirección completa *</label><input type="text" id="lugar-dir" placeholder="Calle, número, piso, puerta"></div>
+      <div class="row2">
+        <div class="field"><label>Municipio *</label><input type="text" id="lugar-mun" placeholder="Ej: Mahón, Ciutadella..."></div>
+        <div class="field"><label>Código postal</label><input type="text" id="lugar-cp" placeholder="07700"></div>
+      </div>
+      <div class="field"><label>Descripción del lugar (si no es una dirección convencional)</label>
+        <input type="text" id="lugar-desc" placeholder="Ej: solar sin número, finca rústica, vía pública...">
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📅 Fecha y hora preferida</h2>
+      <div class="warn">⚠ La disponibilidad del notario depende de la agenda. Indique al menos dos opciones — la notaría confirmará la fecha definitiva.</div>
+      <div class="row2">
+        <div class="field"><label>Opción 1 — Fecha *</label><input type="date" id="fecha1"></div>
+        <div class="field"><label>Opción 1 — Hora preferida</label><input type="time" id="hora1"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Opción 2 — Fecha</label><input type="date" id="fecha2"></div>
+        <div class="field"><label>Opción 2 — Hora preferida</label><input type="time" id="hora2"></div>
+      </div>
+      <div class="field"><label>¿Hay alguna restricción de acceso o protocolo especial?</label>
+        <input type="text" id="acceso" placeholder="Ej: hay portero, necesita cita previa, acceso con vehículo propio...">
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-s" onclick="go(0)">← Atrás</button>
+      <button class="btn-p" onclick="go(2)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- PASO 2 — Personas presentes -->
+  <div class="screen" id="s2">
+    <div class="card">
+      <h2>👥 Personas que estarán presentes</h2>
+      <div class="notice" style="margin-bottom:14px">Indique quién estará en el lugar cuando llegue el notario. Si hay partes contrarias o terceros relevantes, inclúyalos.</div>
+      <div class="field"><label>Nombre de las personas presentes *</label>
+        <textarea id="presentes" rows="4" placeholder="Nombre y relación de cada persona. Ej:&#10;- Juan García (propietario)&#10;- Marta López (arrendataria)&#10;- Pedro Ruiz (testigo)"></textarea>
+      </div>
+      <div class="field"><label>¿Habrá partes en situación de confrontación o conflicto?</label>
+        <div class="rg">
+          <label><input type="radio" name="conflicto" value="No"> No</label>
+          <label><input type="radio" name="conflicto" value="Sí, hay partes en conflicto"> Sí</label>
+        </div>
+        <div class="hint">Si existe conflicto entre las partes, el notario deberá ser informado previamente para adoptar las cautelas necesarias.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📋 Finalidad y uso del acta</h2>
+      <div class="field"><label>¿Para qué necesita esta acta? (orientativo)</label>
+        <select id="finalidad">
+          <option value="">— Seleccione —</option>
+          <option>Procedimiento judicial o arbitral</option>
+          <option>Reclamación extrajudicial</option>
+          <option>Acreditación frente a entidad pública o privada</option>
+          <option>Conservación de prueba</option>
+          <option>Documentación de acto mercantil o societario</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div class="field"><label>Observaciones adicionales</label>
+        <textarea id="obs" rows="3" placeholder="Cualquier información que facilite la labor del notario..."></textarea>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-s" onclick="go(1)">← Atrás</button>
+      <button class="btn-p" onclick="go(3)">Revisar →</button>
+    </div>
+  </div>
+
+  <!-- PASO 3 — Resumen -->
+  <div class="screen" id="s3">
+    <div class="card">
+      <h2>📋 Revise sus datos antes de descargar</h2>
+      <div id="resumen"></div>
+    </div>
+    <div class="notice">Si hay algún error, pulse "Corregir" para volver atrás.</div>
+    <div class="nav">
+      <button class="btn-s" onclick="go(2)">← Corregir</button>
+      <button class="btn-w" onclick="dlWord()">⬇️ Descargar Word y enviar a la notaría</button>
+    </div>
+    <div class="success" id="ok" style="display:none">
+      <h3>✅ Documento descargado</h3>
+      <p>Adjunte el archivo Word en su respuesta al email de la notaría.<br>Le contactaremos para confirmar la disponibilidad del notario y la fecha definitiva.</p>
+    </div>
+  </div>
+
+  <div class="footer">Oficial Notarial IA · Sus datos se procesan localmente y no se almacenan en ningún servidor.</div>
+</div>
+
+<script>
+var LABELS = ['Objeto','Lugar y fecha','Personas','Resumen'];
+var step = 0;
+var tiposSeleccionados = [];
+
+function renderBar(){
+  var b = document.getElementById('stepBar'); b.innerHTML = '';
+  LABELS.forEach(function(l, i){
+    var d = document.createElement('div');
+    d.className = 'sdot ' + (i < step ? 'done' : i === step ? 'active' : 'pend');
+    d.textContent = i < step ? '✓' : (i + 1); d.title = l; b.appendChild(d);
+    if(i < LABELS.length - 1){ var ln = document.createElement('div'); ln.className = 'sline' + (i < step ? ' done' : ''); b.appendChild(ln); }
+  });
+}
+
+function go(n){
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  step = n;
+  if(n === 3) buildRes();
+  document.getElementById('s' + n).classList.add('active');
+  renderBar();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function toggleChip(el, val){
+  el.classList.toggle('on');
+  var idx = tiposSeleccionados.indexOf(val);
+  if(idx > -1) tiposSeleccionados.splice(idx, 1);
+  else tiposSeleccionados.push(val);
+  document.getElementById('tipo-val').value = tiposSeleccionados.join(', ');
+}
+
+function gv(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function gr(name){ var el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ''; }
+function addRow(h, lbl, val){ if(val) h += '<div class="sr"><span>' + lbl + '</span><span>' + val + '</span></div>'; return h; }
+
+function buildRes(){
+  var h = '<div class="sg"><h3>👤 Solicitante</h3>';
+  h = addRow(h, 'Nombre / Razón social', gv('sol-nombre'));
+  h = addRow(h, 'DNI / NIE / CIF', gv('sol-dni'));
+  h = addRow(h, 'Teléfono', gv('sol-tel'));
+  h = addRow(h, 'Email', gv('sol-email'));
+  h += '</div>';
+
+  h += '<div class="sg"><h3>🎯 Objeto del acta</h3>';
+  h = addRow(h, 'Tipo', gv('tipo-val') || tiposSeleccionados.join(', '));
+  h = addRow(h, 'Descripción', gv('descripcion'));
+  h += '</div>';
+
+  h += '<div class="sg"><h3>📍 Lugar y fecha</h3>';
+  h = addRow(h, 'Dirección', gv('lugar-dir'));
+  h = addRow(h, 'Municipio', gv('lugar-mun') + (gv('lugar-cp') ? ' — CP ' + gv('lugar-cp') : ''));
+  h = addRow(h, 'Descripción del lugar', gv('lugar-desc'));
+  h = addRow(h, 'Opción 1', gv('fecha1') + (gv('hora1') ? ' a las ' + gv('hora1') : ''));
+  h = addRow(h, 'Opción 2', gv('fecha2') + (gv('hora2') ? ' a las ' + gv('hora2') : ''));
+  h = addRow(h, 'Acceso', gv('acceso'));
+  h += '</div>';
+
+  h += '<div class="sg"><h3>👥 Personas presentes</h3>';
+  h = addRow(h, 'Presentes', gv('presentes'));
+  h = addRow(h, 'Conflicto entre partes', gr('conflicto'));
+  h = addRow(h, 'Finalidad', gv('finalidad'));
+  h = addRow(h, 'Observaciones', gv('obs'));
+  h += '</div>';
+
+  document.getElementById('resumen').innerHTML = h;
+}
+
+function dlWord(){
+  function p(lbl, val){ return val ? '<p>' + lbl + ': <strong>' + val + '</strong></p>' : ''; }
+  function r(name){ var el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ''; }
+
+  var body =
+    '<h2>DATOS DEL SOLICITANTE</h2>' +
+    p('Nombre / Razón social', gv('sol-nombre')) +
+    p('DNI / NIE / CIF', gv('sol-dni')) +
+    p('Teléfono', gv('sol-tel')) +
+    p('Email', gv('sol-email')) +
+    '<br><h2>OBJETO DEL ACTA</h2>' +
+    p('Tipo de hecho a constatar', gv('tipo-val') || tiposSeleccionados.join(', ')) +
+    p('Descripción detallada', gv('descripcion')) +
+    '<br><h2>LUGAR</h2>' +
+    p('Dirección', gv('lugar-dir')) +
+    p('Municipio', gv('lugar-mun')) +
+    p('Código postal', gv('lugar-cp')) +
+    p('Descripción del lugar', gv('lugar-desc')) +
+    p('Restricciones de acceso', gv('acceso')) +
+    '<br><h2>FECHA Y HORA PREFERIDA</h2>' +
+    p('Opción 1', gv('fecha1') + (gv('hora1') ? ' a las ' + gv('hora1') + 'h' : '')) +
+    p('Opción 2', gv('fecha2') + (gv('hora2') ? ' a las ' + gv('hora2') + 'h' : '')) +
+    '<br><h2>PERSONAS PRESENTES</h2>' +
+    p('Relación de presentes', gv('presentes')) +
+    p('Partes en conflicto', r('conflicto')) +
+    '<br><h2>FINALIDAD Y OBSERVACIONES</h2>' +
+    p('Finalidad del acta', gv('finalidad')) +
+    p('Observaciones', gv('obs')) +
+    '<br><p style="font-size:10pt;color:#777">Documento generado por Oficial Notarial IA · ' + new Date().toLocaleDateString('es-ES') + '</p>';
+
+  var w = '<html xmlns:o=\'urn:schemas-microsoft-com:office:office\' xmlns:w=\'urn:schemas-microsoft-com:office:word\'>' +
+    '<head><meta charset=\'utf-8\'><style>' +
+    'body{font-family:\'Times New Roman\',serif;font-size:12pt;line-height:1.7;margin:2cm 1.5cm}' +
+    'h1{text-align:center;font-size:14pt;margin-bottom:20pt}' +
+    'h2{font-size:12pt;margin-top:16pt;border-bottom:1px solid #aaa;padding-bottom:3pt}' +
+    'p{margin:3pt 0}' +
+    '</style></head><body>' +
+    '<h1>NOTARÍA<br>ACTA DE PRESENCIA</h1>' + body + '</body></html>';
+
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([w], {type: 'application/msword'}));
+  a.download = 'Datos_Acta_Presencia.doc';
+  a.click();
+  document.getElementById('ok').style.display = 'block';
+  document.getElementById('ok').scrollIntoView({behavior: 'smooth'});
+}
+
+renderBar();
+</script>
+</body>
+</html>
