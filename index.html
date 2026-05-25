@@ -1095,6 +1095,39 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
 .sb-model-haiku{background:var(--green-bg);color:var(--green);border-color:var(--green-border);}
 .sb-model-sonnet{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-border);}
 .sb-model-opus{background:var(--red-bg);color:var(--red);border-color:var(--red-border);}
+
+/* ── v8.2 VISUAL REFINEMENTS ── */
+
+/* Topbar: más peso y claridad */
+.topbar{padding:15px 24px;border-bottom:1px solid var(--border2);}
+.topbar-title{font-size:19px;font-weight:600;letter-spacing:-0.02em;}
+.topbar-sub{font-size:10px;letter-spacing:0.08em;margin-top:2px;}
+
+/* Brand: ligeramente más legible */
+.brand-name{font-size:13px;letter-spacing:0.03em;}
+
+/* Content: más aire */
+.content{padding:24px 26px;}
+
+/* Input zone: tarjeta blanca sobre fondo crema */
+#inputZone{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;}
+
+/* Cabecera interna de la zona de input */
+.iz-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:0.5px solid var(--border);margin-bottom:6px;}
+.iz-header-left{display:flex;flex-direction:column;gap:3px;}
+.iz-header-title{font-family:'Lora',serif;font-size:15px;font-weight:500;color:var(--ink);letter-spacing:-0.01em;}
+.iz-header-sub{font-size:10px;color:var(--ink3);letter-spacing:0.05em;text-transform:uppercase;}
+.iz-status-dot{width:8px;height:8px;border-radius:50%;background:#36A862;flex-shrink:0;}
+
+/* Labels de campo: ligeramente más grandes */
+.input-zone .field label{font-size:11px;letter-spacing:0.05em;}
+
+/* Hint: fondo sutil */
+.field-hint{font-size:10.5px;line-height:1.55;background:var(--gold-bg);border:0.5px solid var(--cream3);border-radius:6px;padding:6px 10px;margin-top:7px;color:var(--ink3);}
+
+/* Dark mode overrides */
+[data-theme="dark"] #inputZone{background:var(--surface);border-color:var(--border);}
+[data-theme="dark"] .field-hint{background:rgba(196,168,74,0.06);border-color:var(--border);}
 </style>
 </head>
 <body>
@@ -1292,6 +1325,13 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
     <div class="content">
       <!-- INPUT ZONE -->
       <div class="input-zone" id="inputZone">
+        <div class="iz-header">
+          <div class="iz-header-left">
+            <div class="iz-header-title">Nueva consulta</div>
+            <div class="iz-header-sub">Pega el email del cliente para iniciar el análisis</div>
+          </div>
+          <div class="iz-status-dot" title="Sistema operativo"></div>
+        </div>
         <div class="field">
           <label>Email del cliente <span style="font-weight:300;text-transform:none;letter-spacing:0;">(para envío directo — opcional)</span></label>
           <input type="email" id="emailCliente" placeholder="cliente@ejemplo.com"/>
