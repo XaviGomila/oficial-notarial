@@ -121,37 +121,6 @@ body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-heigh
         <button class="pill" onclick="pill(this,'nC','3+')">Más de 2</button>
       </div>
     </div>
-
-    <!-- ═══ Tarjeta opcional — Inmobiliaria ═══ -->
-    <div class="card" style="background:#fefaf0;border-left:4px solid #c9a84c;">
-      <h2 style="color:#8c6830">🏢 ¿Rellena este formulario una agencia inmobiliaria?</h2>
-      <p style="font-size:0.83rem;color:#6b6258;line-height:1.5;margin-bottom:10px;">Marque "Sí" solo si es agente inmobiliario o gestor profesional. Si es un particular, deje "No".</p>
-      <div class="rg">
-        <label><input type="radio" name="esInmob" value="No" checked onclick="document.getElementById('inmob-w').classList.add('hidden')"> No, soy un particular</label>
-        <label><input type="radio" name="esInmob" value="Sí" onclick="document.getElementById('inmob-w').classList.remove('hidden')"> Sí, agencia inmobiliaria</label>
-      </div>
-      <div id="inmob-w" class="hidden" style="margin-top:14px;">
-        <div class="field">
-          <label>Nombre de la agencia *</label>
-          <input type="text" id="inmob-nombre" placeholder="Ej: Inmobiliaria Mediterránea S.L.">
-        </div>
-        <div class="row2">
-          <div class="field">
-            <label>Persona de contacto</label>
-            <input type="text" id="inmob-contacto" placeholder="Nombre y apellidos">
-          </div>
-          <div class="field">
-            <label>Teléfono</label>
-            <input type="text" id="inmob-tel" placeholder="971 000 000">
-          </div>
-        </div>
-        <div class="field">
-          <label>Email de contacto</label>
-          <input type="text" id="inmob-email" placeholder="contacto@inmobiliaria.com">
-        </div>
-      </div>
-    </div>
-
     <div class="nav"><button class="btn-p" onclick="go(1)">Continuar →</button></div>
   </div>
 
@@ -213,7 +182,7 @@ body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-heigh
         <div class="field"><label>Tipo de arras</label>
           <select id="arras-tipo">
             <option value="">— Seleccione —</option>
-            <option>Confirmatorias (art. 1124 CC)</option>
+            <option>Confirmatorias</option>
             <option>Penitenciales (art. 1454 CC)</option>
             <option>No lo sé</option>
           </select>
@@ -229,7 +198,7 @@ body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-heigh
       </div>
       <div class="field">
         <label>Medio de pago *</label>
-        <select id="pago-medio" onchange="var v=this.value;document.getElementById('pago-extra-w').classList.toggle('hidden',!['Combinación transferencia + cheque','Subrogación en hipoteca existente','Precio aplazado','Otro'].includes(v))">
+        <select id="pago-medio" onchange="(function(v){['pago-transf-w','pago-cheq-w','pago-sub-w','pago-aplaz-w','pago-extra-w'].forEach(function(id){document.getElementById(id).classList.add('hidden')});if(v==='Transferencia bancaria')document.getElementById('pago-transf-w').classList.remove('hidden');else if(v==='Cheque bancario nominativo')document.getElementById('pago-cheq-w').classList.remove('hidden');else if(v==='Subrogación en hipoteca existente')document.getElementById('pago-sub-w').classList.remove('hidden');else if(v==='Precio aplazado')document.getElementById('pago-aplaz-w').classList.remove('hidden');else if(v==='Combinación transferencia + cheque'||v==='Otro')document.getElementById('pago-extra-w').classList.remove('hidden')})(this.value)">
           <option value="">— Seleccione —</option>
           <option>Transferencia bancaria</option>
           <option>Cheque bancario nominativo</option>
@@ -239,8 +208,46 @@ body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-heigh
           <option>Otro</option>
         </select>
       </div>
+      <div id="pago-transf-w" class="hidden">
+        <div class="field"><label>Referencia u orden de transferencia</label><input type="text" id="pago-transf-ref" placeholder="Ej: últimos 4 dígitos cuenta o referencia operación"></div>
+      </div>
+      <div id="pago-cheq-w" class="hidden">
+        <div class="row2">
+          <div class="field"><label>Número de cheque</label><input type="text" id="pago-cheq-num" placeholder="Ej: 0012345678"></div>
+          <div class="field"><label>Entidad emisora del cheque</label><input type="text" id="pago-cheq-ent" placeholder="Ej: CaixaBank"></div>
+        </div>
+      </div>
+      <div id="pago-sub-w" class="hidden">
+        <div class="row2">
+          <div class="field"><label>Entidad acreedora de la hipoteca *</label><input type="text" id="pago-sub-banco" placeholder="Ej: Banco Santander"></div>
+          <div class="field"><label>Capital pendiente</label><input type="text" id="pago-sub-capital" placeholder="Ej: 95.000 €"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Tipo de interés</label><input type="text" id="pago-sub-tipo" placeholder="Ej: Euribor + 0,80%"></div>
+          <div class="field"><label>Fecha de vencimiento</label><input type="date" id="pago-sub-vto"></div>
+        </div>
+        <div class="field"><label>Inscripción registral de la hipoteca</label><input type="text" id="pago-sub-ins" placeholder="Ej: Hipoteca 1ª sobre Finca 12345"></div>
+        <div class="warn">⚠ La subrogación requiere aceptación expresa de la entidad acreedora y novación de condiciones si procede. Informe a la notaría con antelación.</div>
+      </div>
+      <div id="pago-aplaz-w" class="hidden">
+        <div class="row2">
+          <div class="field"><label>Número de plazos</label><input type="text" id="pago-aplaz-plazos" placeholder="Ej: 12 plazos mensuales"></div>
+          <div class="field"><label>Tipo de interés pactado</label><input type="text" id="pago-aplaz-interes" placeholder="Ej: 3% anual / Sin interés"></div>
+        </div>
+        <div class="field"><label>Fechas de vencimiento de los plazos</label><input type="text" id="pago-aplaz-fechas" placeholder="Ej: Último día de cada mes desde enero 2025"></div>
+        <div class="field"><label>Garantía del precio aplazado</label>
+          <select id="pago-aplaz-garantia">
+            <option value="">— Seleccione —</option>
+            <option>Condición resolutoria explícita</option>
+            <option>Hipoteca en garantía del precio aplazado</option>
+            <option>Aval bancario</option>
+            <option>Sin garantía específica</option>
+          </select>
+        </div>
+        <div class="warn">⚠ El ITP se devenga sobre el precio total aunque sea aplazado. Consulte con la notaría la garantía más adecuada.</div>
+      </div>
       <div id="pago-extra-w" class="hidden">
-        <div class="field"><label>Detalles del medio de pago</label><input type="text" id="pago-detalle" placeholder="Entidad bancaria, condiciones del aplazamiento..."></div>
+        <div class="field"><label>Detalles del medio de pago</label><input type="text" id="pago-detalle" placeholder="Describa la combinación o modalidad de pago..."></div>
       </div>
       <div class="field">
         <label>¿El comprador financia con hipoteca?</label>
@@ -255,6 +262,40 @@ body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-heigh
           <div class="field"><label>Entidad financiera</label><input type="text" id="hipoteca-banco" placeholder="Ej: CaixaBank, BBVA..."></div>
           <div class="field"><label>Importe del préstamo</label><input type="text" id="hipoteca-importe" placeholder="Ej: 180.000 €"></div>
         </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📋 Gastos e IBANs</h2>
+      <div class="field">
+        <label>¿Quién paga el IBI del año en curso?</label>
+        <select id="ibi-paga">
+          <option value="">— Seleccione —</option>
+          <option>El vendedor (es propietario a 1 de enero)</option>
+          <option>El comprador (así lo acuerdan las partes)</option>
+          <option>A prorrata desde la fecha de firma</option>
+          <option>Pendiente de acordar entre las partes</option>
+        </select>
+        <div class="warn" style="margin-top:6px">⚠ El sujeto pasivo del IBI es quien sea propietario a 1 de enero. El acuerdo entre partes es válido pero no oponible a Hacienda Local.</div>
+      </div>
+      <div class="field" style="margin-top:4px">
+        <label>¿Quién asume el coste del Certificado de Eficiencia Energética (CEE)?</label>
+        <select id="cee-paga">
+          <option value="">— Seleccione —</option>
+          <option>El vendedor (ya dispone de CEE vigente)</option>
+          <option>El vendedor (deberá obtenerlo antes de la firma)</option>
+          <option>El comprador (así lo acuerdan las partes)</option>
+          <option>Pendiente de acordar</option>
+        </select>
+        <div class="warn" style="margin-top:6px">⚠ El CEE es obligatorio para formalizar la escritura. Si el vendedor no dispone de él, la firma no puede realizarse hasta su obtención.</div>
+      </div>
+      <div class="field" style="margin-top:10px">
+        <label>IBAN del vendedor (cuenta donde recibirá el importe) *</label>
+        <input type="text" id="iban-vendedor" placeholder="ES00 0000 0000 0000 0000 0000" maxlength="29">
+      </div>
+      <div class="field">
+        <label>IBAN del comprador (cuenta desde donde ordena el pago)</label>
+        <input type="text" id="iban-comprador" placeholder="ES00 0000 0000 0000 0000 0000" maxlength="29">
       </div>
     </div>
 
@@ -275,7 +316,7 @@ body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-heigh
       <button class="btn-s" onclick="go(4)">← Corregir</button>
       <button class="btn-w" onclick="dlWord()">⬇️ Descargar Word y enviar a la notaría</button>
     </div>
-    <div class="success" id="ok">
+    <div class="success" id="ok" style="display:none">
       <h3>✅ Documento descargado</h3>
       <p>Por favor, adjunte el archivo Word descargado en su respuesta al email de la notaría.<br>Nos pondremos en contacto para confirmar la documentación necesaria.</p>
     </div>
@@ -329,6 +370,8 @@ function go(n) {
 
 // ── FINCAS ───────────────────────────────────────────────
 function fincaHtml(n, rm) {
+  uid++;
+  var u = uid;
   var r = rm ? '<button class="rm-btn" onclick="this.closest(\'.party\').remove()">✕</button>' : '';
   return '<div class="party"><h3>Finca ' + n + '</h3>' + r +
     '<div class="field"><label>Tipo de inmueble *</label>' +
@@ -342,6 +385,37 @@ function fincaHtml(n, rm) {
     '</div>' +
     '<div class="field"><label>Número de inscripción registral</label><input type="text" placeholder="Ej: Finca 12345, Tomo 100, Libro 50, Folio 200"></div>' +
     '<div class="field"><label>Registro de la Propiedad</label><input type="text" placeholder="Ej: Registro nº 1 de Palma"></div>' +
+    '<div class="field" style="margin-top:10px"><label>¿Existe hipoteca u otra carga inscrita sobre el inmueble?</label>' +
+    '<div class="rg">' +
+      '<label><input type="radio" name="carg' + u + '" value="No" onclick="document.getElementById(\'cargx' + u + '\').classList.add(\'hidden\')"> No</label>' +
+      '<label><input type="radio" name="carg' + u + '" value="Sí" onclick="document.getElementById(\'cargx' + u + '\').classList.remove(\'hidden\')"> Sí</label>' +
+      '<label><input type="radio" name="carg' + u + '" value="No lo sé" onclick="document.getElementById(\'cargx' + u + '\').classList.add(\'hidden\')"> No lo sé</label>' +
+    '</div></div>' +
+    '<div id="cargx' + u + '" class="hidden">' +
+      '<div class="row2">' +
+        '<div class="field"><label>Entidad acreedora</label><input type="text" placeholder="Ej: CaixaBank, BBVA..."></div>' +
+        '<div class="field"><label>Capital pendiente aproximado</label><input type="text" placeholder="Ej: 80.000 €"></div>' +
+      '</div>' +
+      '<div class="warn">⚠ La carga deberá cancelarse antes o simultáneamente a la firma. Informe a la notaría con antelación.</div>' +
+    '</div>' +
+    '<div class="field" style="margin-top:8px"><label>¿Está el inmueble arrendado actualmente?</label>' +
+    '<div class="rg">' +
+      '<label><input type="radio" name="arrend' + u + '" value="No"> No</label>' +
+      '<label><input type="radio" name="arrend' + u + '" value="Sí" onclick="document.getElementById(\'arrendx' + u + '\').classList.remove(\'hidden\')"> Sí</label>' +
+      '<label><input type="radio" name="arrend' + u + '" value="No lo sé"> No lo sé</label>' +
+    '</div></div>' +
+    '<div id="arrendx' + u + '" class="hidden">' +
+      '<div class="warn">⚠ El arrendatario tiene derecho de tanteo y retracto (arts. 25 y ss. LAU). La notaría deberá gestionar la notificación o acreditar la renuncia antes de la firma.</div>' +
+    '</div>' +
+    '<div class="field" style="margin-top:8px"><label>¿Pertenece a una comunidad de propietarios?</label>' +
+    '<div class="rg">' +
+      '<label><input type="radio" name="comu' + u + '" value="No"> No</label>' +
+      '<label><input type="radio" name="comu' + u + '" value="Sí" onclick="document.getElementById(\'comux' + u + '\').classList.remove(\'hidden\')"> Sí</label>' +
+    '</div></div>' +
+    '<div id="comux' + u + '" class="hidden">' +
+      '<div class="field"><label>Nombre del administrador de fincas</label><input type="text" placeholder="Nombre o empresa administradora"></div>' +
+      '<div class="warn">⚠ Será necesario el certificado del administrador acreditando que el inmueble está al corriente de cuotas de comunidad (art. 9.1.e LPH).</div>' +
+    '</div>' +
   '</div>';
 }
 
@@ -386,6 +460,8 @@ function partyHtml(label, n, isSoc, rm) {
     '</div>';
   }
 
+  var isVendedor = label.indexOf('Vendedor') !== -1;
+
   return '<div class="party"><h3>' + label + ' ' + n + '</h3>' + r +
     '<div class="toggle-row"><input type="checkbox" id="soc' + u + '" onchange="document.getElementById(\'socx' + u + '\').classList.toggle(\'hidden\',!this.checked)">' +
     '<label for="soc' + u + '">Es una sociedad (S.L., S.A., etc.)</label></div>' +
@@ -398,9 +474,28 @@ function partyHtml(label, n, isSoc, rm) {
     '</div>' +
     '<div class="row2"><div class="field"><label>Nombre y apellidos *</label><input type="text" placeholder="Nombre completo"></div>' +
     '<div class="field"><label>DNI / NIE *</label><input type="text" placeholder="12345678A"></div></div>' +
-    '<div class="row2"><div class="field"><label>Estado civil</label><select><option value="">—</option>' +
-    '<option>Soltero/a</option><option>Casado/a</option><option>Viudo/a</option><option>Divorciado/a</option></select></div>' +
+    '<div class="row2"><div class="field"><label>Estado civil</label>' +
+    '<select id="ec' + u + '" onchange="document.getElementById(\'rem' + u + '\').classList.toggle(\'hidden\',this.value!==\'Casado/a\')">' +
+    '<option value="">—</option>' +
+    '<option>Soltero/a</option><option>Casado/a</option><option>Viudo/a</option><option>Divorciado/a</option>' +
+    '</select></div>' +
     '<div class="field"><label>Profesión</label><input type="text" placeholder="Ej: Médico, Empresario..."></div></div>' +
+    '<div id="rem' + u + '" class="hidden" style="margin-bottom:10px">' +
+      '<div class="field"><label>Régimen económico matrimonial *</label>' +
+        '<select><option value="">— Seleccione —</option>' +
+        '<option>Gananciales</option><option>Separación de bienes</option>' +
+        '<option>Participación</option><option>No lo sé</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="field"><label>El bien objeto de la operación es *</label>' +
+        '<div class="rg">' +
+          '<label><input type="radio" name="bien' + u + '" value="Privativo (solo del titular)"> Privativo</label>' +
+          '<label><input type="radio" name="bien' + u + '" value="Ganancial (de ambos cónyuges)"> Ganancial</label>' +
+          '<label><input type="radio" name="bien' + u + '" value="No lo sé"> No lo sé</label>' +
+        '</div>' +
+      '</div>' +
+      '<div class="warn">⚠ Si el bien es ganancial, ambos cónyuges deben comparecer o autorizar la operación (art. 1377 CC).</div>' +
+    '</div>' +
     '<div class="field"><label>Domicilio completo</label><input type="text" placeholder="Calle, número, piso, municipio"></div>' +
     '<div class="field"><label>Teléfono de contacto</label><input type="text" placeholder="Ej: 971 000 000 / 600 000 000"></div>' +
     '<div class="field"><label>Cuota de participación *</label><input type="text" placeholder="Ej: 50% (mitad indivisa), 100%, 1/3..."></div>' +
@@ -425,8 +520,11 @@ function partyHtml(label, n, isSoc, rm) {
           '<label><input type="radio" name="res' + u + '" value="No lo sé"> No lo sé</label>' +
         '</div>' +
       '</div>' +
-      '<div class="warn">⚠ Si el <strong>vendedor</strong> es no residente fiscal, el comprador deberá retener el 3% del precio e ingresarlo en Hacienda (Modelo 211).</div>' +
+      (isVendedor
+        ? '<div class="warn">⚠ Si el <strong>vendedor</strong> es no residente fiscal, el comprador deberá retener el 3% del precio e ingresarlo en Hacienda (Modelo 211).</div>'
+        : '<div class="warn">⚠ Como comprador no residente, verifique que dispone de NIE válido. Si el <strong>vendedor</strong> es no residente, usted deberá retener el 3% del precio (Modelo 211).</div>') +
       '<div class="field" style="margin-top:10px"><label>País de residencia habitual</label><input type="text" placeholder="Ej: Alemania, Reino Unido, Francia..."></div>' +
+      '<div class="field"><label>Representante fiscal en España (si lo tiene)</label><input type="text" placeholder="Nombre y apellidos o razón social"></div>' +
     '</div>' +
   '</div>';
 }
@@ -486,16 +584,6 @@ function gr(name) { var el = document.querySelector('input[name=' + name + ']:ch
 function buildRes() {
   var h = '';
 
-  // Inmobiliaria (si aplica)
-  if (gr('esInmob') === 'Sí' && gv('inmob-nombre')) {
-    h += '<div class="sg"><h3>🏢 Inmobiliaria</h3>' +
-      '<div class="sr"><span>Agencia</span><span>' + gv('inmob-nombre') + '</span></div>';
-    if (gv('inmob-contacto')) h += '<div class="sr"><span>Persona de contacto</span><span>' + gv('inmob-contacto') + '</span></div>';
-    if (gv('inmob-tel'))      h += '<div class="sr"><span>Teléfono</span><span>' + gv('inmob-tel') + '</span></div>';
-    if (gv('inmob-email'))    h += '<div class="sr"><span>Email</span><span>' + gv('inmob-email') + '</span></div>';
-    h += '</div>';
-  }
-
   // Fincas
   var fincas = collectBlock('fincasWrap');
   fincas.forEach(function(rows, i) {
@@ -528,12 +616,27 @@ function buildRes() {
   }
   if (gv('pago-acto'))   h += '<div class="sr"><span>Importe en el acto</span><span>' + gv('pago-acto') + '</span></div>';
   if (gv('pago-medio'))  h += '<div class="sr"><span>Medio de pago</span><span>' + gv('pago-medio') + '</span></div>';
-  if (gv('pago-detalle'))h += '<div class="sr"><span>Detalles pago</span><span>' + gv('pago-detalle') + '</span></div>';
-  h += '<div class="sr"><span>Hipoteca</span><span>' + (gr('hipoteca')||'No') + '</span></div>';
+  if (gv('pago-transf-ref'))  h += '<div class="sr"><span>Referencia transferencia</span><span>' + gv('pago-transf-ref') + '</span></div>';
+  if (gv('pago-cheq-num'))    h += '<div class="sr"><span>Número de cheque</span><span>' + gv('pago-cheq-num') + '</span></div>';
+  if (gv('pago-cheq-ent'))    h += '<div class="sr"><span>Entidad emisora cheque</span><span>' + gv('pago-cheq-ent') + '</span></div>';
+  if (gv('pago-sub-banco'))   h += '<div class="sr"><span>Entidad acreedora (subrogación)</span><span>' + gv('pago-sub-banco') + '</span></div>';
+  if (gv('pago-sub-capital')) h += '<div class="sr"><span>Capital pendiente (subrogación)</span><span>' + gv('pago-sub-capital') + '</span></div>';
+  if (gv('pago-sub-tipo'))    h += '<div class="sr"><span>Tipo interés (subrogación)</span><span>' + gv('pago-sub-tipo') + '</span></div>';
+  if (gv('pago-sub-ins'))     h += '<div class="sr"><span>Inscripción hipoteca</span><span>' + gv('pago-sub-ins') + '</span></div>';
+  if (gv('pago-aplaz-plazos'))h += '<div class="sr"><span>Plazos (aplazado)</span><span>' + gv('pago-aplaz-plazos') + '</span></div>';
+  if (gv('pago-aplaz-interes'))h += '<div class="sr"><span>Interés (aplazado)</span><span>' + gv('pago-aplaz-interes') + '</span></div>';
+  if (gv('pago-aplaz-fechas'))h += '<div class="sr"><span>Fechas vencimiento (aplazado)</span><span>' + gv('pago-aplaz-fechas') + '</span></div>';
+  if (gv('pago-aplaz-garantia'))h += '<div class="sr"><span>Garantía (aplazado)</span><span>' + gv('pago-aplaz-garantia') + '</span></div>';
+  if (gv('pago-detalle'))     h += '<div class="sr"><span>Detalles pago</span><span>' + gv('pago-detalle') + '</span></div>';
+  h += '<div class="sr"><span>Hipoteca nueva</span><span>' + (gr('hipoteca')||'No') + '</span></div>';
   if (gr('hipoteca') === 'Sí' || gr('hipoteca') === 'En trámite') {
     if (gv('hipoteca-banco'))  h += '<div class="sr"><span>Entidad</span><span>' + gv('hipoteca-banco') + '</span></div>';
     if (gv('hipoteca-importe'))h += '<div class="sr"><span>Importe préstamo</span><span>' + gv('hipoteca-importe') + '</span></div>';
   }
+  if (gv('ibi-paga'))  h += '<div class="sr"><span>IBI — ¿quién paga?</span><span>' + gv('ibi-paga') + '</span></div>';
+  if (gv('cee-paga'))  h += '<div class="sr"><span>CEE — ¿quién asume el coste?</span><span>' + gv('cee-paga') + '</span></div>';
+  if (gv('iban-vendedor'))  h += '<div class="sr"><span>IBAN vendedor (recibe pago)</span><span>' + gv('iban-vendedor') + '</span></div>';
+  if (gv('iban-comprador')) h += '<div class="sr"><span>IBAN comprador (ordena pago)</span><span>' + gv('iban-comprador') + '</span></div>';
   h += '</div>';
 
   document.getElementById('resumen').innerHTML = h;
@@ -571,76 +674,39 @@ function dlWord() {
   }
   pBody += '<p>Importe en el acto: <strong>' + (gv('pago-acto')||'—') + '</strong></p>' +
            '<p>Medio de pago: <strong>' + (gv('pago-medio')||'—') + '</strong></p>';
-  if (gv('pago-detalle')) pBody += '<p>Detalles: <strong>' + gv('pago-detalle') + '</strong></p>';
-  pBody += '<p>¿Financia con hipoteca?: <strong>' + (gr('hipoteca')||'No') + '</strong></p>';
+  if (gv('pago-transf-ref'))   pBody += '<p>Referencia transferencia: <strong>' + gv('pago-transf-ref') + '</strong></p>';
+  if (gv('pago-cheq-num'))     pBody += '<p>Número de cheque: <strong>' + gv('pago-cheq-num') + '</strong></p>';
+  if (gv('pago-cheq-ent'))     pBody += '<p>Entidad emisora cheque: <strong>' + gv('pago-cheq-ent') + '</strong></p>';
+  if (gv('pago-sub-banco'))    pBody += '<p>Entidad acreedora (subrogación): <strong>' + gv('pago-sub-banco') + '</strong></p>';
+  if (gv('pago-sub-capital'))  pBody += '<p>Capital pendiente: <strong>' + gv('pago-sub-capital') + '</strong></p>';
+  if (gv('pago-sub-tipo'))     pBody += '<p>Tipo de interés: <strong>' + gv('pago-sub-tipo') + '</strong></p>';
+  if (gv('pago-sub-ins'))      pBody += '<p>Inscripción hipoteca subrogada: <strong>' + gv('pago-sub-ins') + '</strong></p>';
+  if (gv('pago-aplaz-plazos')) pBody += '<p>Número de plazos: <strong>' + gv('pago-aplaz-plazos') + '</strong></p>';
+  if (gv('pago-aplaz-interes'))pBody += '<p>Tipo de interés (aplazado): <strong>' + gv('pago-aplaz-interes') + '</strong></p>';
+  if (gv('pago-aplaz-fechas')) pBody += '<p>Fechas de vencimiento: <strong>' + gv('pago-aplaz-fechas') + '</strong></p>';
+  if (gv('pago-aplaz-garantia'))pBody += '<p>Garantía del aplazamiento: <strong>' + gv('pago-aplaz-garantia') + '</strong></p>';
+  if (gv('pago-detalle'))      pBody += '<p>Detalles adicionales: <strong>' + gv('pago-detalle') + '</strong></p>';
+  pBody += '<p>¿Financia con hipoteca nueva?: <strong>' + (gr('hipoteca')||'No') + '</strong></p>';
   if (gr('hipoteca') === 'Sí' || gr('hipoteca') === 'En trámite') {
     pBody += '<p>Entidad financiera: <strong>' + gv('hipoteca-banco') + '</strong></p>' +
              '<p>Importe préstamo: <strong>' + gv('hipoteca-importe') + '</strong></p>';
   }
-  pBody += '<br>';
+  pBody += '<p>IBI — ¿quién paga?: <strong>' + (gv('ibi-paga')||'—') + '</strong></p>' +
+           '<p>CEE — ¿quién asume el coste?: <strong>' + (gv('cee-paga')||'—') + '</strong></p>' +
+           '<p>IBAN vendedor (recibe pago): <strong>' + (gv('iban-vendedor')||'—') + '</strong></p>' +
+           '<p>IBAN comprador (ordena pago): <strong>' + (gv('iban-comprador')||'—') + '</strong></p>' +
+           '<br>';
 
   var body = fBody +
     wBlock('VENDEDOR/ES', collectBlock('vendWrap')) +
     wBlock('COMPRADOR/ES', collectBlock('compWrap')) +
-    pBody;
-
-  // ══ BANNER SUPERIOR — Inmobiliaria (si aplica) ══
-  var bannerTop = '';
-  if (gr('esInmob') === 'Sí' && gv('inmob-nombre')) {
-    var contactoLine = '';
-    if (gv('inmob-contacto')) {
-      contactoLine = '<p align="center" style="margin:8pt 0 0 0;text-align:center;"><font face="Arial" color="#ffffff" size="2">Contacto: ' + gv('inmob-contacto') + '</font></p>';
-    }
-    var bottomLine = [gv('inmob-email'), gv('inmob-tel')].filter(Boolean).join(' · ');
-    var bottomLineHtml = '';
-    if (bottomLine) {
-      bottomLineHtml = '<p align="center" style="margin:3pt 0 0 0;text-align:center;"><font face="Arial" color="#ffffff" size="2">' + bottomLine + '</font></p>';
-    }
-    bannerTop =
-      '<table width="100%" cellpadding="0" cellspacing="0" border="0" align="center" style="margin-bottom:20pt;border:2pt solid #c9a84c;">' +
-        '<tr><td bgcolor="#1a3a5c" align="center" valign="middle" style="background-color:#1a3a5c;padding:16pt;text-align:center;">' +
-          '<p align="center" style="margin:0;text-align:center;"><font face="Arial" color="#c9a84c" size="2"><b>DOCUMENTO PREPARADO POR</b></font></p>' +
-          '<p align="center" style="margin:10pt 0 0 0;text-align:center;"><font face="Georgia" color="#ffffff" size="5"><b>' + gv('inmob-nombre') + '</b></font></p>' +
-          contactoLine +
-          bottomLineHtml +
-        '</td></tr>' +
-      '</table>';
-  }
-
-  // ══ BANNER INFERIOR — Branding Oficial Notarial IA (siempre) ══
-  var bannerBottom =
-    '<br>' +
-    '<table width="100%" cellpadding="0" cellspacing="0" border="0" align="center" style="margin-top:24pt;border:3pt solid #c9a84c;page-break-inside:avoid;">' +
-      '<tr><td bgcolor="#1a3a5c" align="center" valign="middle" style="background-color:#1a3a5c;padding:22pt;text-align:center;">' +
-        '<p align="center" style="margin:0;text-align:center;"><font face="Arial" color="#c9a84c" size="2"><b>DOCUMENTO GENERADO CON</b></font></p>' +
-        '<p align="center" style="margin:12pt 0 6pt 0;text-align:center;"><font face="Georgia" color="#ffffff" size="6"><b>OFICIAL NOTARIAL IA</b></font></p>' +
-        '<p align="center" style="margin:0 0 16pt 0;text-align:center;"><font face="Georgia" color="#c9a84c" size="3"><i>Inteligencia Artificial al servicio de las notarías españolas</i></font></p>' +
-        '<table width="92%" cellpadding="6" cellspacing="0" border="0" align="center" style="margin:0 auto;">' +
-          '<tr>' +
-            '<td width="33%" align="center" valign="top" style="text-align:center;"><font face="Arial" color="#ffffff" size="2"><b>Análisis<br>de correos</b></font></td>' +
-            '<td width="33%" align="center" valign="top" style="text-align:center;"><font face="Arial" color="#ffffff" size="2"><b>Checklist<br>jurídico</b></font></td>' +
-            '<td width="33%" align="center" valign="top" style="text-align:center;"><font face="Arial" color="#ffffff" size="2"><b>Borradores<br>de respuesta</b></font></td>' +
-          '</tr>' +
-        '</table>' +
-        '<p align="center" style="margin:16pt 0 0 0;text-align:center;"><font face="Arial" color="#c9a84c" size="3"><b>oficial-notarial.vercel.app</b></font></p>' +
-      '</td></tr>' +
-    '</table>' +
-    '<p align="center" style="margin-top:10pt;text-align:center;"><font face="Arial" color="#999999" size="1">Generado el ' + new Date().toLocaleDateString('es-ES') + '</font></p>';
-
-  body = bannerTop + body + bannerBottom;
+    pBody +
+    '<p style="font-size:10pt;color:#777">Documento generado por Oficial Notarial IA · ' + new Date().toLocaleDateString('es-ES') + '</p>';
 
   var w = '<html xmlns:o=\'urn:schemas-microsoft-com:office:office\' xmlns:w=\'urn:schemas-microsoft-com:office:word\'>' +
-    '<head><meta charset=\'utf-8\'><style>' +
-    '@page{margin:2.5cm}' +
-    'body{font-family:\'Times New Roman\',serif;font-size:12pt;line-height:1.7}' +
-    'h1{text-align:center;font-size:16pt;margin:0 0 6pt 0;font-weight:bold}' +
-    'h2{text-align:left;font-size:12pt;margin-top:18pt;margin-bottom:8pt;border-bottom:1pt solid #888;padding-bottom:3pt;font-weight:bold;text-transform:uppercase;letter-spacing:0.5pt}' +
-    'p{margin:4pt 0}' +
-    '</style></head><body>' +
-    '<h1 align="center" style="text-align:center;">NOTARÍA</h1>' +
-    '<p align="center" style="text-align:center;font-size:13pt;margin:0 0 24pt 0;"><b>DATOS PARA ESCRITURA DE COMPRAVENTA</b></p>' +
-    body +
-    '</body></html>';
+    '<head><meta charset=\'utf-8\'><style>body{font-family:\'Times New Roman\',serif;font-size:12pt;line-height:1.9;margin:3cm}' +
+    'h1{text-align:center;font-size:14pt;margin-bottom:20pt}h2{font-size:12pt;margin-top:16pt;border-bottom:1px solid #aaa;padding-bottom:3pt}p{margin:3pt 0}' +
+    '</style></head><body><h1>NOTARÍA<br>DATOS PARA ESCRITURA DE COMPRAVENTA</h1>' + body + '</body></html>';
 
   var a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([w], {type: 'application/msword'}));
