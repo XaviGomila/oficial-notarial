@@ -3161,6 +3161,9 @@ async function validarCodigoDesdeModal(){
       actualizarSidebarTrialServidor(r.remaining, r.limit, r.daysRemaining);
     }
     setTimeout(() => { cerrarModalCodigo(); mostrarUsuarioTopbar(); }, 800);
+  } else if(r.reason === 'exhausted'){
+    cerrarModalCodigo();
+    trialMostrarWallServidor(r.error || 'Este código ha agotado los análisis disponibles.');
   } else {
     status.textContent = r.error || 'Código no válido.';
     status.className = 'codigo-status error';
