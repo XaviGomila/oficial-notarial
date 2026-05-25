@@ -1936,6 +1936,11 @@ function goView(view, el){
 // ══════════════════════════════════════════════════════
 //  UTILIDADES
 // ══════════════════════════════════════════════════════
+// Escapado HTML — definido aquí para no depender del bloque de Outlook
+function escHtml(t){
+  return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function urgClass(u){
   if(!u) return 'cp-gray';
   const l = u.toLowerCase();
@@ -2648,14 +2653,20 @@ function renderHistorial(){
     const urg = (h.urgLabel||'').toLowerCase();
     const urgColor = urg.includes('alta') ? 'var(--red)' : urg.includes('media') ? 'var(--orange)' : 'var(--border)';
     const nota = h.nota || '';
+    // Escapar todo contenido de usuario antes de insertar en innerHTML
+    const notaSafe        = escHtml(nota.length > 90 ? nota.substring(0,90)+'…' : nota);
+    const notaRawSafe     = escHtml(nota);
+    const previewSafe     = escHtml(h.emailPreview || '');
+    const interlocutorSafe = escHtml(h.interlocutor || '—');
+    const actoNombreSafe  = escHtml(h.actoNombre || '');
     const notaInner = nota
-      ? `<div class="hist-nota-preview" onclick="abrirNota('${idx}')" title="Editar nota">📝 ${nota.length > 90 ? nota.substring(0,90)+'…' : nota}</div>`
+      ? `<div class="hist-nota-preview" onclick="abrirNota('${idx}')" title="Editar nota">📝 ${notaSafe}</div>`
       : `<button class="hist-nota-toggle" onclick="abrirNota('${idx}')">＋ Añadir nota interna</button>`;
     return `<div class="hist-item" id="hitem-${idx}" onclick="cargarHistorial('${idx}')" style="border-left:3px solid ${urgColor};">
       <div class="hist-top">
         <div class="hist-pills">
-          <span class="cpill cp-blue" style="font-size:10px;">${h.interlocutor||'—'}</span>
-          <span class="cpill ${urgClass(h.urgLabel)}" style="font-size:10px;">${h.urgLabel||'—'}</span>
+          <span class="cpill cp-blue" style="font-size:10px;">${interlocutorSafe}</span>
+          <span class="cpill ${urgClass(h.urgLabel)}" style="font-size:10px;">${escHtml(h.urgLabel||'—')}</span>
           <span class="certeza-badge ${certezaClass(h.certeza)}" style="font-size:10px;padding:2px 8px;">
             <span class="cert-dot"></span>${certezaLabel(h.certeza)}
           </span>
@@ -2670,11 +2681,11 @@ function renderHistorial(){
           </button>
         </div>
       </div>
-      <div class="hist-acto">${h.actoNombre||''}</div>
-      <div class="hist-preview">${h.emailPreview}</div>
+      <div class="hist-acto">${actoNombreSafe}</div>
+      <div class="hist-preview">${previewSafe}</div>
       <div class="hist-nota-wrap" onclick="event.stopPropagation()">
         ${notaInner}
-        <textarea class="hist-nota-input" id="nota-${idx}" placeholder="Nota interna (solo visible aquí, no se envía a nadie)…" onblur="guardarNota('${idx}', this.value)">${nota}</textarea>
+        <textarea class="hist-nota-input" id="nota-${idx}" placeholder="Nota interna (solo visible aquí, no se envía a nadie)…" onblur="guardarNota('${idx}', this.value)">${notaRawSafe}</textarea>
       </div>
     </div>`;
   }).join('');
