@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notaría · Declaración de Obra Nueva</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-height:100vh}
+.header{background:#1a3a5c;color:#fff;padding:20px 24px 18px}
+.header-inner{max-width:620px;margin:0 auto}
+.header-seal{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.seal-icon{width:38px;height:38px;border-radius:8px;border:1px solid rgba(196,168,74,0.5);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.header h1{font-family:'Lora',serif;font-size:1.15rem;font-weight:500}
+.header p{font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:3px}
+.acto-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(196,168,74,0.15);border:1px solid rgba(196,168,74,0.3);border-radius:100px;padding:4px 12px;font-size:0.78rem;color:#c9a84c;margin-top:10px}
+.wrap{max-width:620px;margin:24px auto;padding:0 16px 60px}
+.notice{background:#eef3f9;border-left:3px solid #1a3a5c;border-radius:0 8px 8px 0;padding:11px 16px;font-size:0.83rem;color:#2c4a6a;line-height:1.6;margin-bottom:18px}
+.warn{background:#fef6e4;border-left:3px solid #c9a84c;border-radius:0 8px 8px 0;padding:9px 14px;font-size:0.78rem;color:#8c6830;line-height:1.5;margin-top:6px}
+.info{background:#edf7f1;border-left:3px solid #185535;border-radius:0 8px 8px 0;padding:9px 14px;font-size:0.78rem;color:#185535;line-height:1.5;margin-top:6px}
+.step-bar{display:flex;align-items:center;margin-bottom:22px}
+.sdot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;transition:all .3s}
+.sdot.done{background:#1a3a5c;color:#fff}
+.sdot.active{background:#c9a84c;color:#1a1510;box-shadow:0 0 0 4px rgba(201,168,76,0.2)}
+.sdot.pend{background:#ddd;color:#999}
+.sline{flex:1;height:2px;background:#ddd}
+.sline.done{background:#1a3a5c}
+.screen{display:none}
+.screen.active{display:block}
+.card{background:#fff;border-radius:10px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.07);margin-bottom:14px;border:0.5px solid #e8e2d8}
+.card h2{font-size:0.82rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px;padding-bottom:9px;border-bottom:1.5px solid #f0ebe0}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:0.79rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6b6258;margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:#1a1510;background:#faf8f4;border:1.5px solid #ddd8ce;border-radius:7px;padding:10px 12px;outline:none;transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#1a3a5c;background:#fff}
+.field textarea{resize:vertical;min-height:72px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px}
+.pill{padding:7px 15px;border-radius:20px;border:1.5px solid #ddd8ce;background:#faf8f4;font-size:0.83rem;cursor:pointer;font-weight:500;color:#6b6258;transition:all .15s;font-family:'DM Sans',sans-serif}
+.pill.on{border-color:#1a3a5c;background:#1a3a5c;color:#fff}
+.rg{display:flex;gap:14px;flex-wrap:wrap;margin-top:5px}
+.rg label{display:flex;align-items:center;gap:6px;font-size:0.88rem;cursor:pointer;color:#3d3830}
+.rg input{accent-color:#1a3a5c}
+.toggle-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:0.8rem;color:#6b6258}
+.toggle-row input[type=checkbox]{accent-color:#1a3a5c;width:15px;height:15px;cursor:pointer}
+.hidden{display:none}
+.party{background:#f9f6f0;border:1px solid #e8e2d8;border-radius:8px;padding:15px;margin-bottom:10px;position:relative}
+.party h3{font-size:0.8rem;font-weight:600;color:#1a3a5c;margin-bottom:12px}
+.rm-btn{position:absolute;top:10px;right:10px;background:none;border:none;color:#c0392b;font-size:1rem;cursor:pointer}
+.add-btn{background:#f0ebe0;color:#1a3a5c;border:1.5px dashed #c8bfad;width:100%;padding:9px;border-radius:7px;font-size:0.83rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px;transition:all .15s}
+.add-btn:hover{background:#e8e0d0}
+.nav{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap}
+.btn-p{background:#1a3a5c;color:#fff;border:none;padding:12px 22px;border-radius:7px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;flex:1;transition:opacity .15s}
+.btn-p:hover{opacity:.88}
+.btn-s{background:#f0ebe0;color:#3d3830;border:1px solid #ddd8ce;padding:12px 18px;border-radius:7px;font-size:0.88rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-s:hover{background:#e8e0d0}
+.btn-w{background:#2b579a;color:#fff;border:none;padding:12px 20px;border-radius:7px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .15s}
+.btn-w:hover{opacity:.88}
+.sg{margin-bottom:12px}
+.sg h3{font-size:0.78rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px}
+.sr{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0ebe0;font-size:0.83rem}
+.sr span:first-child{color:#6b6258}
+.sr span:last-child{font-weight:500;text-align:right;max-width:62%}
+.success{background:#e8f5e9;border:1.5px solid #81c784;border-radius:10px;padding:20px;text-align:center;color:#2e7d32;margin-top:16px}
+.success h3{font-size:1rem;margin-bottom:6px;font-family:'Lora',serif}
+.success p{font-size:0.85rem;line-height:1.5}
+.footer{text-align:center;padding:24px 16px;font-size:0.75rem;color:#a09585;border-top:1px solid #e8e2d8;margin-top:8px}
+@media(max-width:480px){.row2{grid-template-columns:1fr}.row3{grid-template-columns:1fr}.nav{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-seal">
+      <div class="seal-icon">⚖</div>
+      <div>
+        <h1>Notaría · Declaración de Obra Nueva</h1>
+        <p>Complete sus datos para que podamos preparar su expediente</p>
+      </div>
+    </div>
+    <div class="acto-badge">🏗️ Declaración de obra nueva</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="notice">Por favor, rellene los datos con la mayor precisión posible. Al finalizar, descargue el documento Word y envíenoslo adjunto por email. El proceso le llevará aproximadamente 8 minutos.</div>
+  <div class="step-bar" id="stepBar"></div>
+
+  <!-- PASO 0 — Configurador -->
+  <div class="screen active" id="s0">
+    <div class="card">
+      <h2>¿Qué tipo de obra nueva es?</h2>
+      <div class="pills">
+        <button class="pill on" onclick="pill(this,'tipo','terminada')">Obra nueva terminada</button>
+        <button class="pill" onclick="pill(this,'tipo','construccion')">Obra nueva en construcción</button>
+      </div>
+      <div class="warn" style="margin-top:10px">⚠ <strong>Terminada:</strong> la edificación ya está concluida y dispone de certificado final de obra. <strong>En construcción:</strong> la obra está en curso — se declarará terminada en un segundo acto notarial cuando finalice.</div>
+    </div>
+    <div class="card">
+      <h2>¿El promotor es una sociedad?</h2>
+      <div class="pills">
+        <button class="pill on" onclick="pill(this,'soc','no')">No — persona física</button>
+        <button class="pill" onclick="pill(this,'soc','si')">Sí — sociedad</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>¿Cuántos promotores?</h2>
+      <div class="pills">
+        <button class="pill on" onclick="pill(this,'nP','1')">1</button>
+        <button class="pill" onclick="pill(this,'nP','2')">2</button>
+        <button class="pill" onclick="pill(this,'nP','3+')">Más de 2</button>
+      </div>
+    </div>
+    <div class="nav"><button class="btn-p" onclick="go(1)">Continuar →</button></div>
+  </div>
+
+  <!-- PASO 1 — Solar -->
+  <div class="screen" id="s1">
+    <div class="card">
+      <h2>🏗️ Datos del solar / finca</h2>
+      <div class="field">
+        <label>Tipo de finca *</label>
+        <select id="solar-tipo">
+          <option value="">— Seleccione —</option>
+          <option>Solar urbano</option>
+          <option>Finca rústica</option>
+          <option>Parte de finca (segregación previa a la obra nueva)</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Dirección completa del solar *</label>
+        <input type="text" id="solar-dir" placeholder="Calle, número, municipio">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Referencia catastral del solar</label>
+          <input type="text" id="solar-catastro" placeholder="1234567AB1234A0001AB">
+        </div>
+        <div class="field">
+          <label>CRU (Código Registral Único)</label>
+          <input type="text" id="solar-cru" placeholder="07001000123456">
+        </div>
+      </div>
+      <div class="field">
+        <label>Número de inscripción registral</label>
+        <input type="text" id="solar-ins" placeholder="Ej: Finca 12345, Tomo 100, Libro 50, Folio 200">
+      </div>
+      <div class="field">
+        <label>Registro de la Propiedad</label>
+        <input type="text" id="solar-reg" placeholder="Ej: Registro nº 1 de Mahón">
+      </div>
+      <div class="field">
+        <label>Superficie del solar (m²)</label>
+        <input type="text" id="solar-sup" placeholder="Ej: 450 m²">
+      </div>
+      <div class="field" style="margin-top:10px">
+        <label>¿Existe hipoteca u otra carga inscrita sobre el solar?</label>
+        <div class="rg">
+          <label><input type="radio" name="carg-solar" value="No" onclick="document.getElementById('carg-solar-x').classList.add('hidden')"> No</label>
+          <label><input type="radio" name="carg-solar" value="Sí" onclick="document.getElementById('carg-solar-x').classList.remove('hidden')"> Sí</label>
+          <label><input type="radio" name="carg-solar" value="No lo sé" onclick="document.getElementById('carg-solar-x').classList.add('hidden')"> No lo sé</label>
+        </div>
+      </div>
+      <div id="carg-solar-x" class="hidden">
+        <div class="row2">
+          <div class="field"><label>Entidad acreedora</label><input type="text" id="solar-carg-ent" placeholder="Ej: CaixaBank, BBVA..."></div>
+          <div class="field"><label>Tipo de carga</label>
+            <select id="solar-carg-tipo">
+              <option value="">—</option>
+              <option>Hipoteca de construcción</option>
+              <option>Hipoteca ordinaria</option>
+              <option>Embargo</option>
+              <option>Otra</option>
+            </select>
+          </div>
+        </div>
+        <div class="warn">⚠ Si existe hipoteca de construcción, la entidad prestamista deberá intervenir en la escritura o prestar su consentimiento para la ampliación de garantía sobre lo edificado.</div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn-s" onclick="go(0)">← Atrás</button>
+      <button class="btn-p" onclick="go(2)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- PASO 2 — Promotores -->
+  <div class="screen" id="s2">
+    <div id="promWrap"></div>
+    <div class="nav">
+      <button class="btn-s" onclick="go(1)">← Atrás</button>
+      <button class="btn-p" onclick="go(3)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- PASO 3 — Descripción de la obra -->
+  <div class="screen" id="s3">
+    <div class="card">
+      <h2>🏠 Descripción de la edificación</h2>
+      <div class="field">
+        <label>Tipo de edificación *</label>
+        <select id="edif-tipo">
+          <option value="">— Seleccione —</option>
+          <option>Vivienda unifamiliar aislada</option>
+          <option>Vivienda unifamiliar adosada / pareada</option>
+          <option>Edificio plurifamiliar (varias viviendas)</option>
+          <option>Local comercial / oficina</option>
+          <option>Nave industrial</option>
+          <option>Garaje / trastero</option>
+          <option>Mixto (residencial + comercial)</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Uso principal</label>
+        <div class="rg">
+          <label><input type="radio" name="edif-uso" value="Residencial" onclick="document.getElementById('seguro-x').classList.remove('hidden')"> Residencial</label>
+          <label><input type="radio" name="edif-uso" value="Comercial" onclick="document.getElementById('seguro-x').classList.add('hidden')"> Comercial</label>
+          <label><input type="radio" name="edif-uso" value="Industrial" onclick="document.getElementById('seguro-x').classList.add('hidden')"> Industrial</label>
+          <label><input type="radio" name="edif-uso" value="Mixto" onclick="document.getElementById('seguro-x').classList.remove('hidden')"> Mixto</label>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Plantas sobre rasante</label>
+          <input type="text" id="edif-plantas-s" placeholder="Ej: 2">
+        </div>
+        <div class="field">
+          <label>Plantas bajo rasante (sótano)</label>
+          <input type="text" id="edif-plantas-b" placeholder="Ej: 1 (o ninguna)">
+        </div>
+      </div>
+      <div class="row3">
+        <div class="field">
+          <label>Sup. construida total (m²)</label>
+          <input type="text" id="edif-sup-const" placeholder="Ej: 320 m²">
+        </div>
+        <div class="field">
+          <label>Sup. útil total (m²)</label>
+          <input type="text" id="edif-sup-util" placeholder="Ej: 275 m²">
+        </div>
+        <div class="field">
+          <label>Nº de viviendas / locales</label>
+          <input type="text" id="edif-num-viv" placeholder="Ej: 1 vivienda">
+        </div>
+      </div>
+      <div class="field">
+        <label>Descripción adicional (opcional)</label>
+        <textarea id="edif-desc" placeholder="Ej: Vivienda unifamiliar con planta baja y primera, piscina, garaje integrado..."></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📄 Licencia de obras</h2>
+      <div class="field">
+        <label>Ayuntamiento que concedió la licencia *</label>
+        <input type="text" id="lic-ayto" placeholder="Ej: Ajuntament de Maó, Ajuntament de Ciutadella...">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Número de expediente / licencia *</label>
+          <input type="text" id="lic-num" placeholder="Ej: LC-2023-0145">
+        </div>
+        <div class="field">
+          <label>Fecha de concesión *</label>
+          <input type="date" id="lic-fecha">
+        </div>
+      </div>
+      <div class="warn">⚠ Sin licencia de obras en vigor no puede otorgarse la escritura de obra nueva. Si está pendiente de obtenerla, informe a la notaría antes de la cita.</div>
+    </div>
+
+    <div class="card">
+      <h2>👷 Técnicos y constructora</h2>
+      <div class="field">
+        <label>Arquitecto proyectista y director de obra *</label>
+        <input type="text" id="tec-arq" placeholder="Nombre y apellidos completos">
+      </div>
+      <div class="field">
+        <label>Aparejador / Director de ejecución de obra</label>
+        <input type="text" id="tec-apare" placeholder="Nombre y apellidos completos">
+      </div>
+      <div class="field">
+        <label>Empresa constructora (si aplica)</label>
+        <input type="text" id="tec-constr" placeholder="Razón social o nombre del constructor">
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📍 Georreferenciación (Ley 13/2015)</h2>
+      <div class="field">
+        <label>¿Dispone de coordenadas georreferenciadas de la parcela?</label>
+        <div class="rg">
+          <label><input type="radio" name="geo" value="Sí — las tengo disponibles"> Sí, las tengo</label>
+          <label><input type="radio" name="geo" value="No — las gestionará la notaría"> No, las gestionará la notaría</label>
+          <label><input type="radio" name="geo" value="En trámite"> En trámite</label>
+        </div>
+        <div class="info" style="margin-top:8px">ℹ La georreferenciación de la parcela es obligatoria para la inscripción registral de la obra nueva (art. 202 LH, Ley 13/2015). La notaría puede gestionar su obtención a través del Catastro.</div>
+      </div>
+      <div class="field">
+        <label>Observaciones (opcional)</label>
+        <input type="text" id="geo-obs" placeholder="Ej: Adjunto fichero GML del Catastro">
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-s" onclick="go(2)">← Atrás</button>
+      <button class="btn-p" onclick="go(4)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- PASO 4 — Certificaciones (solo obra terminada) -->
+  <div class="screen" id="s4">
+    <div class="card">
+      <h2>📋 Certificado final de obra</h2>
+      <div class="row2">
+        <div class="field">
+          <label>Arquitecto firmante del certificado *</label>
+          <input type="text" id="cfo-arq" placeholder="Nombre y apellidos">
+        </div>
+        <div class="field">
+          <label>Fecha del certificado final *</label>
+          <input type="date" id="cfo-fecha">
+        </div>
+      </div>
+      <div class="warn">⚠ El certificado final de obra debe estar visado por el Colegio de Arquitectos correspondiente.</div>
+    </div>
+
+    <div class="card">
+      <h2>⚡ Certificado de Eficiencia Energética (CEE)</h2>
+      <div class="row2">
+        <div class="field">
+          <label>Técnico redactor del CEE</label>
+          <input type="text" id="cee-tec" placeholder="Nombre y apellidos">
+        </div>
+        <div class="field">
+          <label>Calificación energética obtenida</label>
+          <select id="cee-cal">
+            <option value="">—</option>
+            <option>A</option><option>B</option><option>C</option>
+            <option>D</option><option>E</option><option>F</option><option>G</option>
+            <option>Pendiente de obtener</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Número de registro autonómico del CEE</label>
+        <input type="text" id="cee-reg" placeholder="Nº de registro">
+      </div>
+      <div class="warn">⚠ El CEE es obligatorio para obras nuevas terminadas. Sin él no puede otorgarse la escritura.</div>
+    </div>
+
+    <div class="card" id="seguro-x">
+      <h2>🛡️ Seguro decenal (uso residencial)</h2>
+      <div class="notice" style="margin-bottom:14px">El seguro decenal cubre los daños estructurales del edificio durante 10 años (art. 19 LOE). Es obligatorio para edificios de uso residencial salvo autopromotor individual.</div>
+      <div class="field">
+        <label>¿Dispone de seguro decenal?</label>
+        <div class="rg">
+          <label><input type="radio" name="sdec" value="Sí" onclick="document.getElementById('sdec-x').classList.remove('hidden')"> Sí</label>
+          <label><input type="radio" name="sdec" value="No — autopromotor individual (exención art. 19.1.c LOE)" onclick="document.getElementById('sdec-x').classList.add('hidden')"> No — autopromotor individual</label>
+          <label><input type="radio" name="sdec" value="No — otro motivo" onclick="document.getElementById('sdec-x').classList.add('hidden')"> No — otro motivo</label>
+        </div>
+      </div>
+      <div id="sdec-x" class="hidden">
+        <div class="row2">
+          <div class="field"><label>Aseguradora *</label><input type="text" id="sdec-ase" placeholder="Ej: Zurich, AXA, Mapfre..."></div>
+          <div class="field"><label>Número de póliza *</label><input type="text" id="sdec-pol" placeholder="Nº de póliza"></div>
+        </div>
+        <div class="field"><label>Capital asegurado</label><input type="text" id="sdec-cap" placeholder="Ej: 350.000 €"></div>
+      </div>
+      <div class="warn" style="margin-top:8px">⚠ Si es autopromotor individual que va a ocupar personalmente la vivienda, puede acogerse a la exención, pero deberá hacerlo constar en escritura. Si transmite la vivienda antes de 10 años, el comprador podrá exigir la constitución del seguro.</div>
+    </div>
+
+    <div class="card">
+      <h2>📖 Libro del Edificio</h2>
+      <div class="field">
+        <label>¿Dispone del Libro del Edificio?</label>
+        <div class="rg">
+          <label><input type="radio" name="libro" value="Sí, disponible"> Sí</label>
+          <label><input type="radio" name="libro" value="Pendiente de elaborar"> Pendiente</label>
+          <label><input type="radio" name="libro" value="No aplica"> No aplica</label>
+        </div>
+        <div class="info" style="margin-top:8px">ℹ El Libro del Edificio (manual de uso y mantenimiento) es exigible para edificaciones de uso residencial y se entrega como anejo a la escritura.</div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-s" onclick="go(3)">← Atrás</button>
+      <button class="btn-p" onclick="go(5)">Revisar →</button>
+    </div>
+  </div>
+
+  <!-- PASO 5 — Resumen -->
+  <div class="screen" id="s5">
+    <div class="card">
+      <h2>📋 Revise sus datos antes de descargar</h2>
+      <div id="resumen"></div>
+    </div>
+    <div class="notice">Si hay algún error, pulse "Corregir" para volver atrás.</div>
+    <div class="nav">
+      <button class="btn-s" id="btn-corr" onclick="go(cfg.tipo==='construccion'?3:4)">← Corregir</button>
+      <button class="btn-w" onclick="dlWord()">⬇️ Descargar Word y enviar a la notaría</button>
+    </div>
+    <div class="success" id="ok" style="display:none">
+      <h3>✅ Documento descargado</h3>
+      <p>Por favor, adjunte el archivo Word descargado en su respuesta al email de la notaría.<br>Nos pondremos en contacto para confirmar la documentación necesaria.</p>
+    </div>
+  </div>
+
+  <div class="footer">Oficial Notarial IA · Sus datos se procesan localmente y no se almacenan en ningún servidor.</div>
+</div>
+
+<script>
+var LABELS_T = ['Inicio','Solar','Promotor','Obra','Certificaciones','Resumen'];
+var LABELS_C = ['Inicio','Solar','Promotor','Obra','Resumen'];
+var cfg = {tipo:'terminada', soc:'no', nP:'1'};
+var step = 0, uid = 0, promCnt = 1;
+
+function pill(el, k, v) {
+  el.closest('.card').querySelectorAll('.pill').forEach(function(p){ p.classList.remove('on'); });
+  el.classList.add('on');
+  cfg[k] = v;
+}
+
+function getLabels() { return cfg.tipo === 'construccion' ? LABELS_C : LABELS_T; }
+
+function renderBar() {
+  var labels = getLabels();
+  var b = document.getElementById('stepBar');
+  b.innerHTML = '';
+  labels.forEach(function(l, i) {
+    var d = document.createElement('div');
+    d.className = 'sdot ' + (i < step ? 'done' : i === step ? 'active' : 'pend');
+    d.textContent = i < step ? '✓' : (i + 1);
+    d.title = l;
+    b.appendChild(d);
+    if (i < labels.length - 1) {
+      var ln = document.createElement('div');
+      ln.className = 'sline' + (i < step ? ' done' : '');
+      b.appendChild(ln);
+    }
+  });
+}
+
+function go(n) {
+  if (n === 4 && cfg.tipo === 'construccion') { n = 5; }
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  step = n;
+  if (n === 2) buildProms();
+  if (n === 5) buildRes();
+  document.getElementById('s' + n).classList.add('active');
+  renderBar();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function promHtml(n, rm) {
+  uid++;
+  var u = uid;
+  var r = rm ? '<button class="rm-btn" onclick="this.closest(\'.party\').remove()">✕</button>' : '';
+  if (cfg.soc === 'si') {
+    return '<div class="party"><h3>Promotor ' + n + ' — Sociedad</h3>' + r +
+      '<div class="field"><label>Razón social *</label><input type="text" placeholder="Ej: Construcciones XYZ S.L."></div>' +
+      '<div class="row2"><div class="field"><label>CIF *</label><input type="text" placeholder="B12345678"></div>' +
+      '<div class="field"><label>Cargo del representante *</label><input type="text" placeholder="Administrador único"></div></div>' +
+      '<div class="field"><label>Nombre del representante legal *</label><input type="text" placeholder="Nombre y apellidos completos"></div>' +
+      '<div class="field"><label>DNI / NIE del representante *</label><input type="text" placeholder="12345678A"></div>' +
+      '<div class="field"><label>Domicilio social</label><input type="text" placeholder="Calle, número, municipio"></div>' +
+    '</div>';
+  }
+  return '<div class="party"><h3>Promotor ' + n + '</h3>' + r +
+    '<div class="row2"><div class="field"><label>Nombre y apellidos *</label><input type="text" placeholder="Nombre completo"></div>' +
+    '<div class="field"><label>DNI / NIE *</label><input type="text" placeholder="12345678A"></div></div>' +
+    '<div class="row2"><div class="field"><label>Estado civil</label>' +
+    '<select id="ec' + u + '" onchange="document.getElementById(\'rem' + u + '\').classList.toggle(\'hidden\',this.value!==\'Casado/a\')">' +
+    '<option value="">—</option><option>Soltero/a</option><option>Casado/a</option><option>Viudo/a</option><option>Divorciado/a</option>' +
+    '</select></div>' +
+    '<div class="field"><label>Domicilio completo</label><input type="text" placeholder="Calle, número, municipio"></div></div>' +
+    '<div id="rem' + u + '" class="hidden" style="margin-bottom:10px">' +
+      '<div class="field"><label>Régimen económico matrimonial *</label>' +
+        '<select><option value="">— Seleccione —</option><option>Gananciales</option>' +
+        '<option>Separación de bienes</option><option>Participación</option><option>No lo sé</option></select>' +
+      '</div>' +
+      '<div class="warn">⚠ Si el bien es ganancial, ambos cónyuges deben comparecer o autorizar la operación (art. 1377 CC).</div>' +
+    '</div>' +
+    '<div class="row2"><div class="field"><label>Teléfono de contacto</label><input type="text" placeholder="Ej: 971 000 000"></div>' +
+    '<div class="field"><label>Cuota de titularidad *</label><input type="text" placeholder="Ej: 100%, 50% indiviso..."></div></div>' +
+    '<div class="toggle-row"><input type="checkbox" id="ext' + u + '" onchange="document.getElementById(\'extx' + u + '\').classList.toggle(\'hidden\',!this.checked)">' +
+    '<label for="ext' + u + '">Es extranjero/a (nacionalidad no española)</label></div>' +
+    '<div id="extx' + u + '" class="hidden">' +
+      '<div class="field"><label>País de residencia habitual</label><input type="text" placeholder="Ej: Alemania, Reino Unido..."></div>' +
+      '<div class="field"><label>Representante fiscal en España (si lo tiene)</label><input type="text" placeholder="Nombre y apellidos o razón social"></div>' +
+    '</div>' +
+  '</div>';
+}
+
+function buildProms() {
+  var n = cfg.nP === '3+' ? 3 : parseInt(cfg.nP);
+  promCnt = n;
+  var w = document.getElementById('promWrap');
+  w.innerHTML = '';
+  var card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = '<h2>👤 Promotor' + (n > 1 ? 'es' : '') + '</h2>';
+  for (var i = 1; i <= n; i++) card.innerHTML += promHtml(i, i > 1);
+  if (cfg.nP === '3+') {
+    var ab = document.createElement('button');
+    ab.className = 'add-btn';
+    ab.textContent = '+ Añadir promotor';
+    ab.onclick = function() {
+      promCnt++;
+      var d = document.createElement('div');
+      d.innerHTML = promHtml(promCnt, true);
+      card.insertBefore(d.firstElementChild, ab);
+    };
+    card.appendChild(ab);
+  }
+  w.appendChild(card);
+}
+
+function collectBlock(cId) {
+  var out = [];
+  document.querySelectorAll('#' + cId + ' .party').forEach(function(p) {
+    var rows = [];
+    p.querySelectorAll('input[type=text], select').forEach(function(inp) {
+      var f = inp.closest('.field');
+      if (!f) return;
+      var lbl = f.querySelector('label');
+      if (lbl && inp.value.trim()) rows.push({lbl: lbl.textContent.replace(' *','').trim(), val: inp.value.trim()});
+    });
+    p.querySelectorAll('input[type=radio]:checked').forEach(function(r) {
+      var f = r.closest('.field');
+      if (!f) return;
+      var lbl = f.querySelector('label');
+      if (lbl) rows.push({lbl: lbl.textContent.replace(' *','').trim(), val: r.value});
+    });
+    if (rows.length) out.push(rows);
+  });
+  return out;
+}
+
+function gv(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function gr(name) { var el = document.querySelector('input[name=' + name + ']:checked'); return el ? el.value : ''; }
+function sr(lbl, val) { return val ? '<div class="sr"><span>' + lbl + '</span><span>' + val + '</span></div>' : ''; }
+
+function buildRes() {
+  var tipoLabel = cfg.tipo === 'construccion' ? 'Obra nueva en construcción' : 'Obra nueva terminada';
+  var h = '<div class="sg"><h3>📋 Tipo</h3>' + sr('Tipo de obra nueva', tipoLabel) + '</div>';
+
+  h += '<div class="sg"><h3>🏗️ Solar / Finca</h3>' +
+    sr('Tipo de finca', gv('solar-tipo')) + sr('Dirección', gv('solar-dir')) +
+    sr('Ref. catastral', gv('solar-catastro')) + sr('CRU', gv('solar-cru')) +
+    sr('Inscripción registral', gv('solar-ins')) + sr('Registro', gv('solar-reg')) +
+    sr('Superficie solar', gv('solar-sup')) + sr('Cargas', gr('carg-solar')) +
+    sr('Entidad acreedora', gv('solar-carg-ent')) + sr('Tipo carga', gv('solar-carg-tipo')) +
+  '</div>';
+
+  collectBlock('promWrap').forEach(function(rows, i) {
+    h += '<div class="sg"><h3>👤 Promotor' + (i > 0 ? ' ' + (i+1) : '') + '</h3>';
+    rows.forEach(function(r){ h += sr(r.lbl, r.val); });
+    h += '</div>';
+  });
+
+  h += '<div class="sg"><h3>🏠 Edificación</h3>' +
+    sr('Tipo', gv('edif-tipo')) + sr('Uso', gr('edif-uso')) +
+    sr('Plantas sobre rasante', gv('edif-plantas-s')) + sr('Plantas bajo rasante', gv('edif-plantas-b')) +
+    sr('Sup. construida', gv('edif-sup-const')) + sr('Sup. útil', gv('edif-sup-util')) +
+    sr('Nº viviendas / locales', gv('edif-num-viv')) + sr('Descripción', gv('edif-desc')) +
+  '</div>';
+
+  h += '<div class="sg"><h3>📄 Licencia</h3>' +
+    sr('Ayuntamiento', gv('lic-ayto')) + sr('Nº expediente', gv('lic-num')) + sr('Fecha', gv('lic-fecha')) +
+  '</div>';
+
+  h += '<div class="sg"><h3>👷 Técnicos</h3>' +
+    sr('Arquitecto', gv('tec-arq')) + sr('Aparejador', gv('tec-apare')) + sr('Constructora', gv('tec-constr')) +
+  '</div>';
+
+  h += '<div class="sg"><h3>📍 Georreferenciación</h3>' +
+    sr('Coordenadas', gr('geo')) + sr('Observaciones', gv('geo-obs')) +
+  '</div>';
+
+  if (cfg.tipo === 'terminada') {
+    h += '<div class="sg"><h3>📋 Cert. final de obra</h3>' +
+      sr('Arquitecto firmante', gv('cfo-arq')) + sr('Fecha', gv('cfo-fecha')) + '</div>';
+    h += '<div class="sg"><h3>⚡ CEE</h3>' +
+      sr('Técnico', gv('cee-tec')) + sr('Calificación', gv('cee-cal')) + sr('Nº registro', gv('cee-reg')) + '</div>';
+    h += '<div class="sg"><h3>🛡️ Seguro decenal</h3>' +
+      sr('Dispone de seguro', gr('sdec')) + sr('Aseguradora', gv('sdec-ase')) +
+      sr('Póliza', gv('sdec-pol')) + sr('Capital asegurado', gv('sdec-cap')) + '</div>';
+    h += '<div class="sg"><h3>📖 Libro del Edificio</h3>' + sr('Estado', gr('libro')) + '</div>';
+  }
+
+  document.getElementById('resumen').innerHTML = h;
+}
+
+function dlWord() {
+  var tipoLabel = cfg.tipo === 'construccion' ? 'Obra nueva en construcción' : 'Obra nueva terminada';
+  var body = '<h2>TIPO DE ACTUACIÓN</h2><p>Tipo de obra nueva: <strong>' + tipoLabel + '</strong></p><br>';
+
+  body += '<h2>SOLAR / FINCA</h2>' +
+    '<p>Tipo de finca: <strong>' + (gv('solar-tipo')||'—') + '</strong></p>' +
+    '<p>Dirección: <strong>' + (gv('solar-dir')||'—') + '</strong></p>' +
+    '<p>Ref. catastral: <strong>' + (gv('solar-catastro')||'—') + '</strong></p>' +
+    '<p>CRU: <strong>' + (gv('solar-cru')||'—') + '</strong></p>' +
+    '<p>Inscripción registral: <strong>' + (gv('solar-ins')||'—') + '</strong></p>' +
+    '<p>Registro de la Propiedad: <strong>' + (gv('solar-reg')||'—') + '</strong></p>' +
+    '<p>Superficie solar: <strong>' + (gv('solar-sup')||'—') + '</strong></p>' +
+    '<p>Cargas sobre el solar: <strong>' + (gr('carg-solar')||'—') + '</strong></p>';
+  if (gv('solar-carg-ent')) body += '<p>Entidad acreedora: <strong>' + gv('solar-carg-ent') + '</strong></p>';
+  if (gv('solar-carg-tipo')) body += '<p>Tipo de carga: <strong>' + gv('solar-carg-tipo') + '</strong></p>';
+  body += '<br>';
+
+  body += '<h2>PROMOTOR/ES</h2>';
+  collectBlock('promWrap').forEach(function(rows, i) {
+    if (i > 0) body += '<p><strong>Promotor ' + (i+1) + ':</strong></p>';
+    rows.forEach(function(r){ body += '<p>' + r.lbl + ': <strong>' + r.val + '</strong></p>'; });
+    body += '<br>';
+  });
+
+  body += '<h2>DESCRIPCIÓN DE LA EDIFICACIÓN</h2>' +
+    '<p>Tipo: <strong>' + (gv('edif-tipo')||'—') + '</strong></p>' +
+    '<p>Uso principal: <strong>' + (gr('edif-uso')||'—') + '</strong></p>' +
+    '<p>Plantas sobre rasante: <strong>' + (gv('edif-plantas-s')||'—') + '</strong></p>' +
+    '<p>Plantas bajo rasante: <strong>' + (gv('edif-plantas-b')||'—') + '</strong></p>' +
+    '<p>Sup. construida total: <strong>' + (gv('edif-sup-const')||'—') + '</strong></p>' +
+    '<p>Sup. útil total: <strong>' + (gv('edif-sup-util')||'—') + '</strong></p>' +
+    '<p>Nº de viviendas / locales: <strong>' + (gv('edif-num-viv')||'—') + '</strong></p>';
+  if (gv('edif-desc')) body += '<p>Descripción adicional: <strong>' + gv('edif-desc') + '</strong></p>';
+  body += '<br>';
+
+  body += '<h2>LICENCIA DE OBRAS</h2>' +
+    '<p>Ayuntamiento: <strong>' + (gv('lic-ayto')||'—') + '</strong></p>' +
+    '<p>Nº expediente / licencia: <strong>' + (gv('lic-num')||'—') + '</strong></p>' +
+    '<p>Fecha: <strong>' + (gv('lic-fecha')||'—') + '</strong></p><br>';
+
+  body += '<h2>TÉCNICOS Y CONSTRUCTORA</h2>' +
+    '<p>Arquitecto: <strong>' + (gv('tec-arq')||'—') + '</strong></p>' +
+    '<p>Aparejador / Dir. ejecución: <strong>' + (gv('tec-apare')||'—') + '</strong></p>' +
+    '<p>Constructora: <strong>' + (gv('tec-constr')||'—') + '</strong></p><br>';
+
+  body += '<h2>GEORREFERENCIACIÓN</h2>' +
+    '<p>Coordenadas disponibles: <strong>' + (gr('geo')||'—') + '</strong></p>';
+  if (gv('geo-obs')) body += '<p>Observaciones: <strong>' + gv('geo-obs') + '</strong></p>';
+  body += '<br>';
+
+  if (cfg.tipo === 'terminada') {
+    body += '<h2>CERTIFICADO FINAL DE OBRA</h2>' +
+      '<p>Arquitecto firmante: <strong>' + (gv('cfo-arq')||'—') + '</strong></p>' +
+      '<p>Fecha: <strong>' + (gv('cfo-fecha')||'—') + '</strong></p><br>';
+    body += '<h2>CERTIFICADO DE EFICIENCIA ENERGÉTICA (CEE)</h2>' +
+      '<p>Técnico redactor: <strong>' + (gv('cee-tec')||'—') + '</strong></p>' +
+      '<p>Calificación: <strong>' + (gv('cee-cal')||'—') + '</strong></p>' +
+      '<p>Nº de registro: <strong>' + (gv('cee-reg')||'—') + '</strong></p><br>';
+    body += '<h2>SEGURO DECENAL</h2>' +
+      '<p>¿Dispone de seguro?: <strong>' + (gr('sdec')||'—') + '</strong></p>';
+    if (gv('sdec-ase')) body += '<p>Aseguradora: <strong>' + gv('sdec-ase') + '</strong></p>';
+    if (gv('sdec-pol')) body += '<p>Nº póliza: <strong>' + gv('sdec-pol') + '</strong></p>';
+    if (gv('sdec-cap')) body += '<p>Capital asegurado: <strong>' + gv('sdec-cap') + '</strong></p>';
+    body += '<br>';
+    body += '<h2>LIBRO DEL EDIFICIO</h2>' +
+      '<p>Estado: <strong>' + (gr('libro')||'—') + '</strong></p><br>';
+  }
+
+  body += '<p style="font-size:10pt;color:#777">Documento generado por Oficial Notarial IA · ' + new Date().toLocaleDateString('es-ES') + '</p>';
+
+  var w = '<html xmlns:o=\'urn:schemas-microsoft-com:office:office\' xmlns:w=\'urn:schemas-microsoft-com:office:word\'>' +
+    '<head><meta charset=\'utf-8\'><style>body{font-family:\'Times New Roman\',serif;font-size:12pt;line-height:1.9;margin:3cm}' +
+    'h1{text-align:center;font-size:14pt;margin-bottom:20pt}h2{font-size:12pt;margin-top:16pt;border-bottom:1px solid #aaa;padding-bottom:3pt}p{margin:3pt 0}' +
+    '</style></head><body><h1>NOTARÍA<br>DATOS PARA ESCRITURA DE DECLARACIÓN DE OBRA NUEVA</h1>' + body + '</body></html>';
+
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([w], {type: 'application/msword'}));
+  a.download = 'Datos_ObraNueva_Notaria.doc';
+  a.click();
+
+  document.getElementById('ok').style.display = 'block';
+  document.getElementById('ok').scrollIntoView({behavior: 'smooth'});
+}
+
+renderBar();
+</script>
+</body>
+</html>
