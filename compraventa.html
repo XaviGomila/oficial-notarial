@@ -289,6 +289,17 @@ body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-heigh
         </select>
         <div class="warn" style="margin-top:6px">⚠ El CEE es obligatorio para formalizar la escritura. Si el vendedor no dispone de él, la firma no puede realizarse hasta su obtención.</div>
       </div>
+      <div class="field" style="margin-top:4px">
+        <label>¿Dispone el inmueble de cédula de habitabilidad vigente?</label>
+        <select id="cedula-hab">
+          <option value="">— Seleccione —</option>
+          <option>Sí, dispone de cédula de habitabilidad vigente</option>
+          <option>No dispone / está caducada (deberá tramitarse)</option>
+          <option>No aplica (no es vivienda: local, garaje, solar, etc.)</option>
+          <option>No lo sé / pendiente de comprobar</option>
+        </select>
+        <div class="warn" style="margin-top:6px">⚠ En las Illes Balears la cédula de habitabilidad vigente es exigible para transmitir viviendas y debe reseñarse en la escritura. Si no se dispone de ella, conviene tramitarla antes de la firma.</div>
+      </div>
       <div class="field" style="margin-top:10px">
         <label>IBAN del vendedor (cuenta donde recibirá el importe) *</label>
         <input type="text" id="iban-vendedor" placeholder="ES00 0000 0000 0000 0000 0000" maxlength="29">
@@ -635,6 +646,7 @@ function buildRes() {
   }
   if (gv('ibi-paga'))  h += '<div class="sr"><span>IBI — ¿quién paga?</span><span>' + gv('ibi-paga') + '</span></div>';
   if (gv('cee-paga'))  h += '<div class="sr"><span>CEE — ¿quién asume el coste?</span><span>' + gv('cee-paga') + '</span></div>';
+  if (gv('cedula-hab'))h += '<div class="sr"><span>Cédula de habitabilidad</span><span>' + gv('cedula-hab') + '</span></div>';
   if (gv('iban-vendedor'))  h += '<div class="sr"><span>IBAN vendedor (recibe pago)</span><span>' + gv('iban-vendedor') + '</span></div>';
   if (gv('iban-comprador')) h += '<div class="sr"><span>IBAN comprador (ordena pago)</span><span>' + gv('iban-comprador') + '</span></div>';
   h += '</div>';
@@ -693,6 +705,7 @@ function dlWord() {
   }
   pBody += '<p>IBI — ¿quién paga?: <strong>' + (gv('ibi-paga')||'—') + '</strong></p>' +
            '<p>CEE — ¿quién asume el coste?: <strong>' + (gv('cee-paga')||'—') + '</strong></p>' +
+           '<p>Cédula de habitabilidad: <strong>' + (gv('cedula-hab')||'—') + '</strong></p>' +
            '<p>IBAN vendedor (recibe pago): <strong>' + (gv('iban-vendedor')||'—') + '</strong></p>' +
            '<p>IBAN comprador (ordena pago): <strong>' + (gv('iban-comprador')||'—') + '</strong></p>' +
            '<br>';
