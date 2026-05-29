@@ -3329,13 +3329,13 @@ function detectarActo(){
   const actoRaw = (_lastParsed?.actoNombre || '').toLowerCase();
   if(actoRaw.includes('compraventa'))                                          return 'compraventa';
   if(actoRaw.includes('poder'))                                                return 'poder';
+  if(actoRaw.includes('condominio')||actoRaw.includes('proindiviso')||actoRaw.includes('disoluci')||actoRaw.includes('extinción de comunidad')||actoRaw.includes('extincion de comunidad'))  return 'disolucion';
   if(actoRaw.includes('herencia')||actoRaw.includes('adjudicación'))           return 'herencia';
   if(actoRaw.includes('donaci'))                                               return 'donacion';
   if(actoRaw.includes('testamento'))                                           return 'testamento';
   if(actoRaw.includes('renuncia')||actoRaw.includes('repudiaci'))              return 'renuncia';
   if(actoRaw.includes('cancelaci'))                                            return 'cancelacion';
   if(actoRaw.includes('obra nueva'))                                           return 'obranue';
-  if(actoRaw.includes('condominio')||actoRaw.includes('proindiviso'))          return 'disolucion';
   if(actoRaw.includes('hipoteca')||actoRaw.includes('préstamo hipotecario'))   return 'hipoteca';
   if(actoRaw.includes('división horizontal')||actoRaw.includes('division horizontal')||actoRaw.includes('segregaci'))  return 'division-horizontal';
 
