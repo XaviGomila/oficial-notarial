@@ -80,6 +80,7 @@ body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-heigh
       </div>
     </div>
     <div class="acto-badge">✍️ Poder notarial</div>
+    <div id="rpHeader" style="display:none;margin-top:10px;font-size:0.8rem;color:rgba(255,255,255,0.78);border-top:1px solid rgba(255,255,255,0.15);padding-top:8px"></div>
   </div>
 </div>
 
@@ -89,6 +90,19 @@ body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-heigh
 
   <!-- PASO 0 — Configurador -->
   <div class="screen active" id="s0">
+  <div class="card">
+    <h2>¿Quién rellena este formulario?</h2>
+    <div class="field"><label>Perfil de quien rellena</label><select id="rp-perfil" onchange="updateRpHeader()" style="width:100%;font-family:inherit;font-size:0.9rem;padding:10px 12px;border:1.5px solid #ddd8ce;border-radius:7px;background:#faf8f4;color:inherit"><option value="">— Seleccione —</option><option>Inmobiliaria</option><option>Gestoría / Asesoría</option><option>Abogado</option><option>Particular (una de las partes)</option><option>Otro</option></select></div>
+    <div class="row2">
+      <div class="field"><label>Nombre y apellidos *</label><input type="text" id="rp-nombre" oninput="updateRpHeader()" placeholder="Nombre de quien rellena"></div>
+      <div class="field"><label>Empresa (si aplica)</label><input type="text" id="rp-empresa" oninput="updateRpHeader()" placeholder="Nombre de la empresa"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Email *</label><input type="email" id="rp-email" oninput="updateRpHeader()" placeholder="correo@ejemplo.com"></div>
+      <div class="field"><label>Teléfono *</label><input type="tel" id="rp-tel" oninput="updateRpHeader()" placeholder="600 000 000"></div>
+    </div>
+  </div>
+
     <div class="card">
       <h2>¿Alguna parte es una sociedad?</h2>
       <div class="pills">
@@ -420,6 +434,38 @@ function collectBlock(cId){
   return out;
 }
 
+
+// ── RELLENADO POR ────────────────────────────────────────
+function rpFields(){
+  var f=[];
+  if(gv('rp-perfil')) f.push(['Perfil',gv('rp-perfil')]);
+  if(gv('rp-nombre')) f.push(['Nombre',gv('rp-nombre')]);
+  if(gv('rp-empresa'))f.push(['Empresa',gv('rp-empresa')]);
+  if(gv('rp-email'))  f.push(['Email',gv('rp-email')]);
+  if(gv('rp-tel'))    f.push(['Teléfono',gv('rp-tel')]);
+  return f;
+}
+function updateRpHeader(){
+  var el=document.getElementById('rpHeader'); if(!el) return;
+  var f=rpFields();
+  if(!f.length){ el.style.display='none'; return; }
+  el.style.display='block';
+  el.textContent='Rellenado por: '+f.map(function(r){return r[1];}).join(' · ');
+}
+function rpWordHtml(){
+  var f=rpFields(); if(!f.length) return '';
+  var h='<h2>DATOS DE QUIEN RELLENA EL FORMULARIO</h2>';
+  f.forEach(function(r){ h+='<p>'+r[0]+': <strong>'+r[1]+'</strong></p>'; });
+  return h+'<br>';
+}
+
+function rpResHtml(){
+  var f=rpFields(); if(!f.length) return '';
+  var h='<div class="sg"><h3>🖊️ Datos de quien rellena</h3>';
+  f.forEach(function(r){ h+='<div class="sr"><span>'+r[0]+'</span><span>'+r[1]+'</span></div>'; });
+  return h+'</div>';
+}
+
 function gv(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; }
 function gr(name){ var el = document.querySelector('input[name=' + name + ']:checked'); return el ? el.value : ''; }
 
@@ -443,7 +489,7 @@ function buildRes(){
     (gv('pais-destino') ? '<div class="sr"><span>País destino</span><span>' + gv('pais-destino') + '</span></div>' : '') +
   '</div>';
 
-  document.getElementById('resumen').innerHTML = h;
+  document.getElementById('resumen').innerHTML = rpResHtml() + h;
 }
 
 // ── WORD ─────────────────────────────────────────────
@@ -463,7 +509,7 @@ function dlWord(){
   var venc = gr('vencimiento') || '—';
   if(gv('fecha-venc')) venc += ' — ' + gv('fecha-venc');
 
-  var body = wBlock('PODERDANTE/S', collectBlock('podWrap')) +
+  var body = rpWordHtml() + wBlock('PODERDANTE/S', collectBlock('podWrap')) +
     wBlock('APODERADO/S', collectBlock('apoWrap')) +
     '<h2>TIPO DE PODER Y FACULTADES</h2>' +
     '<p>Tipo: <strong>' + tipoTexto + '</strong></p>' +

@@ -73,6 +73,7 @@
 <div class="hdr">
   <h1>Disolución de Condominio — Datos para la notaría</h1>
   <p>Complete el formulario para que preparemos su expediente. Sus datos se procesan localmente.</p>
+  <div id="rpHeader" style="display:none;margin-top:10px;font-size:0.8rem;color:rgba(255,255,255,0.78);border-top:1px solid rgba(255,255,255,0.15);padding-top:8px"></div>
 </div>
 <div class="step-bar" id="stepBar"></div>
 
@@ -88,7 +89,20 @@
     Es el acto por el que los copropietarios de un bien ponen fin a la situación de propiedad compartida. Un copropietario se queda con la totalidad del bien y, si su cuota era inferior al 100%, compensa económicamente al resto. Fiscalmente es más ventajosa que una compraventa: tributa por AJD, no por ITP.
   </div>
 
-  <div class="card">
+    <div class="card">
+    <h2>¿Quién rellena este formulario?</h2>
+    <div class="field"><label>Perfil de quien rellena</label><select id="rp-perfil" onchange="updateRpHeader()" style="width:100%;font-family:inherit;font-size:0.9rem;padding:10px 12px;border:1.5px solid #ddd8ce;border-radius:7px;background:#faf8f4;color:inherit"><option value="">— Seleccione —</option><option>Inmobiliaria</option><option>Gestoría / Asesoría</option><option>Abogado</option><option>Particular (una de las partes)</option><option>Otro</option></select></div>
+    <div class="two-col">
+      <div class="field"><label>Nombre y apellidos *</label><input type="text" id="rp-nombre" oninput="updateRpHeader()" placeholder="Nombre de quien rellena"></div>
+      <div class="field"><label>Empresa (si aplica)</label><input type="text" id="rp-empresa" oninput="updateRpHeader()" placeholder="Nombre de la empresa"></div>
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Email *</label><input type="email" id="rp-email" oninput="updateRpHeader()" placeholder="correo@ejemplo.com"></div>
+      <div class="field"><label>Teléfono *</label><input type="tel" id="rp-tel" oninput="updateRpHeader()" placeholder="600 000 000"></div>
+    </div>
+  </div>
+
+<div class="card">
     <h2>👥 Copropietarios actuales</h2>
     <p style="font-size:13px;color:var(--ink3);margin-bottom:16px;line-height:1.5">Incluya todos los propietarios actuales del bien, con su cuota de participación.</p>
 
@@ -336,6 +350,37 @@ function go(n){
   document.getElementById('s'+n).classList.add('active');
   renderBar();window.scrollTo({top:0,behavior:'smooth'});
 }
+
+// ── RELLENADO POR ────────────────────────────────────────
+function rpFields(){
+  var f=[];
+  if(gv('rp-perfil')) f.push(['Perfil',gv('rp-perfil')]);
+  if(gv('rp-nombre')) f.push(['Nombre',gv('rp-nombre')]);
+  if(gv('rp-empresa'))f.push(['Empresa',gv('rp-empresa')]);
+  if(gv('rp-email'))  f.push(['Email',gv('rp-email')]);
+  if(gv('rp-tel'))    f.push(['Teléfono',gv('rp-tel')]);
+  return f;
+}
+function updateRpHeader(){
+  var el=document.getElementById('rpHeader'); if(!el) return;
+  var f=rpFields();
+  if(!f.length){ el.style.display='none'; return; }
+  el.style.display='block';
+  el.textContent='Rellenado por: '+f.map(function(r){return r[1];}).join(' · ');
+}
+function rpWordHtml(){
+  var f=rpFields(); if(!f.length) return '';
+  var h='<h2>DATOS DE QUIEN RELLENA EL FORMULARIO</h2>';
+  f.forEach(function(r){ h+='<p>'+r[0]+': <strong>'+r[1]+'</strong></p>'; });
+  return h+'<br>';
+}
+function rpResHtml(){
+  var f=rpFields(); if(!f.length) return '';
+  var h='<div style="background:#fff;border:1px solid #e0d8cc;border-radius:10px;padding:16px;margin-bottom:14px"><h3 style="font-size:13px;font-weight:700;color:#0d1b2e;margin-bottom:8px">🖊️ Datos de quien rellena</h3>';
+  f.forEach(function(r){ h+='<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #eee;font-size:13px"><span style="color:#888">'+r[0]+'</span><span style="font-weight:600;text-align:right">'+r[1]+'</span></div>'; });
+  return h+'</div>';
+}
+
 function gv(id){const e=document.getElementById(id);return e?e.value.trim():'';}
 function gr(name){const e=document.querySelector(`input[name="${name}"]:checked`);return e?e.value:'';}
 function sv(id){const e=document.getElementById(id);return e?e.value:'';}
@@ -418,7 +463,7 @@ function buildResumen(){
   h+=row('Forma de pago',gr('comp-forma'));h+=row('Momento del pago',gr('comp-momento'));
   h+='</div>';
   if(gv('observaciones')){h+=`<div class="res-block"><h3>Observaciones</h3><div style="font-size:13px;line-height:1.55">${gv('observaciones')}</div></div>`;}
-  document.getElementById('resumen-contenido').innerHTML=h;
+  document.getElementById('resumen-contenido').innerHTML=rpResHtml()+h;
 
   const items=[];
   const cb=document.querySelectorAll('[id^="coprop-"]');
@@ -441,6 +486,7 @@ function dlWord(){
   function aviso(t){return `<div style="background:#fff8e8;border-left:4pt solid #c9a84c;padding:8pt 12pt;margin:8pt 0;font-size:10.5pt;line-height:1.5">${t}</div>`;}
 
   let body='';
+  body+=rpWordHtml();
   body+=sec('⚠ ALERTAS JURÍDICAS — LEER ANTES DE PREPARAR EL EXPEDIENTE');
   body+=aviso(`<strong>⚖ FISCALIDAD — AJD vs ITP:</strong> La disolución de condominio tributa por AJD sobre el valor total del bien (tipo autonómico Baleares). Verificar si existe exceso de adjudicación: si el adjudicatario recibe más valor del que le corresponde por su cuota y no hay indivisibilidad justificada, el exceso puede tributar por ITP o ISD. Calcular y advertir al cliente antes de la firma.`);
   if(gr('bien-hip')==='Sí') body+=alerta('<strong>⚠️ BIEN CON HIPOTECA — SUBROGACIÓN:</strong> El adjudicatario se subroga en la deuda hipotecaria. Verificar que el banco ha aceptado expresamente la subrogación antes de autorizar la escritura. Si no hay aceptación, la escritura puede otorgarse pero el cedente seguirá obligado frente al banco hasta novación.');

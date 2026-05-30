@@ -79,6 +79,7 @@ body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-heigh
       </div>
     </div>
     <div class="acto-badge">🏠 Compraventa de inmueble</div>
+    <div id="rpHeader" style="display:none;margin-top:10px;font-size:0.8rem;color:rgba(255,255,255,0.75);border-top:1px solid rgba(255,255,255,0.12);padding-top:8px"></div>
   </div>
 </div>
 
@@ -88,6 +89,24 @@ body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-heigh
 
   <!-- ═══ PASO 0 — Configurador ═══ -->
   <div class="screen active" id="s0">
+    <div class="card">
+      <h2>¿Quién rellena este formulario?</h2>
+      <div class="pills">
+        <button class="pill" onclick="pill(this,'rellena','Inmobiliaria')">Inmobiliaria</button>
+        <button class="pill" onclick="pill(this,'rellena','Gestoría / Asesoría')">Gestoría / Asesoría</button>
+        <button class="pill" onclick="pill(this,'rellena','Abogado')">Abogado</button>
+        <button class="pill" onclick="pill(this,'rellena','Particular (una de las partes)')">Particular</button>
+        <button class="pill" onclick="pill(this,'rellena','Otro')">Otro</button>
+      </div>
+      <div class="row2" style="margin-top:14px">
+        <div class="field"><label>Nombre y apellidos *</label><input type="text" id="rp-nombre" placeholder="Nombre de quien rellena"></div>
+        <div class="field"><label>Empresa (si aplica)</label><input type="text" id="rp-empresa" placeholder="Nombre de la empresa"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Email *</label><input type="email" id="rp-email" placeholder="correo@ejemplo.com"></div>
+        <div class="field"><label>Teléfono *</label><input type="tel" id="rp-tel" placeholder="600 000 000"></div>
+      </div>
+    </div>
     <div class="card">
       <h2>¿Cuántas fincas se transmiten?</h2>
       <div class="pills">
@@ -289,17 +308,6 @@ body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-heigh
         </select>
         <div class="warn" style="margin-top:6px">⚠ El CEE es obligatorio para formalizar la escritura. Si el vendedor no dispone de él, la firma no puede realizarse hasta su obtención.</div>
       </div>
-      <div class="field" style="margin-top:4px">
-        <label>¿Dispone el inmueble de cédula de habitabilidad vigente?</label>
-        <select id="cedula-hab">
-          <option value="">— Seleccione —</option>
-          <option>Sí, dispone de cédula de habitabilidad vigente</option>
-          <option>No dispone / está caducada (deberá tramitarse)</option>
-          <option>No aplica (no es vivienda: local, garaje, solar, etc.)</option>
-          <option>No lo sé / pendiente de comprobar</option>
-        </select>
-        <div class="warn" style="margin-top:6px">⚠ En las Illes Balears la cédula de habitabilidad vigente es exigible para transmitir viviendas y debe reseñarse en la escritura. Si no se dispone de ella, conviene tramitarla antes de la firma.</div>
-      </div>
       <div class="field" style="margin-top:10px">
         <label>IBAN del vendedor (cuenta donde recibirá el importe) *</label>
         <input type="text" id="iban-vendedor" placeholder="ES00 0000 0000 0000 0000 0000" maxlength="29">
@@ -338,7 +346,7 @@ body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-heigh
 
 <script>
 var LABELS = ['Inicio','Inmueble','Vendedor/es','Comprador/es','Precio y pago','Resumen'];
-var cfg = {nF:'1', nV:'1', nC:'1', soc:'no'};
+var cfg = {nF:'1', nV:'1', nC:'1', soc:'no', rellena:''};
 var step = 0, uid = 0, fincaCnt = 1;
 
 // ── PILLS ────────────────────────────────────────────────
@@ -376,6 +384,7 @@ function go(n) {
   if (n === 5) buildRes();
   document.getElementById('s' + n).classList.add('active');
   renderBar();
+  updateRpHeader();
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
@@ -506,13 +515,6 @@ function partyHtml(label, n, isSoc, rm) {
         '</div>' +
       '</div>' +
       '<div class="warn">⚠ Si el bien es ganancial, ambos cónyuges deben comparecer o autorizar la operación (art. 1377 CC).</div>' +
-      '<div class="field" style="margin-top:8px"><label>¿La finca es la vivienda habitual de la familia?</label>' +
-        '<select><option value="">— Seleccione —</option>' +
-        '<option>Sí, es la vivienda habitual de la familia</option>' +
-        '<option>No</option><option>No lo sé</option>' +
-        '</select>' +
-      '</div>' +
-      '<div class="warn">⚠ Si la finca es la vivienda habitual de la familia, puede requerirse el consentimiento del cónyuge para venderla aunque el bien sea privativo (art. 1320 CC). La notaría lo verificará antes de la firma.</div>' +
     '</div>' +
     '<div class="field"><label>Domicilio completo</label><input type="text" placeholder="Calle, número, piso, municipio"></div>' +
     '<div class="field"><label>Teléfono de contacto</label><input type="text" placeholder="Ej: 971 000 000 / 600 000 000"></div>' +
@@ -598,9 +600,41 @@ function collectBlock(cId) {
 function gv(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
 function gr(name) { var el = document.querySelector('input[name=' + name + ']:checked'); return el ? el.value : ''; }
 
+// ── RELLENADO POR (cabecera) ─────────────────────────────
+function rpResumen() {
+  var partes = [];
+  if (cfg.rellena)      partes.push(cfg.rellena);
+  if (gv('rp-nombre'))  partes.push(gv('rp-nombre'));
+  if (gv('rp-empresa')) partes.push(gv('rp-empresa'));
+  if (gv('rp-email'))   partes.push(gv('rp-email'));
+  if (gv('rp-tel'))     partes.push(gv('rp-tel'));
+  return partes;
+}
+function updateRpHeader() {
+  var el = document.getElementById('rpHeader');
+  if (!el) return;
+  var p = rpResumen();
+  if (!p.length) { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+  el.textContent = 'Rellenado por: ' + p.join(' · ');
+}
+
 // ── RESUMEN ──────────────────────────────────────────────
 function buildRes() {
   var h = '';
+
+  // Rellenado por
+  var rpRows = [];
+  if (cfg.rellena)      rpRows.push({lbl:'Perfil', val:cfg.rellena});
+  if (gv('rp-nombre'))  rpRows.push({lbl:'Nombre', val:gv('rp-nombre')});
+  if (gv('rp-empresa')) rpRows.push({lbl:'Empresa', val:gv('rp-empresa')});
+  if (gv('rp-email'))   rpRows.push({lbl:'Email', val:gv('rp-email')});
+  if (gv('rp-tel'))     rpRows.push({lbl:'Teléfono', val:gv('rp-tel')});
+  if (rpRows.length) {
+    h += '<div class="sg"><h3>🖊️ Datos de quien rellena</h3>';
+    rpRows.forEach(function(r){ h += '<div class="sr"><span>' + r.lbl + '</span><span>' + r.val + '</span></div>'; });
+    h += '</div>';
+  }
 
   // Fincas
   var fincas = collectBlock('fincasWrap');
@@ -653,7 +687,6 @@ function buildRes() {
   }
   if (gv('ibi-paga'))  h += '<div class="sr"><span>IBI — ¿quién paga?</span><span>' + gv('ibi-paga') + '</span></div>';
   if (gv('cee-paga'))  h += '<div class="sr"><span>CEE — ¿quién asume el coste?</span><span>' + gv('cee-paga') + '</span></div>';
-  if (gv('cedula-hab'))h += '<div class="sr"><span>Cédula de habitabilidad</span><span>' + gv('cedula-hab') + '</span></div>';
   if (gv('iban-vendedor'))  h += '<div class="sr"><span>IBAN vendedor (recibe pago)</span><span>' + gv('iban-vendedor') + '</span></div>';
   if (gv('iban-comprador')) h += '<div class="sr"><span>IBAN comprador (ordena pago)</span><span>' + gv('iban-comprador') + '</span></div>';
   h += '</div>';
@@ -712,12 +745,23 @@ function dlWord() {
   }
   pBody += '<p>IBI — ¿quién paga?: <strong>' + (gv('ibi-paga')||'—') + '</strong></p>' +
            '<p>CEE — ¿quién asume el coste?: <strong>' + (gv('cee-paga')||'—') + '</strong></p>' +
-           '<p>Cédula de habitabilidad: <strong>' + (gv('cedula-hab')||'—') + '</strong></p>' +
            '<p>IBAN vendedor (recibe pago): <strong>' + (gv('iban-vendedor')||'—') + '</strong></p>' +
            '<p>IBAN comprador (ordena pago): <strong>' + (gv('iban-comprador')||'—') + '</strong></p>' +
            '<br>';
 
-  var body = fBody +
+  var rpBody = '';
+  var rpPartes = rpResumen();
+  if (rpPartes.length) {
+    rpBody = '<h2>DATOS DE QUIEN RELLENA EL FORMULARIO</h2>';
+    if (cfg.rellena)      rpBody += '<p>Perfil: <strong>' + cfg.rellena + '</strong></p>';
+    if (gv('rp-nombre'))  rpBody += '<p>Nombre: <strong>' + gv('rp-nombre') + '</strong></p>';
+    if (gv('rp-empresa')) rpBody += '<p>Empresa: <strong>' + gv('rp-empresa') + '</strong></p>';
+    if (gv('rp-email'))   rpBody += '<p>Email: <strong>' + gv('rp-email') + '</strong></p>';
+    if (gv('rp-tel'))     rpBody += '<p>Teléfono: <strong>' + gv('rp-tel') + '</strong></p>';
+    rpBody += '<br>';
+  }
+
+  var body = rpBody + fBody +
     wBlock('VENDEDOR/ES', collectBlock('vendWrap')) +
     wBlock('COMPRADOR/ES', collectBlock('compWrap')) +
     pBody +
