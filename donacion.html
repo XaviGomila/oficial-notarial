@@ -666,6 +666,8 @@
 </div><!-- /wrap -->
 <div class="footer">Oficial Notarial IA · Sus datos se procesan localmente y no se almacenan en ningún servidor.</div>
 
+<script src="docx.umd.js"></script>
+<script src="notarial-docx.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════
 //  ESTADO
@@ -1118,31 +1120,7 @@ function dlWord(){
 
   // Generar documento
   const nombre=gv('dn-nombre').split(' ')[0]||'Donante';
-  const w=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>
-<head><meta charset='utf-8'><style>
-body{font-family:'Times New Roman',serif;font-size:11pt;line-height:1.6;margin:2cm 2cm 2.5cm;color:#1a1a1a}
-h1{text-align:center;font-size:14pt;color:#0d1b2e;margin-bottom:4pt}
-h2{font-size:12pt;color:#0d1b2e;border-bottom:2pt solid #c9a84c;padding-bottom:3pt;margin-top:18pt;margin-bottom:8pt}
-h3{font-size:11pt;color:#0d1b2e;margin-top:12pt;margin-bottom:4pt}
-p{margin:3pt 0}ul{margin:0}
-.ftr{font-size:9pt;color:#aaa;text-align:center;margin-top:30pt;border-top:1pt solid #eee;padding-top:8pt}
-</style></head>
-<body>
-<h1>NOTARÍA<br>EXPEDIENTE DE DONACIÓN</h1>
-<p style="text-align:center;font-size:10pt;color:#888;margin-bottom:16pt">
-  Generado: ${now.toLocaleDateString('es-ES')} ${now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}
-  ${gv('dn-nombre')?' · Donante: '+gv('dn-nombre'):''}
-</p>
-${body}
-<div class="ftr">Documento generado por Oficial Notarial IA · ${now.toLocaleDateString('es-ES')}<br>Sus datos se han procesado localmente y no han sido almacenados en ningún servidor.</div>
-</body></html>`;
-
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([w],{type:'application/msword'}));
-  a.download=`Datos_Donacion_${nombre}_${now.toISOString().slice(0,10)}.doc`;
-  a.click();
-  document.getElementById('ok').style.display='block';
-  document.getElementById('ok').scrollIntoView({behavior:'smooth'});
+  NotarialDocx.download({title:'EXPEDIENTE DE DONACIÓN', filename:`Datos_Donacion_${nombre}_${now.toISOString().slice(0,10)}`}, body);
 }
 
 // ═══════════════════════════════════════════════════════

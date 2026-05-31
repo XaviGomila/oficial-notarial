@@ -345,6 +345,7 @@ body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-heigh
 </div>
 
 <script src="docx.umd.js"></script>
+<script src="notarial-docx.js"></script>
 <script>
 var LABELS = ['Inicio','Inmueble','Vendedor/es','Comprador/es','Precio y pago','Resumen'];
 var cfg = {nF:'1', nV:'1', nC:'1', soc:'no', rellena:''};
@@ -697,114 +698,6 @@ function buildRes() {
 
 // ── WORD ─────────────────────────────────────────────────
 function dlWord() {
-  if (!window.docx || !window.docx.Packer) { dlWordLegacy(); return; }
-  var D = window.docx;
-  var NAVY="1A3A5C", GOLD="C9A84C", INK="2C2C2C", GREY="6B6258";
-
-  function heading(t){ return new D.Paragraph({ spacing:{before:280,after:120},
-    border:{ bottom:{ color:GOLD, style:D.BorderStyle.SINGLE, size:8, space:4 } },
-    children:[ new D.TextRun({ text:t.toUpperCase(), bold:true, color:NAVY, size:23, font:"Cambria", characterSpacing:20 }) ] }); }
-  function subHead(t){ return new D.Paragraph({ spacing:{before:150,after:60},
-    children:[ new D.TextRun({ text:t, bold:true, color:NAVY, size:20, font:"Calibri" }) ] }); }
-  function cellP(text,opts){ var o=Object.assign({ text:String(text), size:19, font:"Calibri" }, opts||{});
-    return new D.Paragraph({ children:[ new D.TextRun(o) ] }); }
-  function table(rows){
-    var noB={style:D.BorderStyle.NONE,size:0,color:"FFFFFF"};
-    var hair={style:D.BorderStyle.SINGLE,size:2,color:"E0D8CC"};
-    return new D.Table({ width:{size:100,type:D.WidthType.PERCENTAGE},
-      borders:{top:noB,left:noB,right:noB,bottom:hair,insideHorizontal:hair,insideVertical:noB},
-      rows: rows.map(function(r){ return new D.TableRow({ children:[
-        new D.TableCell({ width:{size:38,type:D.WidthType.PERCENTAGE}, margins:{top:60,bottom:60,left:80,right:120}, children:[ cellP(r[0],{color:GREY}) ] }),
-        new D.TableCell({ width:{size:62,type:D.WidthType.PERCENTAGE}, margins:{top:60,bottom:60,left:120,right:80}, children:[ cellP(r[1],{bold:true,color:INK}) ] })
-      ]}); }) });
-  }
-
-  var sections = [];
-
-  var rpRows = [];
-  if (cfg.rellena)      rpRows.push(['Perfil', cfg.rellena]);
-  if (gv('rp-nombre'))  rpRows.push(['Nombre', gv('rp-nombre')]);
-  if (gv('rp-empresa')) rpRows.push(['Empresa', gv('rp-empresa')]);
-  if (gv('rp-email'))   rpRows.push(['Email', gv('rp-email')]);
-  if (gv('rp-tel'))     rpRows.push(['Teléfono', gv('rp-tel')]);
-  if (rpRows.length) sections.push({title:'Datos de quien rellena', blocks:[{sub:null, rows:rpRows}]});
-
-  var fincas = collectBlock('fincasWrap');
-  var fblocks = fincas.map(function(rows,i){
-    return {sub: fincas.length>1 ? 'Finca '+(i+1) : null, rows: rows.map(function(r){ return [r.lbl, r.val]; })}; });
-  if (gr('hab')) fblocks.push({sub:null, rows:[['¿Vivienda habitual del comprador?', gr('hab')]]});
-  if (fblocks.length) sections.push({title:'Inmueble/s', blocks:fblocks});
-
-  function partyBlocks(cId){
-    var parties = collectBlock(cId);
-    return parties.map(function(rows,i){
-      return {sub: parties.length>1 ? 'Parte '+(i+1) : null, rows: rows.map(function(r){ return [r.lbl, r.val]; })}; }); }
-  var vend = partyBlocks('vendWrap'); if (vend.length) sections.push({title:'Vendedor/es', blocks:vend});
-  var comp = partyBlocks('compWrap'); if (comp.length) sections.push({title:'Comprador/es', blocks:comp});
-
-  var pr = [];
-  function add(l,v){ if(v) pr.push([l,v]); }
-  add('Precio total', gv('precio'));
-  add('Arras previas', gr('arras'));
-  if (gr('arras')==='Sí'){ add('Importe arras',gv('arras-importe')); add('Tipo de arras',gv('arras-tipo')); add('Fecha entrega arras',gv('arras-fecha')); }
-  add('Importe en el acto', gv('pago-acto'));
-  add('Medio de pago', gv('pago-medio'));
-  add('Referencia transferencia', gv('pago-transf-ref'));
-  add('Número de cheque', gv('pago-cheq-num'));
-  add('Entidad emisora cheque', gv('pago-cheq-ent'));
-  add('Entidad acreedora (subrogación)', gv('pago-sub-banco'));
-  add('Capital pendiente', gv('pago-sub-capital'));
-  add('Tipo de interés', gv('pago-sub-tipo'));
-  add('Inscripción hipoteca subrogada', gv('pago-sub-ins'));
-  add('Número de plazos', gv('pago-aplaz-plazos'));
-  add('Tipo de interés (aplazado)', gv('pago-aplaz-interes'));
-  add('Fechas de vencimiento', gv('pago-aplaz-fechas'));
-  add('Garantía del aplazamiento', gv('pago-aplaz-garantia'));
-  add('Detalles adicionales', gv('pago-detalle'));
-  pr.push(['¿Financia con hipoteca nueva?', gr('hipoteca')||'No']);
-  if (gr('hipoteca')==='Sí' || gr('hipoteca')==='En trámite'){ add('Entidad financiera',gv('hipoteca-banco')); add('Importe préstamo',gv('hipoteca-importe')); }
-  add('IBI — ¿quién paga?', gv('ibi-paga'));
-  add('CEE — ¿quién asume el coste?', gv('cee-paga'));
-  add('IBAN vendedor (recibe pago)', gv('iban-vendedor'));
-  add('IBAN comprador (ordena pago)', gv('iban-comprador'));
-  if (pr.length) sections.push({title:'Precio y forma de pago', blocks:[{sub:null, rows:pr}]});
-
-  var body = [];
-  body.push(new D.Paragraph({ alignment:D.AlignmentType.CENTER, spacing:{after:40},
-    children:[ new D.TextRun({ text:"NOTARÍA", bold:true, color:NAVY, size:30, font:"Cambria", characterSpacing:60 }) ] }));
-  body.push(new D.Paragraph({ alignment:D.AlignmentType.CENTER, spacing:{after:80},
-    children:[ new D.TextRun({ text:"DATOS PARA ESCRITURA DE COMPRAVENTA", bold:true, color:GOLD, size:22, font:"Cambria" }) ] }));
-  body.push(new D.Paragraph({ alignment:D.AlignmentType.JUSTIFIED, spacing:{after:220},
-    children:[ new D.TextRun({ text:"Documento preparado a partir de los datos aportados por el interesado para la preparación del expediente notarial. Verifíquese su exactitud antes de la firma.", italics:true, color:GREY, size:18, font:"Calibri" }) ] }));
-  sections.forEach(function(sec){
-    body.push(heading(sec.title));
-    sec.blocks.forEach(function(b){ if(b.sub) body.push(subHead(b.sub)); body.push(table(b.rows)); });
-  });
-
-  var fecha = new Date().toLocaleDateString('es-ES');
-  var doc = new D.Document({
-    creator:"Oficial Notarial IA",
-    styles:{ default:{ document:{ run:{ font:"Calibri", size:19, color:INK } } } },
-    sections:[{
-      properties:{ page:{ margin:{ top:1418, bottom:1418, left:1418, right:1418 } } },
-      footers:{ default: new D.Footer({ children:[ new D.Paragraph({ alignment:D.AlignmentType.CENTER,
-        children:[ new D.TextRun({ text:"Documento generado por Oficial Notarial IA · "+fecha+"   ·   Página ", size:15, color:GREY, font:"Calibri" }),
-                   new D.TextRun({ children:[ D.PageNumber.CURRENT ], size:15, color:GREY, font:"Calibri" }) ] }) ] }) },
-      children: body
-    }]
-  });
-
-  D.Packer.toBlob(doc).then(function(blob){
-    var a=document.createElement('a');
-    a.href=URL.createObjectURL(blob);
-    a.download='Datos_Compraventa_Notaria.docx';
-    a.click();
-    document.getElementById('ok').style.display='block';
-    document.getElementById('ok').scrollIntoView({behavior:'smooth'});
-  });
-}
-
-function dlWordLegacy() {
   function wBlock(title, parties) {
     if (!parties.length) return '';
     var h = '<h2>' + title + '</h2>';
@@ -876,18 +769,7 @@ function dlWordLegacy() {
     pBody +
     '<p style="font-size:10pt;color:#777">Documento generado por Oficial Notarial IA · ' + new Date().toLocaleDateString('es-ES') + '</p>';
 
-  var w = '<html xmlns:o=\'urn:schemas-microsoft-com:office:office\' xmlns:w=\'urn:schemas-microsoft-com:office:word\'>' +
-    '<head><meta charset=\'utf-8\'><style>body{font-family:\'Times New Roman\',serif;font-size:12pt;line-height:1.9;margin:3cm}' +
-    'h1{text-align:center;font-size:14pt;margin-bottom:20pt}h2{font-size:12pt;margin-top:16pt;border-bottom:1px solid #aaa;padding-bottom:3pt}p{margin:3pt 0}' +
-    '</style></head><body><h1>NOTARÍA<br>DATOS PARA ESCRITURA DE COMPRAVENTA</h1>' + body + '</body></html>';
-
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([w], {type: 'application/msword'}));
-  a.download = 'Datos_Compraventa_Notaria.doc';
-  a.click();
-
-  document.getElementById('ok').style.display = 'block';
-  document.getElementById('ok').scrollIntoView({behavior: 'smooth'});
+  NotarialDocx.download({title:'DATOS PARA ESCRITURA DE COMPRAVENTA', filename:'Datos_Compraventa_Notaria'}, body);
 }
 
 renderBar();

@@ -260,6 +260,8 @@ body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-heigh
   <div class="footer">Oficial Notarial IA · Sus datos se procesan localmente y no se almacenan en ningún servidor.</div>
 </div>
 
+<script src="docx.umd.js"></script>
+<script src="notarial-docx.js"></script>
 <script>
 var LABELS = ['Inicio','Poderdante/s','Apoderado/s','Tipo de poder','Resumen'];
 var cfg = {nP:'1', nA:'1', soc:'no'};
@@ -519,17 +521,7 @@ function dlWord(){
     (gv('organismo-destino') ? '<p>Organismo: <strong>' + gv('organismo-destino') + '</strong></p>' : '') +
     '<br><p style="font-size:10pt;color:#777">Documento generado por Oficial Notarial IA · ' + new Date().toLocaleDateString('es-ES') + '</p>';
 
-  var w = '<html xmlns:o=\'urn:schemas-microsoft-com:office:office\' xmlns:w=\'urn:schemas-microsoft-com:office:word\'>' +
-    '<head><meta charset=\'utf-8\'><style>body{font-family:\'Times New Roman\',serif;font-size:12pt;line-height:1.9;margin:3cm}' +
-    'h1{text-align:center;font-size:14pt;margin-bottom:20pt}h2{font-size:12pt;margin-top:16pt;border-bottom:1px solid #aaa;padding-bottom:3pt}p{margin:3pt 0}' +
-    '</style></head><body><h1>NOTARÍA<br>DATOS PARA PODER NOTARIAL</h1>' + body + '</body></html>';
-
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([w], {type: 'application/msword'}));
-  a.download = 'Datos_Poder_Notarial.doc';
-  a.click();
-  document.getElementById('ok').style.display = 'block';
-  document.getElementById('ok').scrollIntoView({behavior: 'smooth'});
+  NotarialDocx.download({title:'DATOS PARA PODER NOTARIAL', filename:'Datos_Poder_Notarial'}, body);
 }
 
 renderBar();
