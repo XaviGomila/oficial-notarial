@@ -2909,7 +2909,7 @@ async function analizar(){
         email,
         remitente: document.getElementById('emailCliente').value.trim() || 'desconocido',
         code: codigoAcceso.get(),
-        model: modelId   // El Worker debe leer este campo y pasarlo a la API de Claude
+        model: modelKey   // 'haiku' | 'sonnet' | 'opus' — el Worker lo traduce al ID real
       })
     });
 
@@ -3403,15 +3403,6 @@ function abrirFormulario(){
     </div>`;
   document.getElementById('formOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
-}
-
-function seleccionarFormulario(act){
-  const actoNombre = FORM_LABELS[act] || act;
-  document.getElementById('fovActLabel').textContent = actoNombre;
-  document.getElementById('fovContent').innerHTML = `
-    <div style="max-width:520px;margin:0 auto;">
-      ${construirPanelEnlace(act, actoNombre)}
-    </div>`;
 }
 
 function construirPanelEnlace(act, actoNombre){
