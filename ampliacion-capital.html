@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notaría · Datos Ampliación de Capital</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-height:100vh}
+.header{background:#1a3a5c;color:#fff;padding:20px 24px 18px}
+.header-inner{max-width:620px;margin:0 auto}
+.header-seal{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.seal-icon{width:38px;height:38px;border-radius:8px;border:1px solid rgba(196,168,74,0.5);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.header h1{font-family:'Lora',serif;font-size:1.15rem;font-weight:500}
+.header p{font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:3px}
+.acto-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(196,168,74,0.15);border:1px solid rgba(196,168,74,0.3);border-radius:100px;padding:4px 12px;font-size:0.78rem;color:#c9a84c;margin-top:10px}
+.wrap{max-width:620px;margin:24px auto;padding:0 16px 60px}
+.notice{background:#eef3f9;border-left:3px solid #1a3a5c;border-radius:0 8px 8px 0;padding:11px 16px;font-size:0.83rem;color:#2c4a6a;line-height:1.6;margin-bottom:18px}
+.warn{background:#fef6e4;border-left:3px solid #c9a84c;border-radius:0 8px 8px 0;padding:9px 14px;font-size:0.78rem;color:#8c6830;line-height:1.5;margin-top:6px}
+.danger{background:#fff0ee;border-left:3px solid #c0392b;border-radius:0 8px 8px 0;padding:10px 14px;font-size:0.8rem;color:#922;line-height:1.55;margin-top:6px}
+.step-bar{display:flex;align-items:center;margin-bottom:22px}
+.sdot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;transition:all .3s}
+.sdot.done{background:#1a3a5c;color:#fff}
+.sdot.active{background:#c9a84c;color:#1a1510;box-shadow:0 0 0 4px rgba(201,168,76,0.2)}
+.sdot.pend{background:#ddd;color:#999}
+.sline{flex:1;height:2px;background:#ddd}
+.sline.done{background:#1a3a5c}
+.screen{display:none}
+.screen.active{display:block}
+.card{background:#fff;border-radius:10px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.07);margin-bottom:14px;border:0.5px solid #e8e2d8}
+.card h2{font-size:0.82rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px;padding-bottom:9px;border-bottom:1.5px solid #f0ebe0}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:0.79rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6b6258;margin-bottom:5px}
+.field input,.field select{width:100%;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:#1a1510;background:#faf8f4;border:1.5px solid #ddd8ce;border-radius:7px;padding:10px 12px;outline:none;transition:border-color .15s}
+.field input:focus,.field select:focus{border-color:#1a3a5c;background:#fff}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px}
+.pill{padding:7px 15px;border-radius:20px;border:1.5px solid #ddd8ce;background:#faf8f4;font-size:0.83rem;cursor:pointer;font-weight:500;color:#6b6258;transition:all .15s;font-family:'DM Sans',sans-serif}
+.pill.on{border-color:#1a3a5c;background:#1a3a5c;color:#fff}
+.rg{display:flex;gap:14px;flex-wrap:wrap;margin-top:5px}
+.rg label{display:flex;align-items:center;gap:6px;font-size:0.88rem;cursor:pointer;color:#3d3830}
+.rg input{accent-color:#1a3a5c}
+.party{background:#f9f6f0;border:1px solid #e8e2d8;border-radius:8px;padding:15px;margin-bottom:10px;position:relative}
+.party h3{font-size:0.8rem;font-weight:600;color:#1a3a5c;margin-bottom:12px}
+.rm-btn{position:absolute;top:10px;right:10px;background:none;border:none;color:#c0392b;font-size:1rem;cursor:pointer}
+.add-btn{background:#f0ebe0;color:#1a3a5c;border:1.5px dashed #c8bfad;width:100%;padding:9px;border-radius:7px;font-size:0.83rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px;transition:all .15s}
+.add-btn:hover{background:#e8e0d0}
+.toggle-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:0.8rem;color:#6b6258}
+.toggle-row input[type=checkbox]{accent-color:#1a3a5c;width:15px;height:15px;cursor:pointer}
+.hidden{display:none}
+.calc-box{background:#f3f7fc;border:1px solid #cdddee;border-radius:8px;padding:12px 14px;margin-top:6px;font-size:0.85rem;color:#2c4a6a}
+.calc-box b{color:#1a3a5c}
+.nav{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap}
+.btn-p{background:#1a3a5c;color:#fff;border:none;padding:12px 22px;border-radius:7px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;flex:1;transition:opacity .15s}
+.btn-p:hover{opacity:.88}
+.btn-s{background:#f0ebe0;color:#3d3830;border:1px solid #ddd8ce;padding:12px 18px;border-radius:7px;font-size:0.88rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-s:hover{background:#e8e0d0}
+.btn-w{background:#2b579a;color:#fff;border:none;padding:12px 20px;border-radius:7px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .15s}
+.btn-w:hover{opacity:.88}
+.sg{margin-bottom:12px}
+.sg h3{font-size:0.78rem;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px}
+.sr{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0ebe0;font-size:0.83rem}
+.sr span:first-child{color:#6b6258}
+.sr span:last-child{font-weight:500;text-align:right;max-width:60%}
+.success{background:#e8f5e9;border:1.5px solid #81c784;border-radius:10px;padding:20px;text-align:center;color:#2e7d32;margin-top:16px}
+.success h3{font-size:1rem;margin-bottom:6px;font-family:'Lora',serif}
+.success p{font-size:0.85rem;line-height:1.5}
+.footer{text-align:center;padding:24px 16px;font-size:0.75rem;color:#a09585;border-top:1px solid #e8e2d8;margin-top:8px}
+@media(max-width:480px){.row2{grid-template-columns:1fr}.nav{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-seal">
+      <div class="seal-icon">⚖</div>
+      <div>
+        <h1>Notaría · Ampliación de Capital Social</h1>
+        <p>Complete los datos para que podamos preparar la escritura</p>
+      </div>
+    </div>
+    <div class="acto-badge">📈 Ampliación de capital (S.L.)</div>
+    <div id="rpHeader" style="display:none;margin-top:10px;font-size:0.8rem;color:rgba(255,255,255,0.75);border-top:1px solid rgba(255,255,255,0.12);padding-top:8px"></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="notice">Por favor, rellene los datos con la mayor precisión posible. Al finalizar, descargue el documento Word y envíenoslo adjunto por email. El proceso le llevará aproximadamente 5-7 minutos.</div>
+  <div class="step-bar" id="stepBar"></div>
+
+  <!-- ═══ PASO 0 — Configurador ═══ -->
+  <div class="screen active" id="s0">
+    <div class="card">
+      <h2>¿Quién rellena este formulario?</h2>
+      <div class="pills">
+        <button class="pill" onclick="pill(this,'rellena','Administrador de la sociedad')">Administrador</button>
+        <button class="pill" onclick="pill(this,'rellena','Gestoría / Asesoría')">Gestoría / Asesoría</button>
+        <button class="pill" onclick="pill(this,'rellena','Abogado')">Abogado</button>
+        <button class="pill" onclick="pill(this,'rellena','Socio / Nuevo socio')">Socio</button>
+        <button class="pill" onclick="pill(this,'rellena','Otro')">Otro</button>
+      </div>
+      <div class="row2" style="margin-top:14px">
+        <div class="field"><label>Nombre y apellidos *</label><input type="text" id="rp-nombre" placeholder="Nombre de quien rellena"></div>
+        <div class="field"><label>Empresa (si aplica)</label><input type="text" id="rp-empresa" placeholder="Nombre de la empresa"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Email *</label><input type="email" id="rp-email" placeholder="correo@ejemplo.com"></div>
+        <div class="field"><label>Teléfono *</label><input type="tel" id="rp-tel" placeholder="600 000 000"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>¿Cuántos socios tiene la sociedad ANTES de la ampliación?</h2>
+      <div class="pills">
+        <button class="pill on" onclick="pill(this,'nSoc','1')">1 (sociedad unipersonal)</button>
+        <button class="pill" onclick="pill(this,'nSoc','2')">2</button>
+        <button class="pill" onclick="pill(this,'nSoc','3+')">Más de 2</button>
+      </div>
+      <div class="warn">Indique los socios <strong>actuales</strong>. El nuevo socio que entra con la ampliación se introduce en un paso posterior.</div>
+    </div>
+    <div class="nav"><button class="btn-p" onclick="go(1)">Continuar →</button></div>
+  </div>
+
+  <!-- ═══ PASO 1 — Sociedad ═══ -->
+  <div class="screen" id="s1">
+    <div class="card">
+      <h2>🏢 Sociedad que amplía el capital</h2>
+      <div class="field"><label>Denominación social *</label><input type="text" id="soc-nombre" placeholder="Ej: ALMA WATER MENORCA, S.L."></div>
+      <div class="row2">
+        <div class="field"><label>CIF *</label><input type="text" id="soc-cif" placeholder="B12345678"></div>
+        <div class="field"><label>Domicilio social</label><input type="text" id="soc-domicilio" placeholder="Calle, número, municipio"></div>
+      </div>
+      <div class="field"><label>Datos registrales (Registro Mercantil, tomo, folio, hoja)</label><input type="text" id="soc-registro" placeholder="Ej: R.M. de Menorca, Tomo 100, Folio 50, Hoja MH-1234"></div>
+      <div class="field" style="margin-top:6px"><label>¿Es sociedad unipersonal inscrita como tal?</label>
+        <div class="rg">
+          <label><input type="radio" name="uni" value="Sí, unipersonal inscrita"> Sí</label>
+          <label><input type="radio" name="uni" value="No, pluripersonal"> No</label>
+          <label><input type="radio" name="uni" value="No lo sé"> No lo sé</label>
+        </div>
+        <div class="warn">⚠ Tras la entrada del nuevo socio, la sociedad dejará de ser unipersonal. El cese de la unipersonalidad debe hacerse constar en la escritura e inscribirse (arts. 13-14 LSC).</div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>💼 Capital social ACTUAL (antes de la ampliación)</h2>
+      <div class="row2">
+        <div class="field"><label>Capital social actual (€) *</label><input type="text" id="soc-capital" placeholder="Ej: 10.948 €" oninput="calcPct()"></div>
+        <div class="field"><label>Nº de participaciones actuales *</label><input type="text" id="soc-num-part" placeholder="Ej: 10.948" oninput="calcPct()"></div>
+      </div>
+      <div class="field"><label>Valor nominal por participación (€) *</label><input type="text" id="soc-nominal" placeholder="Ej: 1 €"></div>
+    </div>
+    <div class="card">
+      <h2>✍️ Administrador que comparece por la sociedad</h2>
+      <div class="row2">
+        <div class="field"><label>Nombre y apellidos *</label><input type="text" id="adm-nombre" placeholder="Nombre completo"></div>
+        <div class="field"><label>DNI / NIE *</label><input type="text" id="adm-dni" placeholder="12345678A"></div>
+      </div>
+      <div class="field"><label>Cargo *</label>
+        <select id="adm-cargo">
+          <option value="">— Seleccione —</option>
+          <option>Administrador único</option>
+          <option>Administrador solidario</option>
+          <option>Administrador mancomunado</option>
+          <option>Consejero delegado</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div class="field"><label>¿El cargo está vigente e inscrito en el Registro Mercantil?</label>
+        <div class="rg">
+          <label><input type="radio" name="cargo-vig" value="Sí, vigente e inscrito"> Sí</label>
+          <label><input type="radio" name="cargo-vig" value="No"> No</label>
+          <label><input type="radio" name="cargo-vig" value="No lo sé"> No lo sé</label>
+        </div>
+        <div class="warn">⚠ El administrador debe tener el cargo vigente e inscrito para elevar a público el acuerdo. Si está caducado, deberá renovarse antes de la firma.</div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn-s" onclick="go(0)">← Atrás</button>
+      <button class="btn-p" onclick="go(2)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ PASO 2 — Socios actuales ═══ -->
+  <div class="screen" id="s2">
+    <div id="sociosWrap"></div>
+    <div class="card">
+      <h2>📜 Derecho de asunción preferente (art. 304 LSC)</h2>
+      <div class="field"><label>¿Los socios actuales renuncian a su derecho de asunción preferente a favor del nuevo socio?</label>
+        <div class="rg">
+          <label><input type="radio" name="renuncia" value="Sí, renuncian todos a favor del nuevo socio"> Sí, renuncian</label>
+          <label><input type="radio" name="renuncia" value="No"> No</label>
+          <label><input type="radio" name="renuncia" value="Parcialmente / por determinar"> Parcial / por determinar</label>
+        </div>
+      </div>
+      <div class="warn">⚠ Para que el nuevo socio asuma las participaciones, los socios actuales deben renunciar a su derecho de asunción preferente (art. 304 LSC), o bien suprimirse el derecho con informe del órgano de administración (art. 308 LSC). Confirme con la notaría la vía aplicable según el criterio del Registro Mercantil competente.</div>
+    </div>
+    <div class="nav">
+      <button class="btn-s" onclick="go(1)">← Atrás</button>
+      <button class="btn-p" onclick="go(3)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ PASO 3 — Nuevo socio ═══ -->
+  <div class="screen" id="s3">
+    <div class="card">
+      <h2>🆕 Nuevo socio que suscribe la ampliación</h2>
+      <div class="field"><label>El nuevo socio es:</label>
+        <div class="rg">
+          <label><input type="radio" name="nuevoTipo" value="pf" checked onclick="toggleNuevo('pf')"> Persona física</label>
+          <label><input type="radio" name="nuevoTipo" value="soc" onclick="toggleNuevo('soc')"> Sociedad (S.L., S.A., etc.)</label>
+        </div>
+      </div>
+
+      <!-- Persona física -->
+      <div id="nuevo-pf">
+        <div class="row2">
+          <div class="field"><label>Nombre y apellidos *</label><input type="text" id="np-nombre" placeholder="Nombre completo"></div>
+          <div class="field"><label>DNI / NIE *</label><input type="text" id="np-dni" placeholder="12345678A"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Estado civil</label>
+            <select id="np-ec" onchange="document.getElementById('np-rem').classList.toggle('hidden',this.value!=='Casado/a')">
+              <option value="">—</option>
+              <option>Soltero/a</option><option>Casado/a</option><option>Viudo/a</option><option>Divorciado/a</option>
+            </select>
+          </div>
+          <div class="field"><label>Nacionalidad</label><input type="text" id="np-nac" placeholder="Ej: Española"></div>
+        </div>
+        <div id="np-rem" class="hidden" style="margin-bottom:10px">
+          <div class="field"><label>Régimen económico matrimonial *</label>
+            <select id="np-remval">
+              <option value="">— Seleccione —</option>
+              <option>Gananciales</option><option>Separación de bienes</option>
+              <option>Participación</option><option>No lo sé</option>
+            </select>
+          </div>
+          <div class="field"><label>Las participaciones que suscribe son *</label>
+            <div class="rg">
+              <label><input type="radio" name="np-bien" value="Privativas (fondos propios)"> Privativas</label>
+              <label><input type="radio" name="np-bien" value="Gananciales"> Gananciales</label>
+              <label><input type="radio" name="np-bien" value="No lo sé"> No lo sé</label>
+            </div>
+          </div>
+          <div class="warn">⚠ El carácter privativo o ganancial depende del origen de los fondos aportados. Si los fondos son gananciales, puede requerirse el consentimiento del cónyuge.</div>
+        </div>
+        <div class="field"><label>Domicilio completo</label><input type="text" id="np-domicilio" placeholder="Calle, número, municipio"></div>
+        <div class="field"><label>¿Es residente fiscal en España?</label>
+          <div class="rg">
+            <label><input type="radio" name="np-res" value="Sí, residente fiscal"> Sí</label>
+            <label><input type="radio" name="np-res" value="No, no residente fiscal"> No</label>
+            <label><input type="radio" name="np-res" value="No lo sé"> No lo sé</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sociedad -->
+      <div id="nuevo-soc" class="hidden">
+        <div class="field"><label>Denominación social *</label><input type="text" id="ns-nombre" placeholder="Ej: Inversiones XYZ, S.L."></div>
+        <div class="row2">
+          <div class="field"><label>CIF *</label><input type="text" id="ns-cif" placeholder="B87654321"></div>
+          <div class="field"><label>Domicilio social</label><input type="text" id="ns-domicilio" placeholder="Calle, número, municipio"></div>
+        </div>
+        <div class="field"><label>Datos registrales</label><input type="text" id="ns-registro" placeholder="R.M., tomo, folio, hoja"></div>
+        <div class="row2">
+          <div class="field"><label>Nombre del representante *</label><input type="text" id="ns-rep-nombre" placeholder="Nombre completo"></div>
+          <div class="field"><label>DNI / NIE del representante *</label><input type="text" id="ns-rep-dni" placeholder="12345678A"></div>
+        </div>
+        <div class="field"><label>Cargo del representante *</label><input type="text" id="ns-rep-cargo" placeholder="Ej: Administrador único"></div>
+        <div class="warn">⚠ El representante de la sociedad suscriptora deberá acreditar cargo vigente e inscrito y facultades suficientes para suscribir participaciones.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>👨‍👩‍👧 Relación entre las partes</h2>
+      <div class="field"><label>¿Existe relación familiar entre el nuevo socio y los socios actuales?</label>
+        <div class="rg">
+          <label><input type="radio" name="parentesco" value="No"  onclick="document.getElementById('par-w').classList.add('hidden')"> No</label>
+          <label><input type="radio" name="parentesco" value="Sí" onclick="document.getElementById('par-w').classList.remove('hidden')"> Sí</label>
+          <label><input type="radio" name="parentesco" value="No lo sé" onclick="document.getElementById('par-w').classList.add('hidden')"> No lo sé</label>
+        </div>
+      </div>
+      <div id="par-w" class="hidden">
+        <div class="field"><label>Indique el parentesco</label><input type="text" id="par-detalle" placeholder="Ej: padre e hijo, hermanos, cónyuges..."></div>
+        <div class="danger">⚠ Si las participaciones se suscriben por debajo del valor real de la sociedad y existe relación familiar, la diferencia puede considerarse una <strong>donación indirecta (ISD)</strong> y generar <strong>ganancia patrimonial en el IRPF</strong> del socio que se diluye. Recomendamos valoración y asesoramiento fiscal previo.</div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-s" onclick="go(2)">← Atrás</button>
+      <button class="btn-p" onclick="go(4)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ PASO 4 — Operación ═══ -->
+  <div class="screen" id="s4">
+    <div class="card">
+      <h2>📈 Datos de la ampliación</h2>
+      <div class="row2">
+        <div class="field"><label>Nº de participaciones nuevas a emitir *</label><input type="text" id="amp-num-part" placeholder="Ej: 5.474" oninput="calcPct()"></div>
+        <div class="field"><label>Valor nominal por participación nueva (€) *</label><input type="text" id="amp-nominal" placeholder="Ej: 1 €"></div>
+      </div>
+      <div class="field"><label>Importe total de la ampliación (nominal) (€) *</label><input type="text" id="amp-total" placeholder="Ej: 5.474 €"></div>
+      <div class="calc-box" id="pct-result">Introduzca participaciones actuales y nuevas para calcular el porcentaje resultante del nuevo socio.</div>
+    </div>
+
+    <div class="card">
+      <h2>💎 Prima de emisión</h2>
+      <div class="field"><label>¿Se establece prima de emisión?</label>
+        <div class="rg">
+          <label><input type="radio" name="prima" value="No" checked onclick="document.getElementById('prima-w').classList.add('hidden')"> No</label>
+          <label><input type="radio" name="prima" value="Sí" onclick="document.getElementById('prima-w').classList.remove('hidden')"> Sí</label>
+          <label><input type="radio" name="prima" value="Por determinar" onclick="document.getElementById('prima-w').classList.add('hidden')"> Por determinar</label>
+        </div>
+      </div>
+      <div id="prima-w" class="hidden">
+        <div class="row2">
+          <div class="field"><label>Prima por participación (€)</label><input type="text" id="prima-unit" placeholder="Ej: 9 €"></div>
+          <div class="field"><label>Prima total (€)</label><input type="text" id="prima-total" placeholder="Ej: 49.266 €"></div>
+        </div>
+      </div>
+      <div class="warn">⚠ Si el valor real de la sociedad supera el nominal (reservas, patrimonio, fondo de comercio), la prima de emisión evita la dilución del socio actual y reduce el riesgo fiscal de donación. Consulte con la notaría y su asesor fiscal.</div>
+    </div>
+
+    <div class="card">
+      <h2>🏦 Desembolso de la aportación dineraria</h2>
+      <div class="field"><label>Medio de aportación *</label>
+        <select id="des-medio">
+          <option value="">— Seleccione —</option>
+          <option>Transferencia bancaria a cuenta de la sociedad</option>
+          <option>Ingreso en cuenta de la sociedad</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div class="row2">
+        <div class="field"><label>IBAN de la cuenta de la sociedad</label><input type="text" id="des-iban" placeholder="ES00 0000 0000 0000 0000 0000" maxlength="29"></div>
+        <div class="field"><label>Fecha del ingreso</label><input type="date" id="des-fecha"></div>
+      </div>
+      <div class="warn">⚠ Se necesita <strong>certificación bancaria</strong> del ingreso en cuenta a nombre de la sociedad, con antigüedad no superior a 2 meses respecto de la fecha de escritura (art. 62 LSC). Los pagos en efectivo superiores a 1.000 € están prohibidos (Ley 11/2021).</div>
+    </div>
+
+    <div class="card">
+      <h2>🧮 Valoración de la sociedad</h2>
+      <div class="field"><label>¿Se ha valorado la sociedad?</label>
+        <div class="rg">
+          <label><input type="radio" name="valorada" value="Sí" onclick="document.getElementById('val-w').classList.remove('hidden')"> Sí</label>
+          <label><input type="radio" name="valorada" value="No" onclick="document.getElementById('val-w').classList.add('hidden')"> No</label>
+          <label><input type="radio" name="valorada" value="No lo sé" onclick="document.getElementById('val-w').classList.add('hidden')"> No lo sé</label>
+        </div>
+      </div>
+      <div id="val-w" class="hidden">
+        <div class="row2">
+          <div class="field"><label>Valor real aproximado (€)</label><input type="text" id="val-importe" placeholder="Ej: 60.000 €"></div>
+          <div class="field"><label>Método / origen de la valoración</label><input type="text" id="val-metodo" placeholder="Ej: balance, informe experto..."></div>
+        </div>
+      </div>
+      <div class="danger">⚠ Punto clave: si el nuevo socio suscribe participaciones por debajo del valor real de la sociedad, la diferencia puede tributar como donación (ISD) para el nuevo socio y como ganancia patrimonial (IRPF) para el socio que se diluye. Aporte la valoración si dispone de ella.</div>
+    </div>
+
+    <div class="card">
+      <h2>📝 Otras modificaciones</h2>
+      <div class="field"><label>¿La ampliación conlleva otras modificaciones estatutarias?</label>
+        <div class="rg">
+          <label><input type="radio" name="modest" value="No" onclick="document.getElementById('mod-w').classList.add('hidden')"> No</label>
+          <label><input type="radio" name="modest" value="Sí" onclick="document.getElementById('mod-w').classList.remove('hidden')"> Sí</label>
+        </div>
+      </div>
+      <div id="mod-w" class="hidden">
+        <div class="field"><label>Indique qué cláusulas se modifican</label><input type="text" id="mod-detalle" placeholder="Ej: domicilio, objeto social, órgano de administración..."></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-s" onclick="go(3)">← Atrás</button>
+      <button class="btn-p" onclick="go(5)">Revisar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ PASO 5 — Resumen ═══ -->
+  <div class="screen" id="s5">
+    <div class="card">
+      <h2>📋 Revise sus datos antes de descargar</h2>
+      <div id="resumen"></div>
+    </div>
+    <div class="notice">Si hay algún error, pulse "Corregir" para volver atrás.</div>
+    <div class="nav">
+      <button class="btn-s" onclick="go(4)">← Corregir</button>
+      <button class="btn-w" onclick="dlWord()">⬇️ Descargar Word y enviar a la notaría</button>
+    </div>
+    <div class="success" id="ok" style="display:none">
+      <h3>✅ Documento descargado</h3>
+      <p>Por favor, adjunte el archivo Word descargado en su respuesta al email de la notaría.<br>Nos pondremos en contacto para confirmar la documentación necesaria.</p>
+    </div>
+  </div>
+
+  <div class="footer">Oficial Notarial IA · Sus datos se procesan localmente y no se almacenan en ningún servidor.</div>
+</div>
+
+<script src="docx.umd.js"></script>
+<script src="notarial-docx.js"></script>
+<script>
+var LABELS = ['Inicio','Sociedad','Socios actuales','Nuevo socio','Operación','Resumen'];
+var cfg = {nSoc:'1', rellena:''};
+var step = 0, uid = 0;
+
+// ── PILLS ────────────────────────────────────────────────
+function pill(el, k, v) {
+  el.closest('.card').querySelectorAll('.pill').forEach(function(p){ p.classList.remove('on'); });
+  el.classList.add('on');
+  cfg[k] = v;
+}
+
+// ── STEP BAR ─────────────────────────────────────────────
+function renderBar() {
+  var b = document.getElementById('stepBar');
+  b.innerHTML = '';
+  LABELS.forEach(function(l, i) {
+    var d = document.createElement('div');
+    d.className = 'sdot ' + (i < step ? 'done' : i === step ? 'active' : 'pend');
+    d.textContent = i < step ? '✓' : (i + 1);
+    d.title = l;
+    b.appendChild(d);
+    if (i < LABELS.length - 1) {
+      var ln = document.createElement('div');
+      ln.className = 'sline' + (i < step ? ' done' : '');
+      b.appendChild(ln);
+    }
+  });
+}
+
+// ── NAVIGATION ───────────────────────────────────────────
+function go(n) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  step = n;
+  if (n === 2) buildSocios();
+  if (n === 4) calcPct();
+  if (n === 5) buildRes();
+  document.getElementById('s' + n).classList.add('active');
+  renderBar();
+  updateRpHeader();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// ── NUEVO SOCIO toggle ───────────────────────────────────
+function toggleNuevo(t) {
+  document.getElementById('nuevo-pf').classList.toggle('hidden', t !== 'pf');
+  document.getElementById('nuevo-soc').classList.toggle('hidden', t !== 'soc');
+}
+
+// ── SOCIOS ACTUALES ──────────────────────────────────────
+function socioHtml(n, rm) {
+  uid++;
+  var u = uid;
+  var r = rm ? '<button class="rm-btn" onclick="this.closest(\'.party\').remove()">✕</button>' : '';
+  return '<div class="party"><h3>Socio actual ' + n + '</h3>' + r +
+    '<div class="toggle-row"><input type="checkbox" id="ssoc' + u + '" onchange="document.getElementById(\'ssocx' + u + '\').classList.toggle(\'hidden\',!this.checked)">' +
+    '<label for="ssoc' + u + '">Es una sociedad (S.L., S.A., etc.)</label></div>' +
+    '<div id="ssocx' + u + '" class="hidden">' +
+      '<div class="field"><label>Razón social *</label><input type="text" placeholder="Ej: Holding XYZ S.L."></div>' +
+      '<div class="row2"><div class="field"><label>CIF *</label><input type="text" placeholder="B12345678"></div>' +
+      '<div class="field"><label>Representante *</label><input type="text" placeholder="Nombre y apellidos"></div></div>' +
+    '</div>' +
+    '<div class="row2"><div class="field"><label>Nombre y apellidos *</label><input type="text" placeholder="Nombre completo"></div>' +
+    '<div class="field"><label>DNI / NIE *</label><input type="text" placeholder="12345678A"></div></div>' +
+    '<div class="row2"><div class="field"><label>Nº de participaciones que posee *</label><input type="text" placeholder="Ej: 10.948"></div>' +
+    '<div class="field"><label>% sobre el capital actual</label><input type="text" placeholder="Ej: 100%"></div></div>' +
+  '</div>';
+}
+
+function buildSocios() {
+  var n = cfg.nSoc === '3+' ? 3 : parseInt(cfg.nSoc);
+  var w = document.getElementById('sociosWrap');
+  w.innerHTML = '';
+  var card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = '<h2>👤 Socio' + (n > 1 ? 's' : '') + ' actual' + (n > 1 ? 'es' : '') + '</h2>';
+  for (var i = 1; i <= n; i++) card.innerHTML += socioHtml(i, i > 1);
+  if (cfg.nSoc === '3+') {
+    var cnt = n;
+    var ab = document.createElement('button');
+    ab.className = 'add-btn';
+    ab.textContent = '+ Añadir socio';
+    ab.onclick = function() {
+      cnt++;
+      var d = document.createElement('div');
+      d.innerHTML = socioHtml(cnt, true);
+      card.insertBefore(d.firstElementChild, ab);
+    };
+    card.appendChild(ab);
+  }
+  w.appendChild(card);
+}
+
+// ── CÁLCULO % RESULTANTE ─────────────────────────────────
+function num(id) {
+  var v = gv(id);
+  if (!v) return null;
+  v = v.replace(/[^0-9,.-]/g, '').replace(/\.(?=\d{3}(\D|$))/g, '').replace(',', '.');
+  var f = parseFloat(v);
+  return isNaN(f) ? null : f;
+}
+function calcPct() {
+  var box = document.getElementById('pct-result');
+  if (!box) return;
+  var act = num('soc-num-part');
+  var nue = num('amp-num-part');
+  if (act === null || nue === null || (act + nue) <= 0) {
+    box.innerHTML = 'Introduzca participaciones actuales y nuevas para calcular el porcentaje resultante del nuevo socio.';
+    return;
+  }
+  var total = act + nue;
+  var pctNuevo = (nue / total) * 100;
+  var pctResto = 100 - pctNuevo;
+  box.innerHTML = 'Participaciones tras la ampliación: <b>' + total.toLocaleString('es-ES') + '</b>. ' +
+    'El nuevo socio tendría aprox. <b>' + pctNuevo.toFixed(2) + '%</b> y los socios actuales aprox. <b>' + pctResto.toFixed(2) + '%</b>.';
+}
+
+function gv(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function gr(name) { var el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ''; }
+
+// ── COLLECT (socios) ─────────────────────────────────────
+function collectBlock(cId) {
+  var out = [];
+  document.querySelectorAll('#' + cId + ' .party').forEach(function(p) {
+    var rows = [];
+    p.querySelectorAll('input[type=text], select').forEach(function(inp) {
+      var f = inp.closest('.field');
+      if (!f) return;
+      var lbl = f.querySelector('label');
+      if (lbl && inp.value.trim()) {
+        rows.push({lbl: lbl.textContent.replace(' *','').trim(), val: inp.value.trim()});
+      }
+    });
+    if (rows.length) out.push(rows);
+  });
+  return out;
+}
+
+// ── RELLENADO POR (cabecera) ─────────────────────────────
+function rpResumen() {
+  var partes = [];
+  if (cfg.rellena)      partes.push(cfg.rellena);
+  if (gv('rp-nombre'))  partes.push(gv('rp-nombre'));
+  if (gv('rp-empresa')) partes.push(gv('rp-empresa'));
+  if (gv('rp-email'))   partes.push(gv('rp-email'));
+  if (gv('rp-tel'))     partes.push(gv('rp-tel'));
+  return partes;
+}
+function updateRpHeader() {
+  var el = document.getElementById('rpHeader');
+  if (!el) return;
+  var p = rpResumen();
+  if (!p.length) { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+  el.textContent = 'Rellenado por: ' + p.join(' · ');
+}
+
+// ── NUEVO SOCIO: recoger ─────────────────────────────────
+function nuevoTipoVal() { return gr('nuevoTipo') || 'pf'; }
+
+function nuevoSocioRows() {
+  var rows = [];
+  if (nuevoTipoVal() === 'soc') {
+    if (gv('ns-nombre'))    rows.push({lbl:'Denominación social', val:gv('ns-nombre')});
+    if (gv('ns-cif'))       rows.push({lbl:'CIF', val:gv('ns-cif')});
+    if (gv('ns-domicilio')) rows.push({lbl:'Domicilio social', val:gv('ns-domicilio')});
+    if (gv('ns-registro'))  rows.push({lbl:'Datos registrales', val:gv('ns-registro')});
+    if (gv('ns-rep-nombre'))rows.push({lbl:'Representante', val:gv('ns-rep-nombre')});
+    if (gv('ns-rep-dni'))   rows.push({lbl:'DNI / NIE representante', val:gv('ns-rep-dni')});
+    if (gv('ns-rep-cargo')) rows.push({lbl:'Cargo del representante', val:gv('ns-rep-cargo')});
+  } else {
+    if (gv('np-nombre'))    rows.push({lbl:'Nombre y apellidos', val:gv('np-nombre')});
+    if (gv('np-dni'))       rows.push({lbl:'DNI / NIE', val:gv('np-dni')});
+    if (gv('np-ec'))        rows.push({lbl:'Estado civil', val:gv('np-ec')});
+    if (gv('np-nac'))       rows.push({lbl:'Nacionalidad', val:gv('np-nac')});
+    if (gv('np-ec') === 'Casado/a') {
+      if (gv('np-remval'))  rows.push({lbl:'Régimen económico matrimonial', val:gv('np-remval')});
+      if (gr('np-bien'))    rows.push({lbl:'Carácter de las participaciones', val:gr('np-bien')});
+    }
+    if (gv('np-domicilio')) rows.push({lbl:'Domicilio', val:gv('np-domicilio')});
+    if (gr('np-res'))       rows.push({lbl:'Residencia fiscal', val:gr('np-res')});
+  }
+  return rows;
+}
+
+// ── RESUMEN ──────────────────────────────────────────────
+function srRows(title, icon, rows) {
+  if (!rows.length) return '';
+  var h = '<div class="sg"><h3>' + icon + ' ' + title + '</h3>';
+  rows.forEach(function(r){ h += '<div class="sr"><span>' + r.lbl + '</span><span>' + r.val + '</span></div>'; });
+  return h + '</div>';
+}
+
+function socMetaRows() {
+  var rows = [];
+  if (gv('soc-nombre'))    rows.push({lbl:'Denominación social', val:gv('soc-nombre')});
+  if (gv('soc-cif'))       rows.push({lbl:'CIF', val:gv('soc-cif')});
+  if (gv('soc-domicilio')) rows.push({lbl:'Domicilio social', val:gv('soc-domicilio')});
+  if (gv('soc-registro'))  rows.push({lbl:'Datos registrales', val:gv('soc-registro')});
+  if (gr('uni'))           rows.push({lbl:'Unipersonal', val:gr('uni')});
+  if (gv('soc-capital'))   rows.push({lbl:'Capital social actual', val:gv('soc-capital')});
+  if (gv('soc-num-part'))  rows.push({lbl:'Nº participaciones actuales', val:gv('soc-num-part')});
+  if (gv('soc-nominal'))   rows.push({lbl:'Valor nominal/participación', val:gv('soc-nominal')});
+  return rows;
+}
+function admRows() {
+  var rows = [];
+  if (gv('adm-nombre'))  rows.push({lbl:'Administrador', val:gv('adm-nombre')});
+  if (gv('adm-dni'))     rows.push({lbl:'DNI / NIE', val:gv('adm-dni')});
+  if (gv('adm-cargo'))   rows.push({lbl:'Cargo', val:gv('adm-cargo')});
+  if (gr('cargo-vig'))   rows.push({lbl:'Cargo vigente e inscrito', val:gr('cargo-vig')});
+  return rows;
+}
+function opRows() {
+  var rows = [];
+  if (gv('amp-num-part')) rows.push({lbl:'Participaciones nuevas', val:gv('amp-num-part')});
+  if (gv('amp-nominal'))  rows.push({lbl:'Valor nominal/participación nueva', val:gv('amp-nominal')});
+  if (gv('amp-total'))    rows.push({lbl:'Importe total ampliación (nominal)', val:gv('amp-total')});
+  rows.push({lbl:'Prima de emisión', val:(gr('prima')||'No')});
+  if (gr('prima') === 'Sí') {
+    if (gv('prima-unit'))  rows.push({lbl:'Prima por participación', val:gv('prima-unit')});
+    if (gv('prima-total')) rows.push({lbl:'Prima total', val:gv('prima-total')});
+  }
+  if (gv('des-medio'))    rows.push({lbl:'Medio de aportación', val:gv('des-medio')});
+  if (gv('des-iban'))     rows.push({lbl:'IBAN cuenta sociedad', val:gv('des-iban')});
+  if (gv('des-fecha'))    rows.push({lbl:'Fecha del ingreso', val:gv('des-fecha')});
+  rows.push({lbl:'Sociedad valorada', val:(gr('valorada')||'—')});
+  if (gr('valorada') === 'Sí') {
+    if (gv('val-importe')) rows.push({lbl:'Valor real aproximado', val:gv('val-importe')});
+    if (gv('val-metodo'))  rows.push({lbl:'Método de valoración', val:gv('val-metodo')});
+  }
+  rows.push({lbl:'Otras modificaciones estatutarias', val:(gr('modest')||'No')});
+  if (gr('modest') === 'Sí' && gv('mod-detalle')) rows.push({lbl:'Modificaciones', val:gv('mod-detalle')});
+  return rows;
+}
+function relRows() {
+  var rows = [];
+  rows.push({lbl:'Renuncia derecho de asunción preferente', val:(gr('renuncia')||'—')});
+  rows.push({lbl:'Relación familiar entre las partes', val:(gr('parentesco')||'—')});
+  if (gr('parentesco') === 'Sí' && gv('par-detalle')) rows.push({lbl:'Parentesco', val:gv('par-detalle')});
+  return rows;
+}
+
+function buildRes() {
+  var h = '';
+  // Rellenado por
+  var rpRows = [];
+  if (cfg.rellena)      rpRows.push({lbl:'Perfil', val:cfg.rellena});
+  if (gv('rp-nombre'))  rpRows.push({lbl:'Nombre', val:gv('rp-nombre')});
+  if (gv('rp-empresa')) rpRows.push({lbl:'Empresa', val:gv('rp-empresa')});
+  if (gv('rp-email'))   rpRows.push({lbl:'Email', val:gv('rp-email')});
+  if (gv('rp-tel'))     rpRows.push({lbl:'Teléfono', val:gv('rp-tel')});
+  h += srRows('Datos de quien rellena', '🖊️', rpRows);
+
+  h += srRows('Sociedad que amplía', '🏢', socMetaRows());
+  h += srRows('Administrador compareciente', '✍️', admRows());
+
+  // Socios actuales
+  var socios = collectBlock('sociosWrap');
+  socios.forEach(function(rows, i) {
+    h += srRows('Socio actual' + (socios.length > 1 ? ' ' + (i+1) : ''), '👤', rows);
+  });
+
+  // Nuevo socio
+  var ntLabel = nuevoTipoVal() === 'soc' ? 'Nuevo socio (sociedad)' : 'Nuevo socio (persona física)';
+  h += srRows(ntLabel, '🆕', nuevoSocioRows());
+
+  h += srRows('Derecho de preferencia y relación', '📜', relRows());
+  h += srRows('Operación de ampliación', '📈', opRows());
+
+  document.getElementById('resumen').innerHTML = h;
+}
+
+// ── WORD ─────────────────────────────────────────────────
+function wRows(title, rows) {
+  if (!rows.length) return '';
+  var h = '<h2>' + title + '</h2>';
+  rows.forEach(function(r){ h += '<p>' + r.lbl + ': <strong>' + r.val + '</strong></p>'; });
+  return h + '<br>';
+}
+
+function dlWord() {
+  var rpRows = [];
+  if (cfg.rellena)      rpRows.push({lbl:'Perfil', val:cfg.rellena});
+  if (gv('rp-nombre'))  rpRows.push({lbl:'Nombre', val:gv('rp-nombre')});
+  if (gv('rp-empresa')) rpRows.push({lbl:'Empresa', val:gv('rp-empresa')});
+  if (gv('rp-email'))   rpRows.push({lbl:'Email', val:gv('rp-email')});
+  if (gv('rp-tel'))     rpRows.push({lbl:'Teléfono', val:gv('rp-tel')});
+
+  var body = wRows('DATOS DE QUIEN RELLENA EL FORMULARIO', rpRows);
+  body += wRows('SOCIEDAD QUE AMPLÍA EL CAPITAL', socMetaRows());
+  body += wRows('ADMINISTRADOR COMPARECIENTE', admRows());
+
+  var socios = collectBlock('sociosWrap');
+  socios.forEach(function(rows, i) {
+    body += wRows('SOCIO ACTUAL' + (socios.length > 1 ? ' ' + (i+1) : ''), rows);
+  });
+
+  var ntLabel = nuevoTipoVal() === 'soc' ? 'NUEVO SOCIO (SOCIEDAD)' : 'NUEVO SOCIO (PERSONA FÍSICA)';
+  body += wRows(ntLabel, nuevoSocioRows());
+
+  body += wRows('DERECHO DE PREFERENCIA Y RELACIÓN ENTRE LAS PARTES', relRows());
+  body += wRows('OPERACIÓN DE AMPLIACIÓN', opRows());
+
+  // Aviso fiscal destacado en el Word (alerta roja) cuando hay riesgo de donación
+  if (gr('parentesco') === 'Sí' || gr('valorada') !== 'Sí') {
+    body += '<div style="color:#c0392b;background:#fff0ee">AVISO FISCAL: Si el nuevo socio suscribe participaciones por debajo del valor real de la sociedad, la diferencia puede tributar como donación (ISD) y generar ganancia patrimonial en el IRPF del socio que se diluye. Verifíquese la valoración y considérese asesoramiento fiscal antes de la firma.</div>';
+  }
+
+  body += '<p style="font-size:10pt;color:#777">Documento generado por Oficial Notarial IA · ' + new Date().toLocaleDateString('es-ES') + '</p>';
+
+  NotarialDocx.download({title:'DATOS PARA ESCRITURA DE AMPLIACIÓN DE CAPITAL', filename:'Datos_Ampliacion_Capital_Notaria'}, body);
+}
+
+renderBar();
+</script>
+</body>
+</html>
