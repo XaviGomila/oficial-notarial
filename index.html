@@ -1201,6 +1201,10 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
       <svg class="nav-icon" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 5h6M4 7.5h4.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M8.5 10l1.5-1.5L8.5 7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Acta de titular real
     </a>
+    <a class="nav-item" href="ampliacion-capital.html" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
+      <svg class="nav-icon" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 5h6M4 7.5h4.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M8.5 10l1.5-1.5L8.5 7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Ampliación de capital
+    </a>
     <a class="nav-item" href="cancelacion.html" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
       <svg class="nav-icon" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 5h6M4 7.5h4.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M8.5 10l1.5-1.5L8.5 7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Cancelación hipoteca
@@ -3303,6 +3307,7 @@ const FORM_URLS = {
   'acta-notoriedad-abintestato': BASE_URL + '/acta-notoriedad-abintestato.html',
   'acta-presencia':              BASE_URL + '/acta-presencia.html',
   'division-horizontal':         BASE_URL + '/division-horizontal.html',
+  'ampliacion-capital':          BASE_URL + '/ampliacion-capital.html',
 };
 
 const FORM_LABELS = {
@@ -3310,6 +3315,7 @@ const FORM_LABELS = {
   'acta-notoriedad-abintestato': '👥 Acta de notoriedad — herederos abintestato',
   'acta-presencia':              '👁️ Acta de presencia',
   'acta-titular-real':           '🏢 Acta de titular real (Ley 10/2010)',
+  'ampliacion-capital':          '📈 Ampliación de capital (S.L.)',
   cancelacion:                   '🏦 Cancelación de hipoteca',
   compraventa:                   '🏠 Compraventa',
   disolucion:                    '⚖️ Disolución de condominio',
@@ -3323,7 +3329,7 @@ const FORM_LABELS = {
   testamento:                    '📋 Testamento',
 };
 
-const DISPONIBLES = ['compraventa', 'poder', 'renuncia', 'testamento', 'cancelacion', 'donacion', 'herencia', 'obranue', 'hipoteca', 'disolucion', 'acta-manifestaciones', 'acta-titular-real', 'acta-notoriedad-abintestato', 'acta-presencia', 'division-horizontal'];
+const DISPONIBLES = ['compraventa', 'poder', 'renuncia', 'testamento', 'cancelacion', 'donacion', 'herencia', 'obranue', 'hipoteca', 'disolucion', 'acta-manifestaciones', 'acta-titular-real', 'acta-notoriedad-abintestato', 'acta-presencia', 'division-horizontal', 'ampliacion-capital'];
 
 function detectarActo(){
   const actoRaw = (_lastParsed?.actoNombre || '').toLowerCase();
@@ -3338,6 +3344,7 @@ function detectarActo(){
   if(actoRaw.includes('obra nueva'))                                           return 'obranue';
   if(actoRaw.includes('hipoteca')||actoRaw.includes('préstamo hipotecario'))   return 'hipoteca';
   if(actoRaw.includes('división horizontal')||actoRaw.includes('division horizontal')||actoRaw.includes('segregaci'))  return 'division-horizontal';
+  if(actoRaw.includes('ampliación de capital')||actoRaw.includes('ampliacion de capital')||actoRaw.includes('aumento de capital'))  return 'ampliacion-capital';
 
   // Subtipos de actas — solo si actoRaw contiene "acta"
   if(actoRaw.includes('acta')){
