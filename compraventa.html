@@ -154,6 +154,15 @@ body{font-family:'DM Sans',sans-serif;background:#f4f1eb;color:#1a1510;min-heigh
         <label><input type="radio" name="hab" value="No lo sé"> No lo sé</label>
       </div>
     </div>
+    <div class="card">
+      <h2>¿Es vivienda habitual del vendedor?</h2>
+      <div class="rg">
+        <label><input type="radio" name="hab-vend" value="Sí"> Sí</label>
+        <label><input type="radio" name="hab-vend" value="No"> No</label>
+        <label><input type="radio" name="hab-vend" value="No lo sé"> No lo sé</label>
+      </div>
+      <div class="warn" style="margin-top:8px">⚠ Si es vivienda habitual del vendedor persona física residente, puede aplicar la exención por reinversión en IRPF (art. 38 LIRPF) o la exención por mayores de 65 años. También puede afectar a la plusvalía municipal (IIVTNU).</div>
+    </div>
     <div class="nav">
       <button class="btn-s" onclick="go(0)">← Atrás</button>
       <button class="btn-p" onclick="go(2)">Continuar →</button>
@@ -520,6 +529,8 @@ function partyHtml(label, n, isSoc, rm) {
     '</div>' +
     '<div class="field"><label>Domicilio completo</label><input type="text" placeholder="Calle, número, piso, municipio"></div>' +
     '<div class="field"><label>Teléfono de contacto</label><input type="text" placeholder="Ej: 971 000 000 / 600 000 000"></div>' +
+    '<div class="field"><label>Email de contacto</label><input type="email" placeholder="correo@ejemplo.com"></div>' +
+    (isVendedor ? '' : '<div class="field"><label>Fecha de nacimiento</label><input type="date" id="fnac' + u + '"><div class="warn" style="margin-top:5px">ℹ Necesaria para verificar posibles bonificaciones fiscales autonómicas por edad del comprador (ITP/AJD).</div></div>') +
     '<div class="field"><label>Cuota de participación *</label><input type="text" placeholder="Ej: 50% (mitad indivisa), 100%, 1/3..."></div>' +
     '<div class="toggle-row"><input type="checkbox" id="pow' + u + '" onchange="document.getElementById(\'powx' + u + '\').classList.toggle(\'hidden\',!this.checked)">' +
     '<label for="pow' + u + '">Actúa mediante poder notarial (representado por abogado u otra persona)</label></div>' +
@@ -646,7 +657,10 @@ function buildRes() {
     h += '</div>';
   });
   var hab = gr('hab');
-  if (hab) h += '<div class="sg"><h3>Vivienda habitual</h3><div class="sr"><span>¿Vivienda habitual del comprador?</span><span>' + hab + '</span></div></div>';
+  if (hab) h += '<div class="sg"><h3>Vivienda habitual</h3><div class="sr"><span>¿Vivienda habitual del comprador?</span><span>' + hab + '</span></div>';
+  var habVend = gr('hab-vend');
+  if (habVend) h += '<div class="sr"><span>¿Vivienda habitual del vendedor?</span><span>' + habVend + '</span></div>';
+  if (hab || habVend) h += '</div>';
 
   // Partes
   function addParties(label, parties) {
@@ -716,7 +730,8 @@ function dlWord() {
     rows.forEach(function(r){ fBody += '<p>' + r.lbl + ': <strong>' + r.val + '</strong></p>'; });
     fBody += '<br>';
   });
-  fBody += '<p>¿Vivienda habitual del comprador?: <strong>' + (gr('hab')||'—') + '</strong></p><br>';
+  fBody += '<p>¿Vivienda habitual del comprador?: <strong>' + (gr('hab')||'—') + '</strong></p>';
+  fBody += '<p>¿Vivienda habitual del vendedor?: <strong>' + (gr('hab-vend')||'—') + '</strong></p><br>';
 
   var pBody = '<h2>PRECIO Y FORMA DE PAGO</h2>' +
     '<p>Precio total: <strong>' + (gv('precio')||'—') + '</strong></p>' +
