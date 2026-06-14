@@ -1744,77 +1744,6 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
       </div>
     </div>
   </div>
-
-</div><!-- /main -->
-</div><!-- /shell -->
-
-<!-- ══════ VISOR DE ADJUNTOS ══════ -->
-<div class="adj-viewer" id="adjViewer">
-  <div class="adj-viewer-bar">
-    <span class="adj-viewer-name" id="adjViewerName">—</span>
-    <a class="adj-viewer-dl" id="adjViewerDl" download style="display:none;">⬇ Descargar</a>
-    <button class="adj-viewer-close" onclick="cerrarVisorAdj()">✕</button>
-  </div>
-  <div class="adj-viewer-body" id="adjViewerBody">
-    <div class="adj-viewer-spin">
-      <div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-      <span>Cargando adjunto...</span>
-    </div>
-  </div>
-</div>
-
-<!-- ══════ TRIAL WALL (pantalla de caducidad) ══════ -->
-<div class="trial-wall" id="trialWall">
-  <div class="trial-box">
-    <div class="trial-seal">⏰</div>
-    <div class="trial-badge">Período de prueba finalizado</div>
-    <div class="trial-title">Tu acceso de prueba ha caducado</div>
-    <div class="trial-sub" id="trialWallMsg">El período de evaluación ha concluido. Gracias por probar Oficial Notarial IA.</div>
-    <hr class="trial-divider">
-    <div class="trial-contact">
-      <strong>Contrata y sigue usando la herramienta</strong>
-      <div class="trial-plans">
-        <div class="trial-plan">
-          <div class="trial-plan-name">Individual</div>
-          <div class="trial-plan-price">€99<span> /mes</span></div>
-          <div class="trial-plan-desc">Un notario titular y su equipo de oficiales. Análisis ilimitados.</div>
-          <ul class="trial-plan-features">
-            <li>Análisis de email ilimitados</li>
-            <li>Los 15 actos notariales</li>
-            <li>Derecho foral autonómico</li>
-            <li>Motor ITP determinista</li>
-            <li>Bandeja Outlook integrada</li>
-            <li>Traducción ES/EN/DE/FR</li>
-            <li>Historial con notas y buscador</li>
-            <li>Chat jurídico contextual</li>
-            <li>Soporte por email</li>
-          </ul>
-        </div>
-        <div class="trial-plan featured">
-          <div class="trial-plan-tag">Más vendido</div>
-          <div class="trial-plan-name">Despacho compartido</div>
-          <div class="trial-plan-price">€159<span> /mes</span></div>
-          <div class="trial-plan-desc">De 2 a 4 notarios titulares que comparten infraestructura y oficiales.</div>
-          <ul class="trial-plan-features">
-            <li>Todo lo del plan Individual</li>
-            <li>Hasta 4 notarios en el mismo acceso</li>
-            <li>Período de prueba extendido</li>
-            <li>Soporte prioritario</li>
-            <li>Acceso anticipado a nuevas funciones</li>
-            <li>Onboarding personalizado</li>
-          </ul>
-        </div>
-      </div>
-      <div id="trialCtaArea" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
-        <a id="trialEmailBtn" href="mailto:xavigomilaorfila@gmail.com?subject=Licencia%20Oficial%20Notarial%20IA" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 20px;background:var(--ink);color:#F5F0E8;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;transition:opacity .15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 4l6 4.5L13 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-          Solicitar licencia completa
-        </a>
-      </div>
-      <div class="trial-web-link">¿Quieres saber más? <a href="https://landing-oficial-notarial.pages.dev/" target="_blank" rel="noopener noreferrer">Visita nuestra web →</a></div>
-      <div id="trialContactInfo" style="display:none;"></div>
-    </div>
-  </div>
   <div class="view" id="viewHerencias">
     <div class="content">
 <div class="wrap">
@@ -1955,6 +1884,77 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
 
   <div id="resultados"></div>
 </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<!-- ══════ VISOR DE ADJUNTOS ══════ -->
+<div class="adj-viewer" id="adjViewer">
+  <div class="adj-viewer-bar">
+    <span class="adj-viewer-name" id="adjViewerName">—</span>
+    <a class="adj-viewer-dl" id="adjViewerDl" download style="display:none;">⬇ Descargar</a>
+    <button class="adj-viewer-close" onclick="cerrarVisorAdj()">✕</button>
+  </div>
+  <div class="adj-viewer-body" id="adjViewerBody">
+    <div class="adj-viewer-spin">
+      <div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <span>Cargando adjunto...</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ TRIAL WALL (pantalla de caducidad) ══════ -->
+<div class="trial-wall" id="trialWall">
+  <div class="trial-box">
+    <div class="trial-seal">⏰</div>
+    <div class="trial-badge">Período de prueba finalizado</div>
+    <div class="trial-title">Tu acceso de prueba ha caducado</div>
+    <div class="trial-sub" id="trialWallMsg">El período de evaluación ha concluido. Gracias por probar Oficial Notarial IA.</div>
+    <hr class="trial-divider">
+    <div class="trial-contact">
+      <strong>Contrata y sigue usando la herramienta</strong>
+      <div class="trial-plans">
+        <div class="trial-plan">
+          <div class="trial-plan-name">Individual</div>
+          <div class="trial-plan-price">€99<span> /mes</span></div>
+          <div class="trial-plan-desc">Un notario titular y su equipo de oficiales. Análisis ilimitados.</div>
+          <ul class="trial-plan-features">
+            <li>Análisis de email ilimitados</li>
+            <li>Los 15 actos notariales</li>
+            <li>Derecho foral autonómico</li>
+            <li>Motor ITP determinista</li>
+            <li>Bandeja Outlook integrada</li>
+            <li>Traducción ES/EN/DE/FR</li>
+            <li>Historial con notas y buscador</li>
+            <li>Chat jurídico contextual</li>
+            <li>Soporte por email</li>
+          </ul>
+        </div>
+        <div class="trial-plan featured">
+          <div class="trial-plan-tag">Más vendido</div>
+          <div class="trial-plan-name">Despacho compartido</div>
+          <div class="trial-plan-price">€159<span> /mes</span></div>
+          <div class="trial-plan-desc">De 2 a 4 notarios titulares que comparten infraestructura y oficiales.</div>
+          <ul class="trial-plan-features">
+            <li>Todo lo del plan Individual</li>
+            <li>Hasta 4 notarios en el mismo acceso</li>
+            <li>Período de prueba extendido</li>
+            <li>Soporte prioritario</li>
+            <li>Acceso anticipado a nuevas funciones</li>
+            <li>Onboarding personalizado</li>
+          </ul>
+        </div>
+      </div>
+      <div id="trialCtaArea" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+        <a id="trialEmailBtn" href="mailto:xavigomilaorfila@gmail.com?subject=Licencia%20Oficial%20Notarial%20IA" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 20px;background:var(--ink);color:#F5F0E8;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;transition:opacity .15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 4l6 4.5L13 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Solicitar licencia completa
+        </a>
+      </div>
+      <div class="trial-web-link">¿Quieres saber más? <a href="https://landing-oficial-notarial.pages.dev/" target="_blank" rel="noopener noreferrer">Visita nuestra web →</a></div>
+      <div id="trialContactInfo" style="display:none;"></div>
     </div>
   </div>
 
