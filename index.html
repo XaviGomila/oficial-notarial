@@ -1131,6 +1131,63 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
 [data-theme="dark"] #inputZone{background:var(--surface);border-color:var(--border);}
 [data-theme="dark"] .field-hint{background:rgba(196,168,74,0.06);border-color:var(--border);}
 </style>
+<style id="herenciasStyles">
+  /* ====== Vista "Herencias" — motor de cálculo (Fase 1 + B) ======
+     Escopado bajo #viewHerencias para no afectar a otras vistas.
+     Reutiliza las variables CSS de ONA (--cream, --ink, --gold, --red,
+     --green, --orange, --blue, --border, --surface...), por lo que
+     hereda automáticamente el modo oscuro "Notario de Guardia". */
+  #viewHerencias h1{font-family:'Lora',serif;font-size:22px;margin:0 0 4px;}
+  #viewHerencias h2{font-family:'Lora',serif;font-size:17px;margin:24px 0 10px;border-bottom:1px solid var(--border);padding-bottom:6px;}
+  #viewHerencias .sub{color:var(--ink2);font-size:13px;margin-bottom:20px;}
+  #viewHerencias .wrap{max-width:980px;margin:0 auto;width:100%;}
+  #viewHerencias .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:16px;}
+  #viewHerencias .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  #viewHerencias .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+  @media(max-width:760px){
+    #viewHerencias .grid2,#viewHerencias .grid3{grid-template-columns:1fr;}
+  }
+  #viewHerencias label{display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.03em;}
+  #viewHerencias select,#viewHerencias input{width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:6px;font-size:14px;background:var(--cream2);color:var(--ink);font-family:inherit;}
+  #viewHerencias select:focus,#viewHerencias input:focus{outline:2px solid var(--gold);border-color:var(--gold);}
+  #viewHerencias .field{margin-bottom:12px;}
+  #viewHerencias .row-flex{display:flex;gap:10px;align-items:flex-end;}
+  #viewHerencias .row-flex .field{flex:1;margin-bottom:0;}
+  #viewHerencias fieldset{border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;}
+  #viewHerencias legend{font-size:12px;font-weight:700;color:var(--gold);padding:0 6px;}
+  #viewHerencias .btn{background:var(--ink);color:var(--cream);border:none;border-radius:6px;padding:11px 22px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
+  #viewHerencias .btn:hover{background:var(--ink2);}
+  #viewHerencias .btn-sec{background:var(--cream2);color:var(--ink);border:1px solid var(--border);}
+  #viewHerencias .btn-sec:hover{background:var(--border);}
+  #viewHerencias .btn-sm{padding:6px 12px;font-size:12px;}
+  #viewHerencias .btn-del{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+  #viewHerencias .heir-row{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;align-items:end;margin-bottom:8px;}
+  #viewHerencias .bien-row{display:grid;grid-template-columns:2fr 1fr auto;gap:8px;align-items:end;margin-bottom:8px;}
+  #viewHerencias .asig-block{background:var(--cream2);border-radius:6px;padding:8px;margin:0 0 12px 0;}
+  #viewHerencias .asig-row{display:grid;grid-template-columns:2fr 1fr auto;gap:8px;align-items:end;margin-bottom:6px;}
+  #viewHerencias .asig-total-ok{color:var(--ink2);}
+  #viewHerencias .asig-total-bad{color:var(--red);font-weight:700;}
+  #viewHerencias .heir-row.premuerto-row{grid-template-columns:1fr;background:var(--cream2);padding:8px;border-radius:6px;margin-top:-4px;margin-bottom:8px;}
+  #viewHerencias .checkbox-line{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);margin-top:4px;}
+  #viewHerencias .checkbox-line input{width:auto;}
+  #viewHerencias .hidden{display:none !important;}
+  #viewHerencias .result-box{border-radius:8px;padding:14px;margin-bottom:10px;border:1px solid;}
+  #viewHerencias .result-ok{background:var(--green-bg);border-color:var(--green-border);color:var(--green);}
+  #viewHerencias .result-warn{background:var(--orange-bg);border-color:var(--orange-border);color:var(--orange);}
+  #viewHerencias .result-err{background:var(--red-bg);border-color:var(--red-border);color:var(--red);}
+  #viewHerencias .result-info{background:var(--blue-bg);border-color:var(--blue-border);color:var(--blue);}
+  #viewHerencias table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px;}
+  #viewHerencias th,#viewHerencias td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);}
+  #viewHerencias th{color:var(--ink2);font-size:11px;text-transform:uppercase;letter-spacing:.03em;}
+  #viewHerencias .num{text-align:right;font-family:'DM Mono',monospace;font-variant-numeric:tabular-nums;}
+  #viewHerencias .pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;}
+  #viewHerencias .pill-plena{background:var(--green-bg);color:var(--green);}
+  #viewHerencias .pill-nuda{background:var(--orange-bg);color:var(--orange);}
+  #viewHerencias .legal{font-size:11px;color:var(--ink2);}
+  #viewHerencias .clausula-box{background:var(--cream2);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:Georgia,serif;font-size:13.5px;line-height:1.7;white-space:pre-wrap;}
+  #viewHerencias .toolbar{display:flex;gap:10px;margin-top:10px;}
+  #viewHerencias details summary{cursor:pointer;font-weight:600;color:var(--gold);font-size:13px;}
+</style>
 </head>
 <body>
 
@@ -1183,6 +1240,11 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
       <svg class="nav-icon" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 5l6 4 6-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
       Bandeja Outlook
       <span class="hist-count" id="outlookUnread"></span>
+    </div>
+    <div class="nav-section">Herramientas</div>
+    <div class="nav-item" onclick="goView('herencias',this)">
+      <svg class="nav-icon" viewBox="0 0 14 14" fill="none"><path d="M7 1.5l1.4 2.9 3.2.5-2.3 2.3.5 3.2L7 8.9 4.2 10.4l.5-3.2L2.4 4.9l3.2-.5L7 1.5z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+      Cálculo de herencias
     </div>
     <div class="nav-section">Formularios cliente</div>
     <a class="nav-item" href="acta-manifestaciones.html" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
@@ -1753,6 +1815,149 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
       <div id="trialContactInfo" style="display:none;"></div>
     </div>
   </div>
+  <div class="view" id="viewHerencias">
+    <div class="content">
+<div class="wrap">
+  <h1>Motor de Cálculo de Herencias — Fase 1</h1>
+  <div class="sub">Cónyuge + descendientes · sucesión testada e intestada · derecho común (CC) y régimen foral balear (separación de bienes supletoria). Herramienta de apoyo al cálculo — no sustituye la verificación jurídica del oficial.</div>
+
+  <div class="card">
+    <h2 style="margin-top:0">1. Datos del causante y régimen</h2>
+    <div class="grid3">
+      <div class="field">
+        <label>Vecindad civil del causante</label>
+        <select id="vecindad" onchange="toggleVecindad()">
+          <option value="comun">Común (Código Civil)</option>
+          <option value="balear">Balear</option>
+        </select>
+      </div>
+      <div class="field hidden" id="fieldIsla">
+        <label>Isla / régimen foral aplicable</label>
+        <select id="isla" onchange="toggleVecindad()">
+          <option value="mallorca_menorca">Mallorca / Menorca</option>
+          <option value="ibiza_formentera">Ibiza / Formentera</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Tipo de sucesión</label>
+        <select id="tipoSucesion" onchange="toggleTestamento()">
+          <option value="intestada">Intestada (sin testamento)</option>
+          <option value="testada">Testada</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Régimen económico matrimonial</label>
+        <select id="regimen" onchange="toggleRegimen()">
+          <option value="separacion_bienes">Separación de bienes</option>
+          <option value="gananciales">Gananciales</option>
+        </select>
+      </div>
+    </div>
+    <div id="warnBalearGananciales" class="result-box result-warn hidden">
+      ⚠ El régimen supletorio balear es <strong>separación de bienes</strong>. Si el causante tiene vecindad civil balear y régimen gananciales, confirme que existen <strong>capitulaciones matrimoniales expresas</strong> que lo establezcan.
+    </div>
+    <div id="warnIbizaFormentera" class="result-box result-warn hidden">
+      ⚠ El régimen sucesorio de <strong>Ibiza y Formentera</strong> difiere del de Mallorca/Menorca en materia de legítimas y no está implementado en esta herramienta. El cálculo se realizará conforme al <strong>Código Civil común</strong>, lo cual puede NO ser correcto para causantes de vecindad civil pitiusa. Verifique manualmente la legítima y el usufructo vidual aplicables (CDCIB, especialidades de Ibiza/Formentera).
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">2. Cónyuge viudo</h2>
+    <div class="field">
+      <div class="checkbox-line">
+        <input type="checkbox" id="conyugeExiste" checked onchange="toggleConyuge()">
+        <label style="margin:0;text-transform:none;font-weight:500;">Existe cónyuge viudo</label>
+      </div>
+    </div>
+    <div id="conyugeDetalle">
+      <div class="checkbox-line">
+        <input type="checkbox" id="conyugeSeparado" onchange="recalcularInline()">
+        <label style="margin:0;text-transform:none;font-weight:500;">Separado legalmente o de hecho al fallecimiento (art. 834 CC → pierde derecho de usufructo)</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">3. Descendientes (estirpes)</h2>
+    <div id="heirsContainer"></div>
+    <button type="button" class="btn btn-sec btn-sm" onclick="addHeir()">+ Añadir hijo / estirpe</button>
+  </div>
+
+  <div class="card" id="testamentoCard">
+    <h2 style="margin-top:0">4. Disposiciones testamentarias</h2>
+    <div id="mejoraBlock">
+      <div class="field">
+        <label>Tercio de mejora — beneficiario(s)</label>
+        <select id="mejoraTipo" onchange="toggleMejoraDetalle()">
+          <option value="reparto_igual">Sin mejora expresa (se reparte igual entre descendientes, junto con legítima)</option>
+          <option value="un_heredero">Mejora a un descendiente concreto</option>
+          <option value="varios">Mejora repartida entre varios descendientes (porcentajes)</option>
+        </select>
+      </div>
+      <div id="mejoraDetalle" class="hidden"></div>
+    </div>
+    <div id="mejoraBalearAviso" class="result-box result-info hidden" style="margin-top:10px;">
+      ℹ En el Derecho Civil de Mallorca/Menorca (art. 42 CDCIB) <strong>no existe el tercio de mejora</strong>. Lo que no constituye legítima es íntegramente de libre disposición. Configure el reparto del resto de libre disposición más abajo.
+    </div>
+
+    <fieldset style="margin-top:14px;">
+      <legend>Legados a terceros no legitimarios (sobrinos, amigos, etc.)</legend>
+      <div style="font-size:12px;color:var(--ink2);margin-bottom:8px;">Los legados a personas que no son legitimarias se imputan al <strong>tercio de libre disposición</strong> (art. 819 CC). El importe es el valor en € del legado (en metálico o el valor de la cosa legada). Se pagan ANTES de repartir el resto del tercio libre.</div>
+      <div id="legadosContainer"></div>
+      <button type="button" class="btn btn-sec btn-sm" onclick="addLegado()">+ Añadir legado</button>
+    </fieldset>
+
+    <div class="field" style="margin-top:14px;">
+      <label>Resto del tercio de libre disposición (lo que sobre tras pagar los legados) — beneficiario</label>
+      <select id="libreTipo">
+        <option value="descendientes_igual">Se reparte igual entre los descendientes</option>
+        <option value="conyuge">Al cónyuge viudo (plena propiedad)</option>
+        <option value="un_heredero">A un descendiente concreto</option>
+        <option value="tercero">A otro tercero distinto</option>
+      </select>
+    </div>
+    <div id="libreDetalle" class="hidden"></div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">5. Inventario de bienes privativos del causante</h2>
+    <div id="bienesContainer"></div>
+    <button type="button" class="btn btn-sec btn-sm" onclick="addBien()">+ Añadir bien</button>
+    <div style="font-size:11px;color:var(--ink2);margin-top:8px;">El caudal hereditario (bienes privativos) se calcula automáticamente como la suma de los valores de este inventario. Estos bienes son los que se reparten entre cónyuge/herederos según las reglas de legítima, mejora, libre disposición y usufructo calculadas más abajo.</div>
+    <div style="margin-top:8px;font-weight:700;">Total inventario de bienes privativos: <span id="totalInventario">0,00 €</span></div>
+
+    <div class="grid2" id="inventarioGrid" style="margin-top:16px;">
+      <div class="field" id="fieldGananciales">
+        <label>Bienes gananciales (total, €)</label>
+        <input type="number" id="bienesGananciales" value="0" step="0.01" min="0">
+      </div>
+      <div class="field" id="fieldDeudasGananciales">
+        <label>Deudas/cargas de la sociedad de gananciales (€)</label>
+        <input type="number" id="deudasGananciales" value="0" step="0.01" min="0">
+      </div>
+      <div class="field">
+        <label>Deudas y gastos privativos del causante (€)</label>
+        <input type="number" id="deudasPrivativas" value="0" step="0.01" min="0">
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--ink2);margin-top:4px;">Las deudas gananciales se descuentan de la masa común ANTES del reparto 50/50 (art. 1398 CC). Las deudas/gastos privativos (incluidos los de última enfermedad y entierro) se descuentan solo del inventario de bienes privativos del causante.</div>
+
+    <div class="field" style="margin-top:16px;">
+      <label>Donaciones del causante a terceros no herederos en vida (€) — art. 818 CC</label>
+      <input type="number" id="donacionesTerceros" value="0" step="0.01" min="0">
+      <div style="font-size:11px;color:var(--ink2);margin-top:4px;">No incluya aquí las donaciones a los propios herederos (esas se introducen en "Donación previa recibida en vida" de cada hijo/estirpe, sección 3, que sí se colacionan automáticamente). Este campo es solo para donaciones a personas que NO son legitimarias.</div>
+    </div>
+  </div>
+
+  <div style="margin:20px 0;">
+    <button class="btn" onclick="calcular()">Calcular adjudicaciones</button>
+  </div>
+
+  <div id="resultados"></div>
+</div>
+    </div>
+  </div>
+
 </div>
 
 <!-- ══════ MODAL API KEY eliminado — clave gestionada en el servidor ══════ -->
@@ -5535,6 +5740,1572 @@ document.addEventListener('keydown', function(e){
 })();
 </script>
 
+
+<script>
+// ════════════════════════════════════════════════════════
+//  VISTA "HERENCIAS" — Motor de cálculo de herencias (Fase 1 + B)
+//  Cónyuge + descendientes, testada/intestada, separación de
+//  bienes/gananciales, CC y CDCIB Mallorca/Menorca.
+//  100% cálculo local — sin llamadas al Worker/API.
+// ════════════════════════════════════════════════════════
+/* =========================================================
+   MOTOR DE CÁLCULO — FASE 1
+   Cónyuge + descendientes, testada/intestada,
+   separación de bienes / gananciales, derecho común (CC)
+   ========================================================= */
+
+// ---- Utilidades de dinero en céntimos (enteros) ----
+function eurosToCents(v){ return Math.round((parseFloat(v)||0) * 100); }
+function centsToEuros(c){ return c/100; }
+function fmt(c){ return (c/100).toLocaleString('es-ES',{style:'currency',currency:'EUR'}); }
+function fmtFrac(f){
+  // representar fracción como texto legible (1/3, 1/2...)
+  if(Math.abs(f-1/3)<1e-9) return '1/3';
+  if(Math.abs(f-1/2)<1e-9) return '1/2';
+  if(Math.abs(f-2/3)<1e-9) return '2/3';
+  return (f*100).toFixed(2)+'%';
+}
+
+// Reparto entero de un total en céntimos entre N partes iguales,
+// distribuyendo el resto de redondeo a las primeras partes (para que
+// la suma sea EXACTA al céntimo).
+function repartirEntero(totalCents, n){
+  if(n<=0) return [];
+  const base = Math.floor(totalCents/n);
+  const resto = totalCents - base*n;
+  const partes = [];
+  for(let i=0;i<n;i++){
+    partes.push(base + (i<resto?1:0));
+  }
+  return partes;
+}
+
+// Convierte una cantidad expresada en uno de tres modos a céntimos enteros,
+// sobre una base de cálculo dada (en céntimos):
+//   modo 'euros'      -> valor absoluto en € (no usa la base)
+//   modo 'porcentaje' -> base * (pct/100)
+//   modo 'fraccion'   -> base * (num/den)  (también sirve para "partes": num partes de den)
+// Devuelve céntimos enteros redondeados.
+function resolverCantidad(item, baseCents){
+  const modo = item.modo || 'euros';
+  if(modo === 'porcentaje'){
+    const pct = parseFloat(item.pct)||0;
+    return Math.round(baseCents * (pct/100));
+  }
+  if(modo === 'fraccion'){
+    const num = parseFloat(item.num)||0;
+    const den = parseFloat(item.den)||0;
+    if(den <= 0) return 0;
+    return Math.round(baseCents * (num/den));
+  }
+  // 'euros' por defecto
+  return eurosToCents(item.euros);
+}
+
+// Reparte una base en céntimos entre items cuyos pesos se resuelven con
+// resolverCantidad sobre esa misma base, garantizando cuadre exacto:
+// la suma de las cuotas resultantes == baseCents (el resto de redondeo se
+// añade al primer item). Devuelve array de céntimos en el mismo orden.
+function repartirPonderado(items, baseCents){
+  if(items.length===0) return [];
+  const crudas = items.map(it=>resolverCantidad(it, baseCents));
+  let suma = crudas.reduce((a,b)=>a+b,0);
+  // Si los pesos no agotan exactamente la base (por redondeo o por diseño),
+  // ajustamos: el cuadre se fuerza sobre la base real disponible.
+  // Aquí solo corregimos el redondeo respecto a la suma de las cuotas crudas.
+  const diff = baseCents - suma;
+  crudas[0] += diff;
+  return crudas;
+}
+
+// ---- UI: gestión dinámica de herederos ----
+let heirCounter = 0;
+function addHeir(){
+  heirCounter++;
+  const id = 'heir_'+heirCounter;
+  const container = document.getElementById('heirsContainer');
+  const div = document.createElement('div');
+  div.id = id;
+  div.dataset.heirId = id;
+  div.innerHTML = `
+    <div class="heir-row">
+      <div class="field">
+        <label>Nombre</label>
+        <input type="text" class="heir-nombre" value="Hijo/a ${heirCounter}">
+      </div>
+      <div class="field">
+        <label>Estado</label>
+        <select class="heir-estado" onchange="togglePremuerto('${id}')">
+          <option value="vivo">Vivo</option>
+          <option value="premuerto">Premuerto (con representantes)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>&nbsp;</label>
+        <div style="font-size:11px;color:var(--ink2);padding-top:8px;">Estirpe ${heirCounter}</div>
+      </div>
+      <button type="button" class="btn btn-del btn-sm" onclick="removeHeir('${id}')">Eliminar</button>
+    </div>
+    <div class="heir-row premuerto-row hidden" id="${id}_premuerto">
+      <div class="field">
+        <label>Nº de representantes (hijos del premuerto) — la cuota de esta estirpe se divide entre ellos a partes iguales</label>
+        <input type="number" class="heir-nrep" min="1" value="1" step="1">
+        <div style="font-size:11px;color:var(--ink2);margin-top:4px;">Asume que todos los representantes son de la MISMA generación (ej. nietos del causante). Si alguno de ellos está también premuerto y tiene descendencia propia, este reparto no es correcto — calcule ese caso manualmente.</div>
+      </div>
+    </div>
+    <div class="heir-row" style="grid-template-columns:1.4fr auto;align-items:end;background:var(--cream2);padding:6px 8px;border-radius:6px;margin-top:-4px;">
+      <div class="field" style="margin:0;">
+        <label>Donación previa recibida en vida (€) — art. 1035 CC</label>
+        <input type="number" class="heir-donacion" min="0" step="0.01" value="0">
+      </div>
+      <div class="checkbox-line" style="padding-bottom:9px;">
+        <input type="checkbox" class="heir-dispensa">
+        <label style="margin:0;text-transform:none;font-weight:500;font-size:12px;">Con dispensa de colación (art. 1036 CC)</label>
+      </div>
+    </div>
+  `;
+  container.appendChild(div);
+  sincronizarSelectsHerederos();
+}
+function removeHeir(id){
+  const el = document.getElementById(id);
+  if(el) el.remove();
+  sincronizarSelectsHerederos();
+}
+// Regenera los paneles que dependen de la lista de herederos (mejora 'varios'
+// / 'un_heredero', y resto de libre disposición 'un_heredero'), preservando
+// la selección/valores previos cuando el heredero referenciado sigue
+// existiendo. Se invoca al añadir o eliminar un heredero.
+function sincronizarSelectsHerederos(){
+  const mejoraTipo = document.getElementById('mejoraTipo').value;
+  if(mejoraTipo === 'varios' || mejoraTipo === 'un_heredero') toggleMejoraDetalle();
+  if(document.getElementById('libreTipo').value === 'un_heredero') toggleLibreDetalle();
+  regenerarPersonasAsignaciones();
+}
+function togglePremuerto(id){
+  const sel = document.querySelector(`#${id} .heir-estado`);
+  const block = document.getElementById(id+'_premuerto');
+  block.classList.toggle('hidden', sel.value !== 'premuerto');
+}
+
+function getHeirs(){
+  const rows = document.querySelectorAll('#heirsContainer > div');
+  const heirs = [];
+  rows.forEach(div=>{
+    const nombre = div.querySelector('.heir-nombre').value || 'Sin nombre';
+    const estado = div.querySelector('.heir-estado').value;
+    let nrep = 1;
+    if(estado==='premuerto'){
+      nrep = parseInt(div.querySelector('.heir-nrep').value)||1;
+      if(nrep<1) nrep=1;
+    }
+    const donacionCents = eurosToCents(div.querySelector('.heir-donacion').value);
+    const dispensa = div.querySelector('.heir-dispensa').checked;
+    heirs.push({id:div.dataset.heirId, nombre, estado, nrep, donacionCents, dispensa});
+  });
+  return heirs;
+}
+
+// ---- UI: gestión dinámica de legados a terceros ----
+let legadoCounter = 0;
+function addLegado(){
+  legadoCounter++;
+  const id = 'legado_'+legadoCounter;
+  const container = document.getElementById('legadosContainer');
+  const div = document.createElement('div');
+  div.id = id;
+  div.dataset.legadoId = id;
+  div.style.cssText = 'border:1px solid var(--border);border-radius:6px;padding:10px;margin-bottom:8px;background:#fff;';
+  div.innerHTML = `
+    <div style="display:grid;grid-template-columns:2fr 1.4fr auto;gap:8px;align-items:end;">
+      <div class="field" style="margin:0;">
+        <label>Legatario (nombre)</label>
+        <input type="text" class="legado-nombre" value="Sobrino/a ${legadoCounter}">
+      </div>
+      <div class="field" style="margin:0;">
+        <label>Tipo</label>
+        <select class="legado-tipo" onchange="toggleLegadoTipo(this)">
+          <option value="metalico">Metálico / cuota</option>
+          <option value="cosa_cierta">Cosa cierta (bien del inventario)</option>
+        </select>
+      </div>
+      <button type="button" class="btn btn-del btn-sm" onclick="removeLegado('${id}')">Eliminar</button>
+    </div>
+    <div class="legado-modo-row" style="display:grid;grid-template-columns:1.4fr 2fr;gap:8px;align-items:end;margin-top:8px;">
+      <div class="field" style="margin:0;">
+        <label>Expresar como</label>
+        <select class="legado-modo" onchange="toggleModoCampos(this)">
+          <option value="euros">Valor (€)</option>
+          <option value="porcentaje">% del caudal</option>
+          <option value="fraccion">Fracción / partes del caudal</option>
+        </select>
+      </div>
+      <div class="modo-campos" style="margin:0;"></div>
+    </div>
+  `;
+  container.appendChild(div);
+  // inicializar campos del modo por defecto (euros)
+  toggleModoCampos(div.querySelector('.legado-modo'));
+}
+function removeLegado(id){
+  const el = document.getElementById(id);
+  if(el) el.remove();
+}
+// Alterna entre "legado en metálico/cuota" (modo €/%/fracción) y "legado de
+// cosa cierta" (selecciona un bien del inventario; el legado se valora por
+// el importe de ese bien — art. 818 CC, ese bien se entrega íntegro al
+// legatario y queda excluido del reparto entre herederos/cónyuge).
+function toggleLegadoTipo(selectEl){
+  const div = selectEl.closest('[data-legado-id]');
+  const row = div.querySelector('.legado-modo-row');
+  if(selectEl.value === 'cosa_cierta'){
+    row.style.gridTemplateColumns = '1fr';
+    const bienes = getBienes();
+    row.innerHTML = `
+      <div class="field" style="margin:0;">
+        <label>Bien del inventario legado (cosa cierta)</label>
+        <select class="legado-bien">${bienes.map(b=>`<option value="${b.id}">${b.descripcion} (${fmt(b.valorCents)})</option>`).join('')}</select>
+        <div style="font-size:11px;color:var(--ink2);margin-top:4px;">El legado se valora por el importe de este bien (sección 5, Inventario). Ese bien se entregará íntegro al legatario y NO se repartirá entre herederos/cónyuge.</div>
+      </div>`;
+  } else {
+    row.style.gridTemplateColumns = '1.4fr 2fr';
+    row.innerHTML = `
+      <div class="field" style="margin:0;">
+        <label>Expresar como</label>
+        <select class="legado-modo" onchange="toggleModoCampos(this)">
+          <option value="euros">Valor (€)</option>
+          <option value="porcentaje">% del caudal</option>
+          <option value="fraccion">Fracción / partes del caudal</option>
+        </select>
+      </div>
+      <div class="modo-campos" style="margin:0;"></div>`;
+    toggleModoCampos(row.querySelector('.legado-modo'));
+  }
+}
+// Regenera las opciones de los selects "Bien del inventario legado" en todos
+// los legados de cosa cierta, preservando la selección si ese bien sigue
+// existiendo. Se invoca al añadir/eliminar un bien del inventario.
+function regenerarBienesLegados(){
+  const bienes = getBienes();
+  document.querySelectorAll('.legado-bien').forEach(sel=>{
+    const prevValue = sel.value;
+    sel.innerHTML = bienes.map(b=>`<option value="${b.id}">${b.descripcion} (${fmt(b.valorCents)})</option>`).join('');
+    if(bienes.some(b=>b.id===prevValue)){
+      sel.value = prevValue;
+    } else if(bienes.length>0){
+      sel.value = bienes[0].id;
+    }
+  });
+}
+
+// ---- UI: gestión dinámica del inventario de bienes privativos ----
+let bienCounter = 0;
+function addBien(){
+  bienCounter++;
+  const id = 'bien_'+bienCounter;
+  const container = document.getElementById('bienesContainer');
+  const div = document.createElement('div');
+  div.id = id;
+  div.dataset.bienId = id;
+  div.innerHTML = `
+    <div class="bien-row">
+      <div class="field" style="margin:0;">
+        <label>Descripción del bien</label>
+        <input type="text" class="bien-descripcion" value="Bien ${bienCounter}">
+      </div>
+      <div class="field" style="margin:0;">
+        <label>Valor (€)</label>
+        <input type="number" class="bien-valor" min="0" step="0.01" value="0" oninput="actualizarTotalInventario()">
+      </div>
+      <button type="button" class="btn btn-del btn-sm" onclick="removeBien('${id}')">Eliminar</button>
+    </div>
+    <div class="asig-block">
+      <div style="font-size:11px;color:var(--ink2);margin-bottom:6px;">Asignación del bien (proindiviso: puede repartirse entre varias personas, sumando 100%):</div>
+      <div class="asignacionesContainer"></div>
+      <button type="button" class="btn btn-sec btn-sm" onclick="addAsignacion('${id}')">+ Añadir asignación</button>
+      <span class="asig-total" style="margin-left:8px;"></span>
+    </div>
+  `;
+  container.appendChild(div);
+  addAsignacion(id); // primera asignación por defecto: 100% a la primera persona disponible
+  actualizarTotalInventario();
+  regenerarBienesLegados();
+}
+function removeBien(id){
+  const el = document.getElementById(id);
+  if(el) el.remove();
+  actualizarTotalInventario();
+  regenerarBienesLegados();
+}
+// Lee el inventario de bienes privativos del formulario.
+// Devuelve [{id, descripcion, valorCents, asignaciones:[{personaId, pct}]}]
+function getBienes(){
+  const rows = document.querySelectorAll('#bienesContainer > div');
+  const bienes = [];
+  rows.forEach(div=>{
+    const descripcion = div.querySelector('.bien-descripcion').value || 'Bien sin descripción';
+    const valorCents = eurosToCents(div.querySelector('.bien-valor').value);
+    const asignaciones = Array.from(div.querySelectorAll('.asig-row')).map(row=>({
+      personaId: row.querySelector('.asignacion-persona').value,
+      pct: parseFloat(row.querySelector('.asignacion-pct').value) || 0
+    }));
+    bienes.push({id: div.dataset.bienId, descripcion, valorCents, asignaciones});
+  });
+  return bienes;
+}
+// Actualiza el total visible del inventario (suma de bienes privativos).
+function actualizarTotalInventario(){
+  const totalCents = getBienes().reduce((s,b)=>s+b.valorCents,0);
+  const el = document.getElementById('totalInventario');
+  if(el) el.textContent = fmt(totalCents);
+}
+
+// ---- UI: asignación de cada bien a personas (proindiviso, art. 1062 CC) ----
+// Lista de personas que pueden recibir bienes del inventario: cada heredero/
+// estirpe definido en la sección 3, y el cónyuge viudo si existe.
+// NOTA: los legatarios de "cosa cierta" (sección 4) NO aparecen aquí todavía;
+// vincular legados de cosa cierta a bienes del inventario es una ampliación
+// posterior (Fase B.4), distinta de esta asignación entre legitimarios/cónyuge.
+function getPersonasDisponibles(){
+  const personas = getHeirs().map(h=>({id:h.id, nombre:h.nombre}));
+  if(document.getElementById('conyugeExiste').checked){
+    personas.push({id:'CONYUGE', nombre:'Cónyuge viudo'});
+  }
+  return personas;
+}
+function addAsignacion(bienId){
+  const bienDiv = document.getElementById(bienId);
+  const cont = bienDiv.querySelector('.asignacionesContainer');
+  const personas = getPersonasDisponibles();
+  if(personas.length === 0) return;
+  const esLaPrimera = cont.children.length === 0;
+  const row = document.createElement('div');
+  row.className = 'asig-row';
+  row.innerHTML = `
+    <div class="field" style="margin:0;">
+      <label>Persona</label>
+      <select class="asignacion-persona">${personas.map(p=>`<option value="${p.id}">${p.nombre}</option>`).join('')}</select>
+    </div>
+    <div class="field" style="margin:0;">
+      <label>% del bien</label>
+      <input type="number" class="asignacion-pct" min="0" max="100" step="0.01" value="${esLaPrimera?100:0}" oninput="actualizarTotalBien('${bienId}')">
+    </div>
+    <button type="button" class="btn btn-del btn-sm" onclick="removeAsignacion('${bienId}', this)">Eliminar</button>
+  `;
+  cont.appendChild(row);
+  actualizarTotalBien(bienId);
+}
+function removeAsignacion(bienId, btn){
+  const row = btn.closest('.asig-row');
+  if(row) row.remove();
+  actualizarTotalBien(bienId);
+}
+// Muestra, junto a cada bien, la suma de % asignados y si cuadra al 100%.
+function actualizarTotalBien(bienId){
+  const bienDiv = document.getElementById(bienId);
+  if(!bienDiv) return;
+  const pcts = Array.from(bienDiv.querySelectorAll('.asignacion-pct')).map(i=>parseFloat(i.value)||0);
+  const total = pcts.reduce((s,p)=>s+p,0);
+  const span = bienDiv.querySelector('.asig-total');
+  if(!span) return;
+  const ok = Math.abs(total-100) < 0.01;
+  span.textContent = `Total asignado: ${total.toFixed(2)}%` + (ok ? '' : ' — debe sumar 100%');
+  span.className = 'asig-total ' + (ok ? 'asig-total-ok' : 'asig-total-bad');
+}
+// Regenera las opciones de TODOS los selects de persona en los bienes,
+// preservando la selección si esa persona sigue existiendo (mismo patrón
+// que mejora/libre 'un_heredero'). Se invoca al cambiar cónyuge/herederos.
+function regenerarPersonasAsignaciones(){
+  const personas = getPersonasDisponibles();
+  document.querySelectorAll('.asignacion-persona').forEach(sel=>{
+    const prevValue = sel.value;
+    sel.innerHTML = personas.map(p=>`<option value="${p.id}">${p.nombre}</option>`).join('');
+    if(personas.some(p=>p.id===prevValue)){
+      sel.value = prevValue;
+    } else if(personas.length>0){
+      sel.value = personas[0].id;
+    }
+  });
+  document.querySelectorAll('#bienesContainer > div').forEach(div=>actualizarTotalBien(div.id));
+}
+
+// Renderiza los campos correctos según el modo elegido (€ / % / fracción).
+// Se reutiliza para legados, mejora y resto libre. El select tiene clase
+// '...-modo' y su contenedor hermano '.modo-campos'.
+function toggleModoCampos(selectEl){
+  const modo = selectEl.value;
+  const cont = selectEl.closest('div').parentElement.querySelector('.modo-campos');
+  if(modo === 'euros'){
+    cont.innerHTML = `<label>Valor (€)</label><input type="number" class="modo-euros" min="0" step="0.01" value="0">`;
+  } else if(modo === 'porcentaje'){
+    cont.innerHTML = `<label>Porcentaje (%)</label><input type="number" class="modo-pct" min="0" max="100" step="0.01" value="0">`;
+  } else {
+    cont.innerHTML = `<label>Partes (numerador / denominador)</label>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <input type="number" class="modo-num" min="0" step="1" value="1" style="width:70px;">
+        <span style="color:var(--ink2);">de</span>
+        <input type="number" class="modo-den" min="1" step="1" value="5" style="width:70px;">
+      </div>`;
+  }
+}
+
+// Lee el modo y los valores crudos de un contenedor (sin convertir a céntimos:
+// la conversión se hace en el motor con la base correcta).
+function leerModo(scopeEl, selectClass){
+  const modoSel = scopeEl.querySelector('.'+selectClass);
+  const modo = modoSel ? modoSel.value : 'euros';
+  const campos = scopeEl.querySelector('.modo-campos');
+  const out = {modo};
+  if(modo === 'euros'){
+    out.euros = campos.querySelector('.modo-euros') ? campos.querySelector('.modo-euros').value : 0;
+  } else if(modo === 'porcentaje'){
+    out.pct = campos.querySelector('.modo-pct') ? campos.querySelector('.modo-pct').value : 0;
+  } else {
+    out.num = campos.querySelector('.modo-num') ? campos.querySelector('.modo-num').value : 0;
+    out.den = campos.querySelector('.modo-den') ? campos.querySelector('.modo-den').value : 1;
+  }
+  return out;
+}
+
+function getLegados(){
+  const rows = document.querySelectorAll('#legadosContainer > div');
+  const legados = [];
+  rows.forEach(div=>{
+    const nombre = div.querySelector('.legado-nombre').value || 'Legatario sin nombre';
+    const tipo = div.querySelector('.legado-tipo').value;
+    if(tipo === 'cosa_cierta'){
+      const bienSel = div.querySelector('.legado-bien');
+      legados.push({id:div.dataset.legadoId, nombre, tipo, bienId: bienSel ? bienSel.value : ''});
+    } else {
+      const m = leerModo(div, 'legado-modo');
+      legados.push({id:div.dataset.legadoId, nombre, tipo, modo:m.modo, euros:m.euros, pct:m.pct, num:m.num, den:m.den});
+    }
+  });
+  return legados;
+}
+
+// ---- UI toggles ----
+function toggleConyuge(){
+  const existe = document.getElementById('conyugeExiste').checked;
+  document.getElementById('conyugeDetalle').classList.toggle('hidden', !existe);
+  regenerarPersonasAsignaciones();
+}
+function toggleRegimen(){
+  const gan = document.getElementById('regimen').value === 'gananciales';
+  document.getElementById('fieldGananciales').style.display = gan ? '' : 'none';
+  document.getElementById('fieldDeudasGananciales').style.display = gan ? '' : 'none';
+  checkWarnings();
+}
+function toggleTestamento(){
+  const testada = document.getElementById('tipoSucesion').value === 'testada';
+  document.getElementById('testamentoCard').classList.toggle('hidden', !testada);
+  toggleMejoraVisibilidadBalear();
+}
+function checkWarnings(){
+  const balear = document.getElementById('vecindad').value === 'balear';
+  const gan = document.getElementById('regimen').value === 'gananciales';
+  const isla = document.getElementById('isla').value;
+  document.getElementById('warnBalearGananciales').classList.toggle('hidden', !(balear && gan));
+  document.getElementById('warnIbizaFormentera').classList.toggle('hidden', !(balear && isla==='ibiza_formentera'));
+}
+
+// En CDCIB (Mallorca/Menorca) no existe el tercio de mejora (art. 42 CDCIB:
+// lo que no es legítima es íntegramente libre disposición). Ocultar ese
+// bloque de la UI cuando aplique, para no inducir a configurar algo inexistente.
+function toggleMejoraVisibilidadBalear(){
+  const balear = document.getElementById('vecindad').value === 'balear';
+  const isla = document.getElementById('isla').value;
+  const esCDCIBMallorcaMenorca = balear && isla === 'mallorca_menorca';
+  const mejoraBlock = document.getElementById('mejoraBlock');
+  const mejoraAviso = document.getElementById('mejoraBalearAviso');
+  if(mejoraBlock) mejoraBlock.classList.toggle('hidden', esCDCIBMallorcaMenorca);
+  if(mejoraAviso) mejoraAviso.classList.toggle('hidden', !esCDCIBMallorcaMenorca);
+}
+
+function toggleVecindad(){
+  const balear = document.getElementById('vecindad').value === 'balear';
+  document.getElementById('fieldIsla').classList.toggle('hidden', !balear);
+  checkWarnings();
+  toggleMejoraVisibilidadBalear();
+}
+document.getElementById('vecindad').addEventListener('change', checkWarnings);
+document.getElementById('isla').addEventListener('change', toggleVecindad);
+
+// Lee los valores actuales del panel "mejora repartida entre varios",
+// indexados por heirId, para poder restaurarlos si el panel se regenera
+// (p.ej. al añadir/eliminar herederos).
+function leerMejoraVariosActual(){
+  const map = {};
+  document.querySelectorAll('.mejora-item').forEach(el=>{
+    const heirId = el.dataset.heir;
+    map[heirId] = leerModo(el, 'mejora-modo');
+  });
+  return map;
+}
+
+function toggleMejoraDetalle(){
+  const tipo = document.getElementById('mejoraTipo').value;
+  const cont = document.getElementById('mejoraDetalle');
+  const heirs = getHeirs();
+  if(tipo==='reparto_igual'){
+    cont.classList.add('hidden'); cont.innerHTML='';
+    return;
+  }
+  cont.classList.remove('hidden');
+  if(tipo==='un_heredero'){
+    const prevSel = document.getElementById('mejoraUnHeredero');
+    const prevValue = prevSel ? prevSel.value : null;
+    cont.innerHTML = `<div class="field"><label>Descendiente beneficiario de la mejora</label>
+      <select id="mejoraUnHeredero">${heirs.map(h=>`<option value="${h.id}">${h.nombre}</option>`).join('')}</select></div>`;
+    if(prevValue && heirs.some(h=>h.id===prevValue)){
+      document.getElementById('mejoraUnHeredero').value = prevValue;
+    }
+  } else if(tipo==='varios'){
+    const previos = leerMejoraVariosActual();
+    cont.innerHTML = `<div class="field"><label>Reparto del tercio de mejora entre descendientes (cada uno en € / % / partes del tercio de mejora)</label>
+      ${heirs.map(h=>`
+        <div class="mejora-item" data-heir="${h.id}" style="display:grid;grid-template-columns:1.3fr 1fr 1.4fr;gap:8px;align-items:end;margin-bottom:6px;border:1px solid var(--border);border-radius:6px;padding:8px;">
+          <div class="field" style="margin:0;"><span style="font-size:13px;font-weight:600;">${h.nombre}</span></div>
+          <div class="field" style="margin:0;">
+            <label>Modo</label>
+            <select class="mejora-modo" onchange="toggleModoCampos(this)">
+              <option value="euros">Valor (€)</option>
+              <option value="porcentaje">%</option>
+              <option value="fraccion">Partes</option>
+            </select>
+          </div>
+          <div class="modo-campos" style="margin:0;"></div>
+        </div>`).join('')}
+      <div style="font-size:11px;color:var(--ink2);">Base: el tercio de mejora. Si el reparto no agota exactamente el tercio, el resto de redondeo se ajusta al primer descendiente.</div>
+      </div>`;
+    // inicializar campos de cada item, restaurando valores previos si existían
+    // para ese heirId (p.ej. tras añadir/eliminar un heredero distinto).
+    cont.querySelectorAll('.mejora-item').forEach(el=>{
+      const heirId = el.dataset.heir;
+      const sel = el.querySelector('.mejora-modo');
+      const prev = previos[heirId];
+      if(prev) sel.value = prev.modo;
+      toggleModoCampos(sel);
+      if(prev){
+        if(prev.modo === 'euros') el.querySelector('.modo-euros').value = prev.euros;
+        else if(prev.modo === 'porcentaje') el.querySelector('.modo-pct').value = prev.pct;
+        else { el.querySelector('.modo-num').value = prev.num; el.querySelector('.modo-den').value = prev.den; }
+      }
+    });
+  }
+}
+
+function toggleLibreDetalle(){
+  const tipo = document.getElementById('libreTipo').value;
+  const cont = document.getElementById('libreDetalle');
+  const heirs = getHeirs();
+  if(tipo==='un_heredero'){
+    const prevSel = document.getElementById('libreUnHeredero');
+    const prevValue = prevSel ? prevSel.value : null;
+    cont.classList.remove('hidden');
+    cont.innerHTML = `<div class="field"><label>Descendiente beneficiario del tercio de libre disposición</label>
+      <select id="libreUnHeredero">${heirs.map(h=>`<option value="${h.id}">${h.nombre}</option>`).join('')}</select></div>`;
+    if(prevValue && heirs.some(h=>h.id===prevValue)){
+      document.getElementById('libreUnHeredero').value = prevValue;
+    }
+  } else {
+    cont.classList.add('hidden'); cont.innerHTML='';
+  }
+}
+document.getElementById('libreTipo').addEventListener('change', toggleLibreDetalle);
+document.getElementById('tipoSucesion').addEventListener('change', toggleMejoraDetalle);
+
+function recalcularInline(){ /* placeholder para futuros recálculos en vivo */ }
+
+// inicial: un heredero por defecto
+addHeir();
+addHeir();
+// inicial: una línea de inventario por defecto
+addBien();
+toggleRegimen();
+toggleTestamento();
+
+// ============================================================
+// MOTOR PRINCIPAL DE CÁLCULO
+// ============================================================
+//
+// input: objeto con toda la config (ver leerInputDesdeFormulario)
+// output: { caudalNetoCents, liquidacionPrevia, adjudicaciones[],
+//           usufructoConyuge, avisos[], errores[] }
+
+function calcularHerencia(input){
+  const avisos = [];
+  const errores = [];
+
+  // --- Fase B.4: legados de cosa cierta vinculados al inventario.
+  // Solo relevantes en sucesión testada (en intestada los legados se ignoran).
+  // Construimos el conjunto de bienes "reservados" a un legatario de cosa
+  // cierta: esos bienes (a) deben referenciar un bien real del inventario,
+  // (b) no pueden compartirse entre dos legados de cosa cierta, y (c) quedan
+  // excluidos del reparto entre herederos/cónyuge (B.1/B.2). ---
+  const bienIdsLegadoCosaCierta = new Set();
+  const legatarioPorBien = {};
+  if(input.tipoSucesion === 'testada'){
+    const bienIdsUsados = new Set();
+    (input.legados || []).forEach(l=>{
+      if(l.tipo !== 'cosa_cierta') return;
+      const bien = (input.bienes||[]).find(b=>b.id===l.bienId);
+      if(!bien){
+        errores.push(`El legado de cosa cierta a "${l.nombre}" no referencia ningún bien válido del inventario. Seleccione un bien en la sección 5 (Inventario) para este legado.`);
+        return;
+      }
+      if(bienIdsUsados.has(l.bienId)){
+        errores.push(`Dos legados de cosa cierta referencian el mismo bien del inventario ("${bien.descripcion}"). Cada bien solo puede ser objeto de un legado de cosa cierta.`);
+        return;
+      }
+      bienIdsUsados.add(l.bienId);
+      bienIdsLegadoCosaCierta.add(l.bienId);
+      legatarioPorBien[l.bienId] = l.nombre;
+    });
+  }
+  if(errores.length > 0){
+    return {errores, avisos, adjudicaciones:[], caudalNetoCents:0};
+  }
+
+  // --- Validación del inventario (Fase B): si un bien tiene asignaciones
+  // (proindiviso entre personas), deben sumar 100%. Bienes sin ninguna
+  // asignación configurada se admiten (compatibilidad con Fase A). Los
+  // bienes que son objeto de un legado de cosa cierta (B.4) se excluyen:
+  // van íntegros al legatario y su "Asignación" en el formulario se ignora. ---
+  (input.bienes || []).forEach(b=>{
+    if(bienIdsLegadoCosaCierta.has(b.id)) return;
+    if(b.asignaciones && b.asignaciones.length > 0){
+      const sumaPct = b.asignaciones.reduce((s,a)=>s+(a.pct||0),0);
+      if(Math.abs(sumaPct - 100) > 0.01){
+        errores.push(`El bien "${b.descripcion}" tiene asignaciones que suman ${sumaPct.toFixed(2)}% (debe sumar exactamente 100%). Revise el reparto de este bien antes de calcular.`);
+      }
+    }
+  });
+  if(errores.length > 0){
+    return {errores, avisos, adjudicaciones:[], caudalNetoCents:0};
+  }
+
+  // --- Validaciones de elegibilidad (Fase 1) ---
+  if(input.heirs.length === 0){
+    errores.push('No hay descendientes definidos. Este motor (Fase 1) cubre exclusivamente casos con cónyuge + descendientes. Sin descendientes, deriva a otros órdenes sucesorios (Fase 3, no implementada).');
+    return {errores, avisos, adjudicaciones:[], caudalNetoCents:0};
+  }
+
+  // --- Determinación de la rama legal aplicable ---
+  // 'cdcib_mallorca_menorca' aplica las reglas de los arts. 42 y 45 CDCIB
+  // (legítima 1/3 o 1/2 según nº de hijos, sin tercio de mejora, usufructo
+  // vidual = 1/2 con descendientes). Cualquier otro caso (común, o balear
+  // Ibiza/Formentera) usa las reglas del Código Civil común, con aviso si
+  // corresponde.
+  const esCDCIBMallorcaMenorca = input.vecindadBalear && input.isla === 'mallorca_menorca';
+  if(input.vecindadBalear && input.isla === 'ibiza_formentera'){
+    avisos.push('Vecindad civil balear (Ibiza/Formentera): el régimen sucesorio específico de estas islas no está implementado. El cálculo se ha realizado conforme al Código Civil común, lo cual puede no ser correcto en materia de legítimas y usufructo vidual. Verifique manualmente la legítima y el usufructo vidual aplicables según la CDCIB para Ibiza/Formentera.');
+  }
+
+  if(input.vecindadBalear && input.regimen==='gananciales'){
+    avisos.push('Vecindad civil balear con régimen de gananciales: el régimen supletorio balear es separación de bienes. Verificar que existen capitulaciones matrimoniales expresas que establezcan gananciales.');
+  }
+
+  if((input.donacionesTercerosCents || 0) > 0){
+    avisos.push(`Se han declarado donaciones del causante a terceros no herederos en vida por importe de ${fmt(input.donacionesTercerosCents)}. A efectos de fijar la legítima de los descendientes (art. 818 CC), la masa de cálculo debe incluir estas donaciones además del relictum; la legítima resultante de este informe puede estar INFRAVALORADA. Si, sumando estas donaciones, la legítima no queda cubierta con el caudal relicto, dichas donaciones a terceros son reducibles ANTES que las hechas a los propios legitimarios, y entre sí por orden cronológico inverso (arts. 654-656 CC). Calcule manualmente la legítima sobre relictum + donaciones a terceros y compárela con lo aquí adjudicado.`);
+  }
+
+  // Cónyuge: si está separado legal o de hecho, se trata como inexistente (art. 834 CC)
+  let conyugeActivo = input.conyugeExiste && !input.conyugeSeparado;
+  if(input.conyugeExiste && input.conyugeSeparado){
+    avisos.push('Cónyuge viudo separado legalmente o de hecho al fallecimiento: no es legitimario y no tiene derecho de usufructo (art. 834 CC). Se excluye de los cálculos.');
+  }
+
+  // --- Paso 1: liquidación previa (solo gananciales) ---
+  // Las deudas/cargas gananciales (art. 1398 CC) se descuentan del activo
+  // ganancial ANTES de dividirlo al 50%. Las deudas privativas del causante
+  // se descuentan únicamente de su parte hereditaria.
+  let liquidacionPrevia = { aplica:false, cuotaConyugeCents:0 };
+  let caudalBrutoCents;
+  if(input.regimen === 'gananciales'){
+    const gananciaNetaCents = input.gananciales - (input.deudasGananciales || 0);
+    if(gananciaNetaCents < 0){
+      errores.push('Las deudas/cargas de la sociedad de gananciales superan el activo ganancial. Revisar el inventario; no procede cálculo de adjudicaciones.');
+      return {errores, avisos, adjudicaciones:[], caudalNetoCents:0, liquidacionPrevia};
+    }
+    const cuotaConyuge = Math.round(gananciaNetaCents/2); // 50% del ganancial NETO
+    const restoGananciales = gananciaNetaCents - cuotaConyuge;
+    liquidacionPrevia = {
+      aplica:true,
+      cuotaConyugeCents: cuotaConyuge,
+      baseLegal:`Liquidación previa de la sociedad de gananciales (art. 1398 CC): activo ganancial ${fmt(input.gananciales)} menos deudas/cargas gananciales ${fmt(input.deudasGananciales||0)} = ${fmt(gananciaNetaCents)} netos; el 50% (${fmt(cuotaConyuge)}) corresponde al cónyuge viudo en plena propiedad y no forma parte de la herencia.`
+    };
+    caudalBrutoCents = restoGananciales + input.privativos;
+  } else {
+    caudalBrutoCents = input.privativos;
+    if((input.deudasGananciales||0) > 0){
+      avisos.push('Se han indicado deudas gananciales pero el régimen es separación de bienes (sin sociedad de gananciales que liquidar). Se han ignorado; revise si el régimen es correcto.');
+    }
+  }
+
+  // --- Paso 2: caudal neto (se descuentan las deudas/gastos privativos del causante) ---
+  const caudalNetoCents = caudalBrutoCents - (input.deudasPrivativas || 0);
+  if(caudalNetoCents < 0){
+    errores.push('El caudal neto resultante es negativo (las deudas privativas superan el activo hereditario del causante). Revisar el inventario; no procede cálculo de adjudicaciones.');
+    return {errores, avisos, adjudicaciones:[], caudalNetoCents, liquidacionPrevia};
+  }
+
+  // --- Construir lista de "unidades" de reparto (estirpes -> representantes) ---
+  // Cada heredero directo (hijo) cuenta como 1 estirpe. Si premuerto con N
+  // representantes, su cuota de estirpe se divide entre N representantes.
+
+  // Aviso: el reparto entre representantes asume que TODOS pertenecen a la
+  // misma generación (ej. N nietos, hijos directos del premuerto) y se
+  // reparten a partes iguales (art. 924 CC). Si alguno de esos
+  // representantes está, a su vez, premuerto y tiene descendencia propia
+  // (representación en una generación ulterior), el reparto correcto NO
+  // sería a partes iguales entre todos — requiere cálculo manual.
+  input.heirs.forEach(h=>{
+    if(h.estado === 'premuerto' && h.nrep > 1){
+      avisos.push(`Representación de "${h.nombre}": su cuota se ha repartido en ${h.nrep} partes iguales, asumiendo que los ${h.nrep} representantes pertenecen a la misma generación (art. 924 CC). Si alguno de ellos está, a su vez, premuerto y tiene descendencia propia (representación en ulterior generación), el reparto NO sería a partes iguales entre todos — verifique manualmente este supuesto.`);
+    }
+  });
+
+  let adjudicaciones = [];
+  let usufructoConyuge = { aplica:false, tipo:null, fraccion:0, baseLegal:'', conmutable:false, notaConmutacion:'' };
+  // Colación (art. 1035 CC) solo se aplica automáticamente cuando el reparto
+  // entre estirpes es proporcional/igualitario (misma fracción del caudal
+  // para cada estirpe). Se determina en cada rama (intestada/testada).
+  let repartoIgualitarioEstirpes = false;
+
+  const NOTA_CONMUTACION = 'Art. 839 CC: los herederos pueden satisfacer al cónyuge su derecho de usufructo asignándole una renta vitalicia, los productos de determinados bienes, o un capital en efectivo, a elección de los herederos.';
+
+  if(input.tipoSucesion === 'intestada'){
+    // -------- INTESTADA --------
+    // Los legados solo existen en sucesión testada: no hay legado sin testamento.
+    if((input.legados || []).length > 0){
+      avisos.push('Se han definido legados pero la sucesión es intestada. No existe legado sin testamento (art. 660 CC): los legados se han ignorado en el cálculo. Si realmente hay legados, la sucesión es testada — corrija el tipo de sucesión.');
+    }
+
+    const cuotasPorEstirpe = repartirEntero(caudalNetoCents, input.heirs.length);
+    repartoIgualitarioEstirpes = true; // intestada: siempre proporcional por estirpe
+
+    if(conyugeActivo){
+      // El usufructo del cónyuge recae sobre una fracción del caudal hereditario:
+      //  - Derecho común (art. 834 CC, vía art. 945): 1/3.
+      //  - CDCIB Mallorca/Menorca (art. 45.3, en concurrencia con descendientes): 1/2.
+      // El resto pasa a los descendientes en PLENA propiedad (libre de carga),
+      // y la fracción gravada en NUDA propiedad. Cada estirpe recibe su cuota
+      // proporcional de ambos tramos, calculada sobre su cuota total para
+      // garantizar el cuadre exacto al céntimo.
+      const fraccionUsufructo = esCDCIBMallorcaMenorca ? 1/2 : 1/3;
+      const denomUsufructo = esCDCIBMallorcaMenorca ? 2 : 3;
+      const baseLegalPlena = esCDCIBMallorcaMenorca ? ['art. 930 CC (orden de llamamiento intestado)'] : ['art. 930 CC'];
+      const baseLegalNuda = esCDCIBMallorcaMenorca
+        ? ['art. 930 CC (orden de llamamiento intestado)','art. 45.3 CDCIB (usufructo vidual de la mitad del haber hereditario, en concurrencia con descendientes)']
+        : ['art. 930 CC','art. 834 CC (usufructo cónyuge sobre este tramo)'];
+
+      input.heirs.forEach((h,i)=>{
+        const cuotaTotalEstirpe = cuotasPorEstirpe[i];
+        const cuotaNudaEstirpe = Math.round(cuotaTotalEstirpe / denomUsufructo);
+        const cuotaPlenaEstirpe = cuotaTotalEstirpe - cuotaNudaEstirpe;
+
+        if(cuotaPlenaEstirpe > 0){
+          asignarCuotaEstirpe(h, cuotaPlenaEstirpe, false, adjudicaciones, baseLegalPlena);
+        }
+        if(cuotaNudaEstirpe > 0){
+          asignarCuotaEstirpe(h, cuotaNudaEstirpe, true, adjudicaciones, baseLegalNuda);
+        }
+      });
+
+      usufructoConyuge = esCDCIBMallorcaMenorca ? {
+        aplica:true,
+        tipo:'intestada_balear_mitad',
+        fraccion: 1/2,
+        baseLegal:'Usufructo de la mitad del haber hereditario a favor del cónyuge viudo, al concurrir con descendientes (art. 45.3 CDCIB). Grava solo esa mitad: los descendientes reciben la otra mitad en plena propiedad, libre de carga.',
+        conmutable:true,
+        notaConmutacion: NOTA_CONMUTACION
+      } : {
+        aplica:true,
+        tipo:'intestada_tercio',
+        fraccion: 1/3,
+        baseLegal:'Usufructo de un tercio del caudal hereditario a favor del cónyuge viudo (art. 834 CC, aplicado en sucesión intestada por remisión del art. 945 CC). Grava solo ese tercio: los descendientes reciben los dos tercios restantes en plena propiedad, libres de carga.',
+        conmutable:true,
+        notaConmutacion: NOTA_CONMUTACION
+      };
+    } else {
+      // Sin cónyuge activo: toda la herencia en plena propiedad para los descendientes.
+      input.heirs.forEach((h,i)=>{
+        asignarCuotaEstirpe(h, cuotasPorEstirpe[i], false, adjudicaciones, ['art. 930 CC']);
+      });
+    }
+
+  } else {
+    // -------- TESTADA --------
+    let legitimaCents, mejoraCents, libreCents;
+    let baseLegalLegitima, fraccionLegitimaTexto;
+
+    if(esCDCIBMallorcaMenorca){
+      // CDCIB art. 42: legítima de los descendientes = 1/3 del haber hereditario
+      // si son 4 o menos (contados por cabezas), o 1/2 si exceden de 4.
+      // No existe tercio de mejora (art. 42 CDCIB): todo lo que no es legítima
+      // es íntegramente de libre disposición.
+      const numHijos = input.heirs.length;
+      if(numHijos <= 4){
+        legitimaCents = Math.round(caudalNetoCents / 3);
+        fraccionLegitimaTexto = '1/3';
+      } else {
+        legitimaCents = Math.round(caudalNetoCents / 2);
+        fraccionLegitimaTexto = '1/2';
+      }
+      mejoraCents = 0;
+      libreCents = caudalNetoCents - legitimaCents;
+      baseLegalLegitima = [`art. 42 CDCIB (legítima de descendientes = ${fraccionLegitimaTexto} del haber hereditario, ${numHijos<=4?'4 o menos':'más de 4'} hijos)`];
+    } else {
+      // Derecho común (CC): tres tercios — legítima estricta, mejora, libre disposición.
+      const tercio = Math.floor(caudalNetoCents/3);
+      // Ajuste de redondeo: el resto del /3 se añade al tercio de libre disposición
+      const restoTercios = caudalNetoCents - tercio*3;
+      legitimaCents = tercio;
+      mejoraCents = tercio;
+      libreCents = tercio + restoTercios;
+      baseLegalLegitima = ['art. 808 CC (legítima estricta)'];
+    }
+
+    // Colación automática solo si TODA la herencia que corresponde a los
+    // descendientes se reparte en la misma proporción para cada estirpe:
+    // mejora igualitaria (o inexistente en CDCIB) Y resto de libre
+    // disposición repartido igual entre descendientes Y sin legados que
+    // desvíen parte del caudal a terceros.
+    const legadosDeclarados = (input.legados || []).length > 0;
+    repartoIgualitarioEstirpes =
+      (mejoraCents === 0 || input.mejora.tipo === 'reparto_igual') &&
+      input.libre.tipo === 'descendientes_igual' &&
+      !legadosDeclarados;
+
+    // 1) Legítima estricta: repartida por igual entre todos los descendientes (estirpes)
+    const cuotasLegitima = repartirEntero(legitimaCents, input.heirs.length);
+    input.heirs.forEach((h,i)=>{
+      asignarCuotaEstirpe(h, cuotasLegitima[i], false, adjudicaciones, baseLegalLegitima);
+      // La legítima estricta NO está gravada con usufructo de cónyuge
+    });
+
+    // 2) Tercio de mejora (NO existe en CDCIB Mallorca/Menorca: mejoraCents=0,
+    //    el bloque siguiente se omite por completo en ese caso)
+    if(mejoraCents > 0){
+      let asignacionesMejora = []; // [{heirId, cents}]
+      if(input.mejora.tipo === 'reparto_igual'){
+        const cuotasMejora = repartirEntero(mejoraCents, input.heirs.length);
+        input.heirs.forEach((h,i)=> asignacionesMejora.push({heirId:h.id, cents:cuotasMejora[i]}));
+      } else if(input.mejora.tipo === 'un_heredero'){
+        asignacionesMejora.push({heirId: input.mejora.heirId, cents: mejoraCents});
+      } else if(input.mejora.tipo === 'varios'){
+        // Cada beneficiario de la mejora se resuelve sobre la base = tercio de mejora.
+        // Admite modos €, % o fracción. Cuadre exacto sobre mejoraCents.
+        const items = input.mejora.items || [];
+        const sumaResuelta = items.reduce((s,it)=>s+resolverCantidad(it, mejoraCents),0);
+        if(Math.abs(sumaResuelta - mejoraCents) > 1){ // tolerancia 1 céntimo por redondeo
+          avisos.push(`Reparto de la mejora: las cuotas indicadas para el tercio de mejora suman ${fmt(sumaResuelta)}, distinto del tercio de mejora (${fmt(mejoraCents)}). El motor ha ajustado al primer descendiente para cuadrar, pero revise los importes/porcentajes/partes introducidos.`);
+        }
+        const cuotas = repartirPonderado(items, mejoraCents);
+        items.forEach((it, idx)=>{
+          asignacionesMejora.push({heirId: it.heirId, cents: cuotas[idx]});
+        });
+      }
+
+      let mejoraConfigInvalida = false;
+      asignacionesMejora.forEach(a=>{
+        const heir = input.heirs.find(h=>h.id===a.heirId);
+        if(!heir){
+          errores.push(`Reparto de la mejora: se ha indicado un beneficiario (id "${a.heirId}") que no corresponde a ningún descendiente actual. Revise el panel "Mejora repartida entre varios" (puede haber quedado desactualizado tras añadir o eliminar un descendiente) y vuelva a calcular.`);
+          mejoraConfigInvalida = true;
+          return;
+        }
+        const baseLegal = conyugeActivo
+          ? ['art. 823 CC (tercio de mejora)','art. 834 CC (gravado con usufructo de cónyuge)']
+          : ['art. 823 CC (tercio de mejora)'];
+        asignarCuotaEstirpe(heir, a.cents, conyugeActivo, adjudicaciones, baseLegal);
+      });
+      if(mejoraConfigInvalida){
+        return {errores, avisos, adjudicaciones:[], caudalNetoCents, liquidacionPrevia};
+      }
+    }
+
+    // 2b) Usufructo vidual en sucesión testada:
+    //  - Derecho común: usufructo del tercio de mejora (art. 834 CC), 1/3,
+    //    grava la nuda propiedad de los beneficiarios de ese tercio.
+    //  - CDCIB Mallorca/Menorca (art. 45.3): usufructo de la MITAD del haber
+    //    hereditario, en concurrencia con descendientes. Como no hay tercio
+    //    de mejora, esta mitad grava proporcionalmente toda la herencia
+    //    (igual mecánica que en intestada): la legítima y el resto de libre
+    //    disposición se dividen cada uno en mitad libre / mitad gravada.
+    if(conyugeActivo && esCDCIBMallorcaMenorca){
+      // Reconstruir las cuotas YA asignadas a los descendientes (legítima +
+      // resto de libre, que se calculará más abajo) en dos tramos: mitad
+      // libre y mitad gravada. Como el resto de libre disposición todavía
+      // no se ha repartido en este punto, marcamos aquí solo el aviso y
+      // dejamos que el reparto del tramo "libre" (paso 4) aplique la
+      // división 1/2-1/2 igual que en intestada. Para la legítima ya
+      // asignada en el paso 1, la dividimos ahora retroactivamente.
+      const cuotasLegitimaGravadas = [];
+      input.heirs.forEach((h,i)=>{
+        const cuotaLegitimaEstirpe = cuotasLegitima[i];
+        const nudaEstirpe = Math.round(cuotaLegitimaEstirpe/2);
+        const plenaEstirpe = cuotaLegitimaEstirpe - nudaEstirpe;
+        cuotasLegitimaGravadas.push({heir:h, nudaEstirpe, plenaEstirpe});
+      });
+      // Sustituir las filas de legítima recién creadas por su división plena/nuda
+      input.heirs.forEach((h,i)=>{
+        // eliminar la fila de legítima plena creada en el paso 1 para esta estirpe
+        // y sus equivalentes de representantes, y volver a asignar dividida.
+        const {nudaEstirpe, plenaEstirpe} = cuotasLegitimaGravadas[i];
+        // quitar las filas de legítima de esta estirpe (las que tienen baseLegal de legítima CDCIB y derecho plena)
+        const idsEstirpe = h.estado==='premuerto'
+          ? Array.from({length:h.nrep},(_,k)=>h.id+'_rep'+(k+1))
+          : [h.id];
+        for(let k=adjudicaciones.length-1;k>=0;k--){
+          if(idsEstirpe.includes(adjudicaciones[k].personaId) && adjudicaciones[k].baseLegal.some(b=>b.includes('art. 42 CDCIB'))){
+            adjudicaciones.splice(k,1);
+          }
+        }
+        if(plenaEstirpe>0) asignarCuotaEstirpe(h, plenaEstirpe, false, adjudicaciones, baseLegalLegitima);
+        if(nudaEstirpe>0) asignarCuotaEstirpe(h, nudaEstirpe, true, adjudicaciones, [...baseLegalLegitima, 'art. 45.3 CDCIB (usufructo vidual de la mitad del haber hereditario, en concurrencia con descendientes)']);
+      });
+
+      // El resto de libre disposición (paso 4) solo se grava con usufructo
+      // CDCIB cuando se reparte entre descendientes (igual que la legítima).
+      // Si se atribuye al propio cónyuge o a un tercero, esa porción queda
+      // en plena propiedad SIN gravar. En ese caso, el usufructo del cónyuge
+      // que se muestra aquí debe reflejar SOLO lo que realmente queda gravado
+      // (la mitad de la legítima), y se advierte de la duda doctrinal sobre
+      // si el art. 45.3 CDCIB exige además cubrir la porción de libre
+      // disposición no atribuida a descendientes.
+      const gravaLibreConUsufructo = input.libre.tipo === 'descendientes_igual' || input.libre.tipo === 'un_heredero';
+
+      if(gravaLibreConUsufructo){
+        usufructoConyuge = {
+          aplica:true,
+          tipo:'cdcib_mitad_testada',
+          fraccion: 1/2,
+          baseLegal:'Usufructo de la mitad del haber hereditario a favor del cónyuge viudo, en concurrencia con descendientes (art. 45.3 CDCIB). No existiendo tercio de mejora en este Derecho, el usufructo grava proporcionalmente la mitad de cada porción atribuida a los descendientes (legítima y libre disposición).',
+          conmutable:true,
+          notaConmutacion: NOTA_CONMUTACION
+        };
+      } else {
+        const fraccionReal = caudalNetoCents > 0 ? (legitimaCents/2) / caudalNetoCents : 0;
+        usufructoConyuge = {
+          aplica:true,
+          tipo:'cdcib_mitad_legitima_testada',
+          fraccion: fraccionReal,
+          baseLegal:`Usufructo vidual del cónyuge en concurrencia con descendientes (art. 45.3 CDCIB), que en este cálculo grava la mitad de la legítima de los descendientes (${fmtFrac(fraccionReal)} del haber hereditario neto), por ser esta la única porción atribuida a descendientes. El resto de libre disposición se atribuye ${input.libre.tipo==='conyuge'?'al propio cónyuge':'a un tercero distinto'} en plena propiedad, sin gravamen.`,
+          conmutable:true,
+          notaConmutacion: NOTA_CONMUTACION
+        };
+        avisos.push(`CDCIB testada — el resto de libre disposición se atribuye ${input.libre.tipo==='conyuge'?'al propio cónyuge':'a un tercero'}, no a los descendientes. El art. 45.3 CDCIB fija el usufructo vidual en la mitad del HABER HEREDITARIO total; este cálculo solo grava la mitad de la LEGÍTIMA (${fmtFrac(fraccionReal)} del haber), por ser la única porción atribuida a descendientes susceptible de gravamen en este modelo. Existe duda doctrinal sobre si, en este supuesto, el usufructo vidual debe además satisfacerse con cargo a la porción de libre disposición no atribuida a descendientes. VERIFIQUE manualmente el alcance del usufructo antes de redactar la cláusula definitiva (art. 45.3 CDCIB).`);
+      }
+    } else if(conyugeActivo && mejoraCents > 0){
+      usufructoConyuge = {
+        aplica:true,
+        tipo:'tercio_mejora_testada',
+        fraccion: 1/3,
+        baseLegal:'Usufructo del tercio de mejora a favor del cónyuge viudo no separado (art. 834 CC), gravando la nuda propiedad del/los descendiente(s) beneficiario(s) de dicho tercio.',
+        conmutable:true,
+        notaConmutacion: NOTA_CONMUTACION
+      };
+    }
+
+    // 3) LEGADOS a terceros no legitimarios — se imputan al tercio de libre
+    //    disposición (art. 819 CC). Se pagan ANTES de repartir el resto.
+    //    Control de inoficiosidad (art. 817 CC): si exceden el tercio libre,
+    //    se reducen a prorrata hasta el límite del tercio libre (art. 820.2 CC).
+    let libreRestanteCents = libreCents;
+    const legados = input.legados || [];
+    if(legados.length > 0){
+      // Resolver el importe de cada legado:
+      // - cosa cierta (B.4): el importe es el valor del bien vinculado del inventario.
+      // - metálico/cuota: según su modo (€, % o fracción, sobre el CAUDAL NETO).
+      const legadosResueltos = legados.map(l=>{
+        let importeCents;
+        if(l.tipo === 'cosa_cierta'){
+          const bien = (input.bienes||[]).find(b=>b.id===l.bienId);
+          importeCents = bien ? bien.valorCents : 0;
+        } else {
+          importeCents = resolverCantidad(l, caudalNetoCents);
+        }
+        return {...l, importeCents};
+      }).filter(l=>l.importeCents > 0);
+
+      if(legadosResueltos.length === 0){
+        // todos los legados resolvieron a 0: nada que pagar
+      } else {
+      const totalLegados = legadosResueltos.reduce((s,l)=>s+l.importeCents,0);
+
+      let factorReduccion = 1;
+      if(totalLegados > libreCents){
+        // inoficiosidad: reducir a prorrata al límite del tercio libre
+        factorReduccion = libreCents / totalLegados;
+        avisos.push(`INOFICIOSIDAD: los legados a terceros (${fmt(totalLegados)}) exceden el tercio de libre disposición (${fmt(libreCents)}). Lesionan la legítima de los descendientes. El legado solo es válido hasta el límite del tercio libre; el exceso es reducible a petición de los legitimarios (art. 817 CC). El motor ha reducido los legados a prorrata al límite legal (art. 820.2 CC). El legatario tiene derecho a la entrega del legado hasta que el legitimario solicite judicialmente la reducción.`);
+
+        const cosaciertaAfectados = legadosResueltos.filter(l=>l.tipo==='cosa_cierta');
+        if(cosaciertaAfectados.length > 0){
+          avisos.push(`ATENCIÓN — LEGADO DE COSA CIERTA AFECTADO POR LA INOFICIOSIDAD (art. 821 CC): ${cosaciertaAfectados.map(l=>l.nombre).join(', ')} es legatario de un bien concreto cuyo valor ha sido reducido a prorrata por el cálculo anterior. Una cosa cierta NO puede entregarse "a prorrata": conforme al art. 821 CC, el legatario tiene derecho a recibir el bien ÍNTEGRO, pero debe COMPENSAR EN METÁLICO a los legitimarios perjudicados por la diferencia entre el valor del bien y el límite del tercio de libre disposición que le corresponde. El importe que figura para este legado en la adjudicación es ese límite teórico a efectos de cuadre, NO el valor real del bien que se entrega. Calcule manualmente la compensación en metálico y redacte la cláusula correspondiente.`);
+        }
+      }
+
+      // Repartir el límite disponible entre los legados a prorrata, con cuadre exacto
+      let acumuladoLegados = 0;
+      const legadosPagados = legadosResueltos.map((l)=>{
+        let pago = Math.round(l.importeCents * factorReduccion);
+        return {legatario:l, pagoCents:pago};
+      });
+      // Ajuste de redondeo: la suma de pagos no debe superar libreCents
+      let sumaPagos = legadosPagados.reduce((s,x)=>s+x.pagoCents,0);
+      const tope = Math.min(totalLegados, libreCents);
+      const diffPago = tope - sumaPagos;
+      if(legadosPagados.length>0) legadosPagados[0].pagoCents += diffPago;
+
+      legadosPagados.forEach(x=>{
+        const reducido = factorReduccion < 1;
+        adjudicaciones.push({
+          personaId:'LEGADO_'+x.legatario.id,
+          persona:`${x.legatario.nombre} (legatario${x.legatario.tipo==='cosa_cierta'?', legado de cosa cierta':''})`,
+          derecho:'plena_propiedad',
+          baseLegal: reducido
+            ? ['art. 819 CC (legado a extraño, imputado al tercio libre)','art. 817 CC (reducido por inoficioso)']
+            : ['art. 819 CC (legado a extraño, imputado al tercio libre)'],
+          cuotaCents: x.pagoCents,
+          gravadoUsufructo:false
+        });
+        acumuladoLegados += x.pagoCents;
+      });
+
+      libreRestanteCents = libreCents - acumuladoLegados;
+      if(libreRestanteCents < 0) libreRestanteCents = 0; // por seguridad
+      }
+    }
+
+    // 4) Resto del tercio de libre disposición (lo que sobra tras pagar legados)
+    if(libreRestanteCents > 0){
+      // En CDCIB Mallorca/Menorca con cónyuge activo, la porción del resto de
+      // libre disposición que vaya a DESCENDIENTES queda gravada al 50% con
+      // el usufructo vidual (art. 45.3 CDCIB), igual que la legítima. Si va
+      // al cónyuge o a un tercero, se asigna en plena propiedad sin dividir
+      // (no tiene sentido gravar con usufructo al propio cónyuge, y lo
+      // atribuido a un tercero no es masa de legitimarios).
+      const gravarConUsufructoCDCIB = esCDCIBMallorcaMenorca && conyugeActivo
+        && (input.libre.tipo === 'descendientes_igual' || input.libre.tipo === 'un_heredero');
+
+      const baseLegalLibreDescendientes = esCDCIBMallorcaMenorca
+        ? ['art. 42 CDCIB (libre disposición — repartido entre descendientes)']
+        : ['art. 763 CC (resto de libre disposición — repartido entre descendientes)'];
+      const baseLegalLibreUnHeredero = esCDCIBMallorcaMenorca
+        ? ['art. 42 CDCIB (libre disposición)']
+        : ['art. 763 CC (resto de libre disposición)'];
+      const baseLegalUsufructoCDCIB = 'art. 45.3 CDCIB (usufructo vidual de la mitad del haber hereditario, en concurrencia con descendientes)';
+
+      if(input.libre.tipo === 'descendientes_igual'){
+        const cuotasLibre = repartirEntero(libreRestanteCents, input.heirs.length);
+        input.heirs.forEach((h,i)=>{
+          if(gravarConUsufructoCDCIB){
+            const nuda = Math.round(cuotasLibre[i]/2);
+            const plena = cuotasLibre[i] - nuda;
+            if(plena>0) asignarCuotaEstirpe(h, plena, false, adjudicaciones, baseLegalLibreDescendientes);
+            if(nuda>0) asignarCuotaEstirpe(h, nuda, true, adjudicaciones, [...baseLegalLibreDescendientes, baseLegalUsufructoCDCIB]);
+          } else {
+            asignarCuotaEstirpe(h, cuotasLibre[i], false, adjudicaciones, baseLegalLibreDescendientes);
+          }
+        });
+      } else if(input.libre.tipo === 'un_heredero'){
+        const heir = input.heirs.find(h=>h.id===input.libre.heirId);
+        if(!heir){
+          errores.push(`El resto del tercio de libre disposición se atribuye a un descendiente (id "${input.libre.heirId}") que no corresponde a ningún descendiente actual. Revise la opción "Resto del tercio de libre disposición → A un descendiente concreto" (puede haber quedado desactualizada tras añadir o eliminar un descendiente) y vuelva a calcular.`);
+          return {errores, avisos, adjudicaciones:[], caudalNetoCents, liquidacionPrevia};
+        }
+        if(gravarConUsufructoCDCIB){
+          const nuda = Math.round(libreRestanteCents/2);
+          const plena = libreRestanteCents - nuda;
+          if(plena>0) asignarCuotaEstirpe(heir, plena, false, adjudicaciones, baseLegalLibreUnHeredero);
+          if(nuda>0) asignarCuotaEstirpe(heir, nuda, true, adjudicaciones, [...baseLegalLibreUnHeredero, baseLegalUsufructoCDCIB]);
+        } else {
+          asignarCuotaEstirpe(heir, libreRestanteCents, false, adjudicaciones, baseLegalLibreUnHeredero);
+        }
+      } else if(input.libre.tipo === 'conyuge'){
+        if(conyugeActivo){
+          adjudicaciones.push({
+            personaId:'CONYUGE', persona:'Cónyuge viudo', derecho:'plena_propiedad',
+            baseLegal:[esCDCIBMallorcaMenorca ? 'art. 42 CDCIB (libre disposición a favor del cónyuge)' : 'art. 763 CC (resto de libre disposición a favor del cónyuge)'],
+            cuotaCents: libreRestanteCents, gravadoUsufructo:false
+          });
+        } else {
+          avisos.push('El resto del tercio de libre disposición se atribuye al cónyuge pero no hay cónyuge viudo activo: requiere revisión manual de la disposición testamentaria.');
+        }
+      } else if(input.libre.tipo === 'tercero'){
+        adjudicaciones.push({
+          personaId:'TERCERO', persona:'Tercero (resto de libre disposición)', derecho:'plena_propiedad',
+          baseLegal:[esCDCIBMallorcaMenorca ? 'art. 42 CDCIB (libre disposición a favor de tercero)' : 'art. 763 CC (resto de libre disposición a favor de tercero)'],
+          cuotaCents: libreRestanteCents, gravadoUsufructo:false
+        });
+      }
+    }
+  }
+
+  // ============================================================
+  // COLACIÓN (art. 1035-1036 CC)
+  // ============================================================
+  // Solo se aplica automáticamente cuando el reparto entre estirpes es
+  // proporcional/igualitario (repartoIgualitarioEstirpes). En cualquier
+  // otro caso, si hay donaciones colacionables declaradas, se avisa de
+  // que el cálculo debe hacerse manualmente.
+  const colacionInfo = { aplicada:false, masaComputableCents:null, detalle:[] };
+  {
+    const heredsConDonacion = input.heirs.filter(h => (h.donacionCents||0) > 0);
+    if(heredsConDonacion.length > 0){
+      if(!repartoIgualitarioEstirpes){
+        avisos.push('Se han declarado donaciones previas, pero el reparto entre descendientes no es proporcional/igualitario (mejora o libre disposición no repartidos por igual, o existen legados). La colación (art. 1035 CC) no se ha aplicado automáticamente: calcule manualmente la imputación de las donaciones a la legítima, mejora o libre disposición de cada heredero.');
+      } else {
+        const n = input.heirs.length;
+        const donacionesColacionables = input.heirs.map(h => h.dispensa ? 0 : (h.donacionCents||0));
+        const sumaDonacionesColacionables = donacionesColacionables.reduce((a,b)=>a+b,0);
+        const masaComputableCents = caudalNetoCents + sumaDonacionesColacionables;
+        const cuotaIdeal = repartirEntero(masaComputableCents, n);
+
+        // Si alguna donación colacionable >= la cuota ideal de su estirpe,
+        // ese donatario habría recibido ya más (o igual) que su haber:
+        // posible inoficiosidad (arts. 654-656 CC). No se aplica el ajuste
+        // automático; se deja constancia para revisión manual.
+        const hayPosibleInoficiosidad = input.heirs.some((h,i) => donacionesColacionables[i] > cuotaIdeal[i]);
+
+        if(hayPosibleInoficiosidad){
+          avisos.push(`Posible INOFICIOSIDAD de donación: al menos un descendiente recibió en vida una donación colacionable igual o superior a su cuota ideal sobre la masa computable (caudal neto ${fmt(caudalNetoCents)} + donaciones colacionables ${fmt(sumaDonacionesColacionables)} = ${fmt(masaComputableCents)}). La colación no se ha aplicado automáticamente: este supuesto puede requerir reducción de la donación por inoficiosa (arts. 654-656 CC) y/o restitución por el donatario, lo cual excede el cálculo automático. Revise manualmente.`);
+        } else {
+          // Aplicar colación: cada estirpe pasa de su total actual
+          // (proporcional a caudalNetoCents) a (cuotaIdeal - donación
+          // colacionable), escalando todas sus filas de adjudicación
+          // (plena, nuda, representantes) proporcionalmente y ajustando
+          // el redondeo dentro de la propia estirpe para cuadre exacto.
+          input.heirs.forEach((h,i)=>{
+            const idsEstirpe = h.estado==='premuerto'
+              ? Array.from({length:h.nrep},(_,k)=>h.id+'_rep'+(k+1))
+              : [h.id];
+            const filas = adjudicaciones.filter(a=>idsEstirpe.includes(a.personaId));
+            const oldTotal = filas.reduce((s,a)=>s+a.cuotaCents,0);
+            const newTotal = cuotaIdeal[i] - donacionesColacionables[i];
+
+            colacionInfo.detalle.push({
+              heirId:h.id, nombre:h.nombre,
+              donacionCents: h.donacionCents||0, dispensa: !!h.dispensa,
+              cuotaIdealCents: cuotaIdeal[i],
+              recibeDelRelictumCents: Math.max(0,newTotal)
+            });
+
+            if(oldTotal === 0){
+              // No tenía nada asignado (caso degenerado); si le corresponde
+              // algo ahora, no podemos repartirlo entre filas inexistentes.
+              if(newTotal > 0){
+                avisos.push(`No fue posible aplicar la colación a "${h.nombre}": no tenía adjudicación previa sobre la que aplicar el ajuste proporcional. Revise manualmente.`);
+              }
+              return;
+            }
+            if(newTotal < 0){
+              // No debería ocurrir si hayPosibleInoficiosidad es false, pero
+              // por seguridad no se generan cuotas negativas.
+              avisos.push(`No fue posible aplicar la colación a "${h.nombre}": el resultado sería negativo. Revise manualmente.`);
+              return;
+            }
+
+            const factor = newTotal / oldTotal;
+            let acumulado = 0;
+            filas.forEach((fila,idx)=>{
+              let nuevoValor = Math.round(fila.cuotaCents * factor);
+              acumulado += nuevoValor;
+              fila.cuotaCents = nuevoValor;
+              if(idx === filas.length-1){
+                // ajuste de redondeo: la suma de las filas de esta estirpe
+                // debe cuadrar exactamente con newTotal
+                const diff = newTotal - acumulado;
+                fila.cuotaCents += diff;
+              }
+            });
+          });
+
+          colacionInfo.aplicada = true;
+          colacionInfo.masaComputableCents = masaComputableCents;
+
+          let resumenAviso = `COLACIÓN aplicada (art. 1035 CC): masa computable = caudal neto (${fmt(caudalNetoCents)}) + donaciones colacionables (${fmt(sumaDonacionesColacionables)}) = ${fmt(masaComputableCents)}. `;
+          colacionInfo.detalle.forEach(d=>{
+            if(d.donacionCents>0){
+              resumenAviso += `${d.nombre}: cuota ideal ${fmt(d.cuotaIdealCents)}, donación recibida ${fmt(d.donacionCents)}${d.dispensa?' (con dispensa, no colacionable)':''}, recibe del caudal ${fmt(d.recibeDelRelictumCents)}. `;
+            }
+          });
+          avisos.push(resumenAviso.trim());
+        }
+      }
+    }
+  }
+
+  // --- Paso 5: validación de cuadre ---
+  let totalAsignado = 0;
+  adjudicaciones.forEach(a=> totalAsignado += a.cuotaCents);
+  if(totalAsignado !== caudalNetoCents){
+    errores.push(`Descuadre interno: la suma de adjudicaciones (${fmt(totalAsignado)}) no coincide con el caudal neto (${fmt(caudalNetoCents)}). No se muestra resultado por seguridad. Diferencia: ${fmt(totalAsignado-caudalNetoCents)}.`);
+  }
+
+  // ============================================================
+  // PASO 6 (Fase B.2): COMPARATIVA BIENES ASIGNADOS vs. DERECHO TEÓRICO
+  // ============================================================
+  // Para cada heredero/estirpe y para el cónyuge (si existe), compara el
+  // valor de los bienes del inventario que se le han asignado (sección
+  // "Asignación del bien") con su derecho teórico (suma de sus filas de
+  // adjudicación, plena + nuda propiedad). La diferencia es el exceso o
+  // defecto de adjudicación a efectos del art. 1062 CC.
+  //
+  // NOTA: si el cónyuge tiene usufructo (usufructoConyuge.aplica), ese
+  // derecho NO se incluye aquí en su "derecho teórico": es un derecho de
+  // uso/disfrute, conmutable en metálico (art. 839 CC), no la propiedad de
+  // un bien concreto. Si los herederos optan por conmutar el usufructo en
+  // dinero, ese importe debe descontarse adicionalmente de los nudos
+  // propietarios — no está modelado en esta comparativa (revisar manualmente).
+  const excesosDefectos = [];
+  {
+    const personas = input.heirs.map(h=>({id:h.id, nombre:h.nombre}));
+    if(input.conyugeExiste) personas.push({id:'CONYUGE', nombre:'Cónyuge viudo'});
+
+    personas.forEach(p=>{
+      let idsRelevantes;
+      if(p.id === 'CONYUGE'){
+        idsRelevantes = ['CONYUGE'];
+      } else {
+        const h = input.heirs.find(x=>x.id===p.id);
+        idsRelevantes = h.estado==='premuerto'
+          ? Array.from({length:h.nrep},(_,k)=>h.id+'_rep'+(k+1))
+          : [h.id];
+      }
+      const cuotaTeoricaCents = adjudicaciones
+        .filter(a=>idsRelevantes.includes(a.personaId))
+        .reduce((s,a)=>s+a.cuotaCents,0);
+
+      let bienesAsignadosCents = 0;
+      (input.bienes||[]).forEach(b=>{
+        if(bienIdsLegadoCosaCierta.has(b.id)) return; // B.4: va íntegro al legatario, no a herederos/cónyuge
+        (b.asignaciones||[]).forEach(a=>{
+          if(a.personaId === p.id){
+            bienesAsignadosCents += Math.round(b.valorCents * (a.pct||0) / 100);
+          }
+        });
+      });
+
+      excesosDefectos.push({
+        personaId: p.id,
+        persona: p.nombre,
+        cuotaTeoricaCents,
+        bienesAsignadosCents,
+        diferenciaCents: bienesAsignadosCents - cuotaTeoricaCents
+      });
+    });
+  }
+
+  // Aviso art. 1062 CC: si la asignación de bienes del inventario produce un
+  // exceso de adjudicación para alguna persona, advertir sobre el régimen de
+  // exención de TPO (indivisibilidad + compensación en dinero), que el motor
+  // NO verifica.
+  {
+    const conExceso = excesosDefectos.filter(e=>e.diferenciaCents > 0);
+    if(conExceso.length > 0){
+      const detalle = conExceso.map(e=>`${e.persona} (exceso de ${fmt(e.diferenciaCents)})`).join('; ');
+      avisos.push(`EXCESO DE ADJUDICACIÓN (art. 1062 CC): según la asignación de bienes del inventario, ${detalle} recibe(n) más valor en bienes que su derecho teórico sobre la herencia. Este exceso solo queda exento de Transmisiones Patrimoniales Onerosas (TPO) si concurren AMBAS condiciones: (a) el/los bien(es) adjudicado(s) son indivisibles o de división muy costosa, y (b) el exceso se compensa al perjudicado EN DINERO (no con otro bien ni a costa de su legítima). El motor NO verifica ninguna de las dos condiciones. Si no concurren, el exceso tributa por TPO a cargo de quien lo recibe. Verifique ambas circunstancias antes de incorporar la adjudicación a la escritura.`);
+    }
+  }
+
+  return { caudalNetoCents, liquidacionPrevia, adjudicaciones, usufructoConyuge, avisos, errores, excesosDefectos, legatarioPorBien };
+}
+
+// Reparte la cuota de una estirpe entre sus representantes (si premuerto)
+// y empuja las filas de adjudicación correspondientes.
+function asignarCuotaEstirpe(heir, cuotaEstirpeCents, gravadoUsufructo, adjudicaciones, baseLegal){
+  if(heir.estado === 'vivo'){
+    pushOrMerge(adjudicaciones, {
+      personaId: heir.id,
+      persona: heir.nombre,
+      derecho: gravadoUsufructo ? 'nuda_propiedad' : 'plena_propiedad',
+      baseLegal,
+      cuotaCents: cuotaEstirpeCents,
+      gravadoUsufructo
+    });
+  } else {
+    // premuerto: dividir entre representantes
+    const partes = repartirEntero(cuotaEstirpeCents, heir.nrep);
+    for(let i=0;i<heir.nrep;i++){
+      pushOrMerge(adjudicaciones, {
+        personaId: heir.id+'_rep'+(i+1),
+        persona: `Representante ${i+1} de ${heir.nombre} (premuerto/a)`,
+        derecho: gravadoUsufructo ? 'nuda_propiedad' : 'plena_propiedad',
+        baseLegal: [...baseLegal, 'art. 924 CC (derecho de representación por estirpes)'],
+        cuotaCents: partes[i],
+        gravadoUsufructo
+      });
+    }
+  }
+}
+
+// Si la misma persona ya tiene una fila con el mismo derecho/gravamen, suma
+// la cuota en lugar de crear filas duplicadas (ej: legítima + mejora del mismo hijo).
+function pushOrMerge(adjudicaciones, nueva){
+  const existente = adjudicaciones.find(a=>
+    a.personaId===nueva.personaId &&
+    a.derecho===nueva.derecho &&
+    a.gravadoUsufructo===nueva.gravadoUsufructo
+  );
+  if(existente){
+    existente.cuotaCents += nueva.cuotaCents;
+    // fusionar base legal sin duplicar
+    nueva.baseLegal.forEach(b=>{ if(!existente.baseLegal.includes(b)) existente.baseLegal.push(b); });
+  } else {
+    adjudicaciones.push(nueva);
+  }
+}
+
+// ============================================================
+// LECTURA DEL FORMULARIO -> INPUT DEL MOTOR
+// ============================================================
+function leerInputDesdeFormulario(){
+  const heirs = getHeirs();
+  const tipoSucesion = document.getElementById('tipoSucesion').value;
+
+  let mejora = {tipo:'reparto_igual'};
+  let libre = {tipo:'descendientes_igual'};
+  let legados = [];
+
+  if(tipoSucesion === 'testada'){
+    const mejoraTipo = document.getElementById('mejoraTipo').value;
+    if(mejoraTipo === 'un_heredero'){
+      mejora = {tipo:'un_heredero', heirId: document.getElementById('mejoraUnHeredero').value};
+    } else if(mejoraTipo === 'varios'){
+      const items = Array.from(document.querySelectorAll('.mejora-item')).map(el=>{
+        const m = leerModo(el, 'mejora-modo');
+        return {heirId: el.dataset.heir, modo:m.modo, euros:m.euros, pct:m.pct, num:m.num, den:m.den};
+      });
+      mejora = {tipo:'varios', items};
+    } else {
+      mejora = {tipo:'reparto_igual'};
+    }
+
+    const libreTipo = document.getElementById('libreTipo').value;
+    if(libreTipo === 'un_heredero'){
+      libre = {tipo:'un_heredero', heirId: document.getElementById('libreUnHeredero').value};
+    } else {
+      libre = {tipo: libreTipo};
+    }
+
+    legados = getLegados();
+  }
+
+  const bienes = getBienes();
+  return {
+    vecindadBalear: document.getElementById('vecindad').value === 'balear',
+    isla: document.getElementById('isla').value,
+    tipoSucesion,
+    regimen: document.getElementById('regimen').value,
+    conyugeExiste: document.getElementById('conyugeExiste').checked,
+    conyugeSeparado: document.getElementById('conyugeExiste').checked && document.getElementById('conyugeSeparado').checked,
+    heirs,
+    mejora,
+    libre,
+    legados,
+    bienes,
+    gananciales: eurosToCents(document.getElementById('bienesGananciales').value),
+    privativos: bienes.reduce((s,b)=>s+b.valorCents,0),
+    deudasGananciales: eurosToCents(document.getElementById('deudasGananciales').value),
+    deudasPrivativas: eurosToCents(document.getElementById('deudasPrivativas').value),
+    donacionesTercerosCents: eurosToCents(document.getElementById('donacionesTerceros').value)
+  };
+}
+
+// ============================================================
+// RENDER DE RESULTADOS
+// ============================================================
+function calcular(){
+  const input = leerInputDesdeFormulario();
+  const out = calcularHerencia(input);
+  renderResultados(out, input);
+}
+
+// Traduce un personaId de una asignación de bien ('CONYUGE' o id de heredero)
+// a un nombre legible para mostrar en el inventario.
+function nombrePersonaAsignacion(personaId, input){
+  if(personaId === 'CONYUGE') return 'Cónyuge viudo';
+  const heir = (input.heirs||[]).find(h=>h.id===personaId);
+  return heir ? heir.nombre : `(persona no encontrada: ${personaId})`;
+}
+
+function renderResultados(out, input){
+  const cont = document.getElementById('resultados');
+  let html = '';
+
+  if(out.errores.length){
+    out.errores.forEach(e=> html += `<div class="result-box result-err"><strong>Error:</strong> ${e}</div>`);
+    cont.innerHTML = html;
+    return;
+  }
+
+  out.avisos.forEach(a=> html += `<div class="result-box result-warn"><strong>Aviso:</strong> ${a}</div>`);
+
+  html += `<div class="card">
+    <h2 style="margin-top:0">Resumen del caudal</h2>
+    <table>
+      <tr><td>Caudal hereditario neto</td><td class="num"><strong>${fmt(out.caudalNetoCents)}</strong></td></tr>
+      ${out.liquidacionPrevia.aplica ? `<tr><td>Cuota del cónyuge por liquidación de gananciales (plena propiedad, no es herencia)<br><span class="legal">${out.liquidacionPrevia.baseLegal}</span></td><td class="num">${fmt(out.liquidacionPrevia.cuotaConyugeCents)}</td></tr>` : ''}
+    </table>
+    ${(input.bienes && input.bienes.length) ? `<div style="margin-top:12px;font-weight:700;">Inventario de bienes privativos considerado:</div>
+    <table>
+      <thead><tr><th>Bien</th><th class="num">Valor</th><th>Asignado a</th></tr></thead>
+      <tbody>
+        ${input.bienes.map(b=>{
+          let asigTxt;
+          if(out.legatarioPorBien && out.legatarioPorBien[b.id]){
+            asigTxt = `<strong>→ LEGADO DE COSA CIERTA a ${out.legatarioPorBien[b.id]}</strong>`;
+          } else if(b.asignaciones && b.asignaciones.length){
+            asigTxt = b.asignaciones.map(a=>`${nombrePersonaAsignacion(a.personaId, input)} (${Number(a.pct)}%)`).join(', ');
+          } else {
+            asigTxt = '<span style="color:var(--ink2);">sin asignar</span>';
+          }
+          return `<tr><td>${b.descripcion}</td><td class="num">${fmt(b.valorCents)}</td><td>${asigTxt}</td></tr>`;
+        }).join('')}
+      </tbody>
+    </table>` : ''}
+  </div>`;
+
+  if(input.bienes && input.bienes.length && out.excesosDefectos && out.excesosDefectos.length){
+    html += `<div class="card">
+      <h2 style="margin-top:0">Comparativa: bienes asignados vs. derecho teórico</h2>
+      <table>
+        <thead><tr><th>Persona</th><th class="num">Derecho teórico</th><th class="num">Bienes asignados</th><th class="num">Diferencia</th></tr></thead>
+        <tbody>
+          ${out.excesosDefectos.map(e=>{
+            const exceso = e.diferenciaCents > 0;
+            const signo = exceso ? '+' : '';
+            const estilo = exceso ? 'style="color:var(--red);font-weight:700;"' : '';
+            return `<tr><td>${e.persona}</td><td class="num">${fmt(e.cuotaTeoricaCents)}</td><td class="num">${fmt(e.bienesAsignadosCents)}</td><td class="num" ${estilo}>${signo}${fmt(e.diferenciaCents)}</td></tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+      ${out.usufructoConyuge.aplica ? `<div style="font-size:11px;color:var(--ink2);margin-top:8px;">El cónyuge viudo tiene además derecho de usufructo vitalicio sobre ${fmtFrac(out.usufructoConyuge.fraccion)} del caudal (conmutable en metálico, art. 839 CC), no incluido en esta comparativa. Si se opta por la conmutación, ese importe debe descontarse adicionalmente de las adjudicaciones de los nudos propietarios — calcule manualmente este ajuste.</div>` : ''}
+    </div>`;
+  }
+
+  html += `<div class="card">
+    <h2 style="margin-top:0">Adjudicaciones a descendientes / otros</h2>
+    <table>
+      <thead><tr><th>Persona</th><th>Derecho</th><th>Base legal</th><th class="num">Importe</th></tr></thead>
+      <tbody>`;
+  out.adjudicaciones.forEach(a=>{
+    const pillClass = a.derecho==='plena_propiedad' ? 'pill-plena' : 'pill-nuda';
+    const pillText = a.derecho==='plena_propiedad' ? 'Plena propiedad' : 'Nuda propiedad';
+    html += `<tr>
+      <td>${a.persona}</td>
+      <td><span class="pill ${pillClass}">${pillText}</span></td>
+      <td class="legal">${a.baseLegal.join('<br>')}</td>
+      <td class="num">${fmt(a.cuotaCents)}</td>
+    </tr>`;
+  });
+  html += `</tbody></table></div>`;
+
+  if(out.usufructoConyuge.aplica){
+    html += `<div class="card">
+      <h2 style="margin-top:0">Usufructo del cónyuge viudo</h2>
+      <table>
+        <tr><td>Fracción</td><td class="num">${fmtFrac(out.usufructoConyuge.fraccion)}</td></tr>
+        <tr><td>Base legal</td><td>${out.usufructoConyuge.baseLegal}</td></tr>
+        <tr><td>Conmutable</td><td>${out.usufructoConyuge.conmutable ? 'Sí — '+out.usufructoConyuge.notaConmutacion : 'No'}</td></tr>
+      </table>
+    </div>`;
+  } else if(input.conyugeExiste && !input.conyugeSeparado && input.heirs.length>0){
+    html += `<div class="result-box result-info">El cónyuge no tiene derecho de usufructo en este escenario (revisar configuración).</div>`;
+  }
+
+  html += `<div class="card">
+    <h2 style="margin-top:0">Borrador de cláusula de adjudicación</h2>
+    <div class="clausula-box">${generarClausula(out, input)}</div>
+    <div class="toolbar">
+      <button class="btn btn-sec btn-sm" onclick="copiarClausula()">Copiar texto</button>
+    </div>
+  </div>`;
+
+  cont.innerHTML = html;
+}
+
+function generarClausula(out, input){
+  let txt = '';
+  txt += `ADJUDICACIÓN DE LA HERENCIA\n\n`;
+  txt += `El caudal hereditario neto, valorado en ${fmt(out.caudalNetoCents)}, se distribuye conforme a las siguientes cuotas legales:\n\n`;
+
+  out.adjudicaciones.forEach(a=>{
+    if(a.personaId && a.personaId.indexOf('LEGADO_')===0){
+      txt += `— Se hace entrega a ${a.persona} del LEGADO ordenado en testamento, valorado en ${fmt(a.cuotaCents)} (${a.baseLegal.join('; ')}).\n`;
+    } else if(a.derecho==='plena_propiedad'){
+      txt += `— A ${a.persona}, en PLENA PROPIEDAD, la cantidad de ${fmt(a.cuotaCents)} (${a.baseLegal.join('; ')}).\n`;
+    } else {
+      txt += `— A ${a.persona}, en NUDA PROPIEDAD, la cantidad de ${fmt(a.cuotaCents)} (${a.baseLegal.join('; ')}).\n`;
+    }
+  });
+
+  if(out.usufructoConyuge.aplica){
+    txt += `\n— Al cónyuge viudo se le atribuye el USUFRUCTO VITALICIO sobre ${fmtFrac(out.usufructoConyuge.fraccion)} del caudal hereditario (${out.usufructoConyuge.baseLegal}).\n`;
+    if(out.usufructoConyuge.conmutable){
+      txt += `\nADVERTENCIA AL OFICIAL: ${out.usufructoConyuge.notaConmutacion} Si los herederos optan por la conmutación, esta cláusula debe sustituirse en consecuencia.\n`;
+    }
+  }
+
+  if(input.bienes && input.bienes.length){
+    txt += `\n\nADJUDICACIÓN DE LOS BIENES DEL INVENTARIO\n\n`;
+    txt += `En pago de las cuotas anteriores, los bienes del inventario se adjudican del siguiente modo:\n\n`;
+    input.bienes.forEach(b=>{
+      if(out.legatarioPorBien && out.legatarioPorBien[b.id]){
+        txt += `— ${b.descripcion}, valorado en ${fmt(b.valorCents)}: se entrega ÍNTEGRO, en pleno dominio, a ${out.legatarioPorBien[b.id]} como LEGADO DE COSA CIERTA (art. 818 CC, ver adjudicación de legados más arriba).\n`;
+        return;
+      }
+      if(!b.asignaciones || b.asignaciones.length===0){
+        txt += `— ${b.descripcion} (valorado en ${fmt(b.valorCents)}): SIN ASIGNAR — pendiente de adjudicar.\n`;
+        return;
+      }
+      if(b.asignaciones.length===1 && Math.abs(b.asignaciones[0].pct-100)<0.01){
+        txt += `— ${b.descripcion}, valorado en ${fmt(b.valorCents)}: se adjudica íntegramente, en pleno dominio, a ${nombrePersonaAsignacion(b.asignaciones[0].personaId, input)}.\n`;
+      } else {
+        txt += `— ${b.descripcion}, valorado en ${fmt(b.valorCents)}, se adjudica en PROINDIVISO, por las siguientes cuotas:\n`;
+        b.asignaciones.forEach(a=>{
+          txt += `    · ${nombrePersonaAsignacion(a.personaId, input)}: ${Number(a.pct)}% (${fmt(Math.round(b.valorCents*(a.pct||0)/100))})\n`;
+        });
+      }
+    });
+
+    txt += `\n\nCOMPARATIVA: BIENES ADJUDICADOS vs. DERECHO TEÓRICO\n\n`;
+    out.excesosDefectos.forEach(e=>{
+      const signo = e.diferenciaCents > 0 ? '+' : '';
+      txt += `— ${e.persona}: derecho teórico ${fmt(e.cuotaTeoricaCents)}; bienes adjudicados ${fmt(e.bienesAsignadosCents)}; diferencia ${signo}${fmt(e.diferenciaCents)}.\n`;
+    });
+
+    const conExceso = out.excesosDefectos.filter(e=>e.diferenciaCents > 0);
+    if(conExceso.length > 0){
+      txt += `\nADVERTENCIA AL OFICIAL (art. 1062 CC): ${conExceso.map(e=>`${e.persona} recibe un exceso de adjudicación de ${fmt(e.diferenciaCents)}`).join('; ')}. Este exceso solo queda exento de Transmisiones Patrimoniales Onerosas (TPO) si concurren AMBAS condiciones: (a) el bien adjudicado es indivisible o de división muy costosa, y (b) el exceso se compensa al perjudicado EN DINERO (no con otro bien ni a costa de su legítima). El motor NO verifica ninguna de las dos condiciones. Si no concurren, el exceso tributa por TPO a cargo de quien lo recibe. Verifique ambas circunstancias e incluya, en su caso, la cláusula de compensación en metálico correspondiente.\n`;
+    }
+
+    if(out.usufructoConyuge.aplica){
+      txt += `\nADVERTENCIA AL OFICIAL: la comparativa anterior NO incluye el valor del usufructo vidual del cónyuge (conmutable en metálico, art. 839 CC). Si se opta por la conmutación, el importe correspondiente debe descontarse adicionalmente de las adjudicaciones de los nudos propietarios — calcule y redacte ese ajuste manualmente.\n`;
+    }
+  } else {
+    txt += `\nNOTA: este borrador asume un caudal divisible en dinero (no se ha configurado un inventario de bienes con asignaciones). Si la adjudicación real incluye bienes indivisibles que generen excesos de adjudicación, calificar conforme al art. 1062 CC (posible tributación por TPO del exceso) antes de incorporar esta cláusula a la escritura.`;
+  }
+
+  return txt;
+}
+
+function copiarClausula(){
+  const text = document.querySelector('.clausula-box').innerText;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>{
+      alert('Cláusula copiada al portapapeles.');
+    }).catch(()=>{
+      alert('No se ha podido copiar automáticamente (el navegador bloquea el portapapeles en este contexto, p.ej. al abrir el archivo sin servidor). Seleccione el texto manualmente y copie con Ctrl+C / Cmd+C.');
+    });
+  } else {
+    alert('El portapapeles no está disponible en este contexto (p.ej. al abrir el archivo directamente, sin servidor). Seleccione el texto manualmente y copie con Ctrl+C / Cmd+C.');
+  }
+}
+</script>
 
 
 </body>
