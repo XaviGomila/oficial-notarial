@@ -1853,7 +1853,7 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
     </div>
     <div id="conyugeDetalle">
       <div class="checkbox-line">
-        <input type="checkbox" id="conyugeSeparado" onchange="recalcularInline()">
+        <input type="checkbox" id="conyugeSeparado" onchange="recalcularInline(); actualizarVisibilidadColaterales();">
         <label style="margin:0;text-transform:none;font-weight:500;">Separado legalmente o de hecho al fallecimiento (art. 834 CC → pierde derecho de usufructo)</label>
       </div>
       <div class="field" style="max-width:220px;margin-top:8px;">
@@ -1883,6 +1883,13 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
         <label style="margin:0;text-transform:none;font-weight:500;">Madre del causante viva</label>
       </div>
     </div>
+  </div>
+
+  <div class="card herencia-form-block" id="colateralesCard">
+    <h2 style="margin-top:0">3c. Colaterales (hermanos / sobrinos) — solo si NO hay descendientes, cónyuge legitimario ni ascendientes</h2>
+    <div style="font-size:11px;color:var(--ink2);margin-bottom:10px;">Esta sección solo se aplica cuando no hay descendientes (sección 3), el cónyuge no es legitimario o no existe, y ni el padre ni la madre del causante viven (sección 3b). Indique aquí los hermanos del causante (vivos o premuertos con representantes = sobrinos), conforme a los arts. 946-951 CC. Vínculo "doble" = mismo padre y madre que el causante; "sencillo" = solo un progenitor común (medio hermano).</div>
+    <div id="colateralesContainer"></div>
+    <button type="button" class="btn btn-sec btn-sm" onclick="addColateral()">+ Añadir hermano/a</button>
   </div>
 
   <div class="card herencia-form-block" id="testamentoCard">
@@ -5989,6 +5996,86 @@ function getHeirs(){
   return heirs;
 }
 
+// ---- UI: gestión dinámica de colaterales (hermanos/sobrinos, v2.0c) ----
+let colateralCounter = 0;
+function addColateral(){
+  colateralCounter++;
+  const id = 'col_'+colateralCounter;
+  const container = document.getElementById('colateralesContainer');
+  const div = document.createElement('div');
+  div.id = id;
+  div.dataset.colId = id;
+  div.innerHTML = `
+    <div class="heir-row">
+      <div class="field">
+        <label>Nombre</label>
+        <input type="text" class="col-nombre" value="Hermano/a ${colateralCounter}">
+      </div>
+      <div class="field">
+        <label>Vínculo</label>
+        <select class="col-vinculo">
+          <option value="doble">Doble (mismo padre y madre)</option>
+          <option value="sencillo">Sencillo (medio hermano/a)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Estado</label>
+        <select class="col-estado" onchange="toggleColateralPremuerto('${id}')">
+          <option value="vivo">Vivo</option>
+          <option value="premuerto">Premuerto (con representantes)</option>
+        </select>
+      </div>
+      <button type="button" class="btn btn-del btn-sm" onclick="removeColateral('${id}')">Eliminar</button>
+    </div>
+    <div class="heir-row premuerto-row hidden" id="${id}_premuerto">
+      <div class="field">
+        <label>Nº de representantes (hijos del hermano/a premuerto/a = sobrinos del causante) — la cuota de esta estirpe se divide entre ellos a partes iguales (art. 951 CC)</label>
+        <input type="number" class="col-nrep" min="1" value="1" step="1">
+        <div style="font-size:11px;color:var(--ink2);margin-top:4px;">Asume que todos los sobrinos representantes son de la MISMA generación (hijos directos del hermano/a premuerto/a). Si alguno de ellos está también premuerto y tiene descendencia propia, este reparto no es correcto — calcule ese caso manualmente.</div>
+      </div>
+    </div>
+  `;
+  container.appendChild(div);
+}
+function removeColateral(id){
+  const el = document.getElementById(id);
+  if(el) el.remove();
+}
+function toggleColateralPremuerto(id){
+  const sel = document.querySelector(`#${id} .col-estado`);
+  const block = document.getElementById(id+'_premuerto');
+  block.classList.toggle('hidden', sel.value !== 'premuerto');
+}
+function getColaterales(){
+  const rows = document.querySelectorAll('#colateralesContainer > div');
+  const colaterales = [];
+  rows.forEach(div=>{
+    const nombre = div.querySelector('.col-nombre').value || 'Sin nombre';
+    const vinculo = div.querySelector('.col-vinculo').value;
+    const estado = div.querySelector('.col-estado').value;
+    let nrep = 1;
+    if(estado==='premuerto'){
+      nrep = parseInt(div.querySelector('.col-nrep').value)||1;
+      if(nrep<1) nrep=1;
+    }
+    colaterales.push({id:div.dataset.colId, nombre, vinculo, estado, nrep});
+  });
+  return colaterales;
+}
+// Muestra/oculta la sección 3c según corresponda: solo si no hay
+// descendientes (heirs vacío), no hay ascendientes vivos y el cónyuge no es
+// legitimario activo (no existe, o está separado/legal o de hecho).
+function actualizarVisibilidadColaterales(){
+  const card = document.getElementById('colateralesCard');
+  if(!card) return;
+  const sinDescendientes = document.querySelectorAll('#heirsContainer > div').length === 0;
+  const sinAscendientes = !document.getElementById('padreVivo').checked && !document.getElementById('madreViva').checked;
+  const conyugeExiste = document.getElementById('conyugeExiste').checked;
+  const conyugeSeparado = conyugeExiste && document.getElementById('conyugeSeparado').checked;
+  const conyugeActivo = conyugeExiste && !conyugeSeparado;
+  card.classList.toggle('hidden', !(sinDescendientes && sinAscendientes && !conyugeActivo));
+}
+
 // ---- UI: gestión dinámica de legados a terceros ----
 let legadoCounter = 0;
 function addLegado(){
@@ -6187,6 +6274,22 @@ function getPersonasDisponibles(){
   if(document.getElementById('conyugeExiste').checked){
     personas.push({id:'CONYUGE', nombre:'Cónyuge viudo'});
   }
+  // v2.0c: sin descendientes/ascendientes/cónyuge legitimario activo -> colaterales
+  const conyugeExisteChk = document.getElementById('conyugeExiste').checked;
+  const conyugeSeparadoChk = conyugeExisteChk && document.getElementById('conyugeSeparado').checked;
+  const conyugeActivoChk = conyugeExisteChk && !conyugeSeparadoChk;
+  if(!conyugeActivoChk && !document.getElementById('padreVivo').checked && !document.getElementById('madreViva').checked){
+    getColaterales().forEach(c=>{
+      if(c.estado === 'premuerto'){
+        const nrep = c.nrep || 1;
+        for(let k=1;k<=nrep;k++){
+          personas.push({id:c.id+'_rep'+k, nombre:`Sobrino/a ${k} (hijo/a de ${c.nombre})`});
+        }
+      } else {
+        personas.push({id:c.id, nombre:c.nombre});
+      }
+    });
+  }
   return personas;
 }
 function addAsignacion(bienId){
@@ -6232,6 +6335,7 @@ function actualizarTotalBien(bienId){
 // preservando la selección si esa persona sigue existiendo (mismo patrón
 // que mejora/libre 'un_heredero'). Se invoca al cambiar cónyuge/herederos.
 function regenerarPersonasAsignaciones(){
+  actualizarVisibilidadColaterales();
   const personas = getPersonasDisponibles();
   document.querySelectorAll('.asignacion-persona').forEach(sel=>{
     const prevValue = sel.value;
@@ -6603,6 +6707,37 @@ function escribirInputEnFormulario(input){
 
   document.getElementById('padreVivo').checked = !!input.padreVivo;
   document.getElementById('madreViva').checked = !!input.madreViva;
+
+  // 3c. Colaterales: vaciar y regenerar con IDs originales
+  const colateralesContainer = document.getElementById('colateralesContainer');
+  colateralesContainer.innerHTML = '';
+  const colaterales = input.colaterales || [];
+  colaterales.forEach(c=>{
+    addColateral();
+    const div = colateralesContainer.lastElementChild;
+    const oldId = div.id;
+    div.id = c.id;
+    div.dataset.colId = c.id;
+    const premuertoBlock = document.getElementById(oldId+'_premuerto');
+    if(premuertoBlock) premuertoBlock.id = c.id+'_premuerto';
+    div.querySelector('.col-nombre').value = c.nombre || '';
+    div.querySelector('.col-vinculo').value = c.vinculo || 'doble';
+    div.querySelector('.col-estado').value = c.estado || 'vivo';
+    if(c.estado === 'premuerto'){
+      div.querySelector('.col-nrep').value = c.nrep || 1;
+    }
+    toggleColateralPremuerto(c.id);
+    div.querySelector('.col-estado').setAttribute('onchange', `toggleColateralPremuerto('${c.id}')`);
+    const btnDel = div.querySelector('.btn-del');
+    if(btnDel) btnDel.setAttribute('onclick', `removeColateral('${c.id}')`);
+  });
+  let maxColN = 0;
+  colaterales.forEach(c=>{
+    const m = /^col_(\d+)$/.exec(c.id);
+    if(m) maxColN = Math.max(maxColN, parseInt(m[1],10));
+  });
+  if(typeof colateralCounter !== 'undefined' && maxColN > colateralCounter) colateralCounter = maxColN;
+
 
   toggleConyuge();
   toggleRegimen();
@@ -7438,11 +7573,24 @@ function calcularExcesosYAvisoTPO(input, adjudicaciones, bienIdsLegadoCosaCierta
     if(input.padreVivo) personas.push({id:'ASCENDIENTE_PADRE', nombre:'Padre del causante'});
     if(input.madreViva) personas.push({id:'ASCENDIENTE_MADRE', nombre:'Madre del causante'});
     if(input.conyugeExiste) personas.push({id:'CONYUGE', nombre:'Cónyuge viudo'});
+    // v2.0c: sin ascendientes ni cónyuge legitimario activo -> colaterales
+    const conyugeActivoExc = input.conyugeExiste && !input.conyugeSeparado;
+    if(!conyugeActivoExc && !input.padreVivo && !input.madreViva){
+      (input.colaterales||[]).forEach(c=>{
+        if(c.estado === 'premuerto'){
+          for(let k=1;k<=(c.nrep||1);k++){
+            personas.push({id:c.id+'_rep'+k, nombre:`Sobrino/a ${k} (hijo/a de ${c.nombre})`});
+          }
+        } else {
+          personas.push({id:c.id, nombre:c.nombre});
+        }
+      });
+    }
   }
 
   personas.forEach(p=>{
     let idsRelevantes;
-    if(p.id === 'CONYUGE' || p.id === 'ASCENDIENTE_PADRE' || p.id === 'ASCENDIENTE_MADRE'){
+    if(p.id === 'CONYUGE' || p.id === 'ASCENDIENTE_PADRE' || p.id === 'ASCENDIENTE_MADRE' || (input.colaterales||[]).some(c=>c.id===p.id || p.id.startsWith(c.id+'_rep'))){
       idsRelevantes = [p.id];
     } else {
       const h = input.heirs.find(x=>x.id===p.id);
@@ -7484,6 +7632,156 @@ function calcularExcesosYAvisoTPO(input, adjudicaciones, bienIdsLegadoCosaCierta
   }
 
   return excesosDefectos;
+}
+
+// ============================================================
+// v2.0c — SUCESIÓN DE COLATERALES (hermanos / sobrinos por representación)
+// ============================================================
+// Se activa cuando NO hay descendientes, cónyuge activo NI ascendientes
+// (padre/madre vivos). Cubre, en INTESTADA, derecho común (arts. 946-951 CC),
+// aplicable POR IGUAL en CC y en las 4 islas (CDCIB arts. 53 y 84 remiten al
+// CC para colaterales -> sin ramificación balear):
+//
+//   - Solo hermanos de doble vínculo (vivos y/o representados por sobrinos):
+//     reparto por cabezas/estirpes a partes iguales (arts. 947-948 CC).
+//   - Hermanos de doble vínculo + medio hermanos (vivos o representados):
+//     cada unidad doble vale 2 partes, cada unidad sencilla vale 1 parte
+//     (art. 949 CC).
+//   - Solo medio hermanos (sin ningún doble vínculo): todas las unidades
+//     iguales, sin distinción (art. 950 CC).
+//   - Los hijos de un hermano premuerto (sobrinos) reciben, entre ellos a
+//     partes iguales, la cuota de estirpe de su padre/madre premuerto,
+//     conforme a las mismas reglas 947-950 (art. 951 CC).
+//
+// FUERA DE ALCANCE (error explícito, calcule manualmente):
+//   - TESTADA: los colaterales no son legitimarios (no incluidos en el
+//     art. 807 CC); si no hay descendientes/ascendientes/cónyuge, todo el
+//     caudal es de libre disposición. Se trata como caso trivial aparte
+//     (100% LIBRE_DISPOSICION_PENDIENTE), sin necesidad de listar hermanos.
+//   - Sin hermanos NI sobrinos identificados: la sucesión corresponde a
+//     colaterales de grado ulterior (tíos, primos... hasta 4º grado, arts.
+//     954-955 CC), no implementado.
+//   - Representación en generación ulterior (sobrinos-nietos, hijos de un
+//     sobrino premuerto): no implementado.
+// ============================================================
+function calcularHerenciaColaterales(input, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta, legatarioPorBien, usufructoConyuge){
+  const adjudicaciones = [];
+
+  // --- TESTADA: colaterales no son legitimarios -> todo libre disposición ---
+  if(input.tipoSucesion === 'testada'){
+    if(caudalNetoCents > 0){
+      adjudicaciones.push({
+        personaId: 'LIBRE_DISPOSICION_PENDIENTE',
+        persona: 'Totalidad del caudal, libre disposición (pendiente de determinar según testamento)',
+        derecho: 'plena_propiedad',
+        cuotaCents: caudalNetoCents,
+        baseLegal: ['art. 807 CC (los hermanos y demás colaterales no son legitimarios)']
+      });
+    }
+    avisos.push(`Sin descendientes, ascendientes ni cónyuge legitimario, y al no ser los hermanos/colaterales legitimarios (art. 807 CC), la TOTALIDAD del caudal neto (${fmt(caudalNetoCents)}) es de libre disposición: su destino depende íntegramente de lo dispuesto en el testamento (institución de heredero, legados). Verifique el testamento y adjudique manualmente.`);
+    return finalizarCalculo(input, adjudicaciones, usufructoConyuge, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta, legatarioPorBien);
+  }
+
+  // --- INTESTADA: arts. 946-951 CC ---
+  const colaterales = input.colaterales || [];
+
+  // "Unidades" de reparto: cada hermano vivo es una unidad; cada hermano
+  // premuerto con nrep>0 representantes (sobrinos) es una unidad cuya cuota
+  // se divide a partes iguales entre sus representantes (art. 951 CC).
+  const unidades = [];
+  colaterales.forEach((c)=>{
+    if(c.estado === 'premuerto'){
+      if((c.nrep||0) > 0){
+        unidades.push({ id:c.id, nombre:c.nombre, vinculo:c.vinculo, premuerto:true, nrep:c.nrep });
+      }
+      // premuerto sin representantes -> no genera unidad (su parte se
+      // refunde entre el resto, igual que un heredero que repudia: el
+      // motor simplemente no le asigna cuota; arts. 921/981 CC).
+    } else {
+      unidades.push({ id:c.id, nombre:c.nombre, vinculo:c.vinculo, premuerto:false, nrep:0 });
+    }
+  });
+
+  if(unidades.length === 0){
+    errores.push('No se ha identificado ningún hermano vivo ni premuerto con representantes (sobrinos) del causante. Sin descendientes, ascendientes ni cónyuge legitimario, y sin hermanos/sobrinos, la sucesión corresponde a otros colaterales hasta el 4º grado (tíos, primos, etc., arts. 954-955 CC), no implementado por este motor. Calcule manualmente.');
+    return {errores, avisos, adjudicaciones:[], caudalNetoCents, liquidacionPrevia, usufructoConyuge, excesosDefectos:[], legatarioPorBien};
+  }
+
+  // Aviso de representación en generación única (mismo principio que para
+  // descendientes: art. 925 CC, aplicado a sobrinos vía art. 951 CC).
+  unidades.forEach(u=>{
+    if(u.premuerto && u.nrep > 1){
+      avisos.push(`Representación de "${u.nombre}" (hermano/a premuerto/a del causante): su cuota se ha repartido en ${u.nrep} partes iguales entre sus hijos (sobrinos del causante), asumiendo que todos pertenecen a la misma generación (art. 951 CC, por remisión a las reglas de los arts. 947-950 CC). Si alguno de esos sobrinos está, a su vez, premuerto y tiene descendencia propia (representación en ulterior generación), el reparto NO sería a partes iguales entre todos — verifique manualmente este supuesto.`);
+    }
+  });
+
+  const hayDobles = unidades.some(u=>u.vinculo === 'doble');
+  const haySencillos = unidades.some(u=>u.vinculo !== 'doble');
+
+  // Determina los "puntos" de cada unidad: doble vínculo = 2 puntos si
+  // concurre con sencillos (art. 949 CC); en caso contrario (solo dobles, o
+  // solo sencillos), todas las unidades valen 1 punto (arts. 947 y 950 CC).
+  let baseLegalReparto;
+  unidades.forEach(u=>{
+    if(hayDobles && haySencillos){
+      u.puntos = (u.vinculo === 'doble') ? 2 : 1;
+    } else {
+      u.puntos = 1;
+    }
+  });
+  if(hayDobles && haySencillos){
+    baseLegalReparto = ['art. 949 CC (concurrencia de hermanos de doble vínculo con medio hermanos: los de doble vínculo toman doble porción que los de vínculo sencillo)'];
+  } else if(hayDobles){
+    baseLegalReparto = unidades.length > 1
+      ? ['art. 947 CC (solo hermanos de doble vínculo: heredan por partes iguales)']
+      : ['art. 946 CC (hermanos e hijos de hermanos suceden con preferencia a los demás colaterales)'];
+  } else {
+    baseLegalReparto = ['art. 950 CC (solo medio hermanos, por parte de padre o de madre: heredan todos por partes iguales, sin distinción)'];
+  }
+  if(unidades.some(u=>u.premuerto)){
+    baseLegalReparto = baseLegalReparto.concat(['art. 951 CC (los hijos de hermanos premuertos -sobrinos- suceden por representación, según las mismas reglas)']);
+    if(unidades.some(u=>!u.premuerto)){
+      baseLegalReparto = baseLegalReparto.concat(['art. 948 CC (concurriendo hermanos con sobrinos, los hermanos heredan por cabezas y los sobrinos por estirpes)']);
+    }
+  }
+
+  const totalPuntos = unidades.reduce((s,u)=>s+u.puntos, 0);
+  // Cuota por punto: repartirEntero garantiza cuadre exacto al céntimo.
+  const cuotasPorPunto = repartirEntero(caudalNetoCents, totalPuntos);
+  let cursor = 0;
+  unidades.forEach(u=>{
+    const cuotaEstirpeCents = cuotasPorPunto.slice(cursor, cursor+u.puntos).reduce((s,c)=>s+c,0);
+    cursor += u.puntos;
+
+    if(!u.premuerto){
+      if(cuotaEstirpeCents > 0){
+        adjudicaciones.push({
+          personaId: u.id,
+          persona: u.nombre,
+          derecho: 'plena_propiedad',
+          cuotaCents: cuotaEstirpeCents,
+          baseLegal: baseLegalReparto.slice()
+        });
+      }
+    } else {
+      // Sobrinos: reparto a partes iguales de la cuota de estirpe (art. 951 CC)
+      const cuotasRep = repartirEntero(cuotaEstirpeCents, u.nrep);
+      for(let k=0;k<u.nrep;k++){
+        if(cuotasRep[k] <= 0) continue;
+        adjudicaciones.push({
+          personaId: u.id+'_rep'+(k+1),
+          persona: `Sobrino/a ${k+1} (hijo/a de ${u.nombre}, premuerto/a)`,
+          derecho: 'plena_propiedad',
+          cuotaCents: cuotasRep[k],
+          baseLegal: baseLegalReparto.slice()
+        });
+      }
+    }
+  });
+
+  avisos.push('Sin descendientes, ascendientes ni cónyuge legitimario (o cónyuge separado/excluido), la herencia corresponde a los hermanos y/o sobrinos del causante por representación (arts. 946-951 CC). El motor NO verifica la inexistencia de descendientes, ascendientes ni cónyuge con derecho preferente (arts. 943-944 CC) más allá de los datos introducidos en las secciones 2/3/3b: confirme que esos campos reflejan la situación real antes de aplicar este reparto.');
+
+  return finalizarCalculo(input, adjudicaciones, usufructoConyuge, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta, legatarioPorBien);
 }
 
 // ============================================================
@@ -7582,8 +7880,9 @@ function calcularHerenciaSinDescendientes(input, avisos, errores, caudalNetoCent
     }
 
     if(ascendientes.length === 0){
-      errores.push('No hay descendientes, cónyuge ni ascendientes (padre/madre) definidos. Este motor cubre cónyuge + descendientes (Fase 1) y cónyuge/ascendientes sin descendientes (v2.0a). Sin ninguno de estos legitimarios, la sucesión corresponde a colaterales (hermanos, etc.), no implementado. Calcule manualmente (arts. 943 y ss. CC para intestada; arts. 913 y ss. CC para testada sin legitimarios).');
-      return {errores, avisos, adjudicaciones:[], caudalNetoCents, liquidacionPrevia, usufructoConyuge, excesosDefectos:[], legatarioPorBien};
+      // v2.0c: sin descendientes, cónyuge ni ascendientes -> colaterales
+      // (hermanos/sobrinos, arts. 946-951 CC; igual en CC común y CDCIB).
+      return calcularHerenciaColaterales(input, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta, legatarioPorBien, usufructoConyuge);
     }
 
     if(input.tipoSucesion === 'intestada'){
@@ -7778,8 +8077,10 @@ function calcularHerenciaBalear(input, avisos, errores, caudalNetoCents, liquida
 
   // --- CASO: NINGUNO (sin cónyuge activo ni padres) ---
   if(!conyugeActivo && ascendientes.length === 0){
-    errores.push('No hay descendientes, cónyuge ni padres definidos. Este motor cubre cónyuge + descendientes (Fase 1) y cónyuge/ascendientes sin descendientes (v2.0a/v2.0b). Sin ninguno de estos legitimarios, la sucesión corresponde a colaterales (hermanos, etc.), no implementado. Calcule manualmente.');
-    return {errores, avisos, adjudicaciones:[], caudalNetoCents, liquidacionPrevia, usufructoConyuge, excesosDefectos:[], legatarioPorBien};
+    // v2.0c: colaterales (hermanos/sobrinos, arts. 946-951 CC). Las CDCIB
+    // (arts. 53/84) remiten al CC para este supuesto -> idéntico en las 4
+    // islas y en CC común, sin ramificación balear adicional.
+    return calcularHerenciaColaterales(input, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta, legatarioPorBien, usufructoConyuge);
   }
 
   // ============================================================
@@ -8117,6 +8418,7 @@ function leerInputDesdeFormulario(){
     heirs,
     padreVivo: document.getElementById('padreVivo').checked,
     madreViva: document.getElementById('madreViva').checked,
+    colaterales: getColaterales(),
     mejora,
     libre,
     legados,
@@ -8145,6 +8447,13 @@ function nombrePersonaAsignacion(personaId, input){
   if(personaId === 'CONYUGE') return 'Cónyuge viudo';
   if(personaId === 'ASCENDIENTE_PADRE') return 'Padre del causante';
   if(personaId === 'ASCENDIENTE_MADRE') return 'Madre del causante';
+  const matchRep = /^(.+)_rep(\d+)$/.exec(personaId);
+  if(matchRep && (input.colaterales||[]).some(c=>c.id===matchRep[1])){
+    const col = (input.colaterales||[]).find(c=>c.id===matchRep[1]);
+    return `Sobrino/a ${matchRep[2]} (hijo/a de ${col.nombre})`;
+  }
+  const colateral = (input.colaterales||[]).find(c=>c.id===personaId);
+  if(colateral) return colateral.nombre;
   const heir = (input.heirs||[]).find(h=>h.id===personaId);
   return heir ? heir.nombre : `(persona no encontrada: ${personaId})`;
 }
