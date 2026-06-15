@@ -521,6 +521,27 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
   /* Checkboxes legibles en papel */
   .cl-check{border:1.5px solid #666!important;background:#fff!important;border-radius:3px;}
   .cl-item.done .cl-check{background:#1A5C3A!important;}
+
+  /* ---- v3.0: vista de herencias — solo se imprime #resultados ----
+     El formulario de entrada (secciones 0-5, botón "Calcular") tiene la
+     clase .herencia-form-block y se oculta; el bloque #resultados (resumen,
+     inventario, comparativa, adjudicaciones, usufructo, cláusula) se
+     imprime tal cual, con la cabecera .print-header común de la app. */
+  #viewHerencias .herencia-form-block{display:none!important;}
+  #viewHerencias .wrap > h1,
+  #viewHerencias .wrap > .sub{display:none!important;}
+  #viewHerencias #resultados{display:block!important;}
+  #viewHerencias #resultados .card{
+    background:#fff;border:1px solid #999;color:#000;
+    box-shadow:none;break-inside:avoid;page-break-inside:avoid;
+  }
+  #viewHerencias #resultados .card *{color:#000!important;}
+  #viewHerencias .result-box{break-inside:avoid;page-break-inside:avoid;border:1px solid #999;}
+  #viewHerencias .result-warn,#viewHerencias .result-err,
+  #viewHerencias .result-info,#viewHerencias .result-ok{background:#fff!important;}
+  #viewHerencias table,#viewHerencias tr{break-inside:avoid;page-break-inside:avoid;}
+  #viewHerencias .clausula-box{background:#fff;border:1px solid #999;}
+  #viewHerencias .toolbar{display:none!important;}
 }
 
 /* ── RESPONSIVE ── */
@@ -1747,10 +1768,42 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
   <div class="view" id="viewHerencias">
     <div class="content">
 <div class="wrap">
+  <div class="print-header">
+    <div style="font-size:17px;font-weight:600;">Cálculo de adjudicación de herencia — Oficial Notarial IA</div>
+    <div style="font-size:11px;color:#78716C;margin-top:3px;" id="printHerenciaMeta"></div>
+  </div>
   <h1>Motor de Cálculo de Herencias — Fase 1</h1>
   <div class="sub">Cónyuge + descendientes · sucesión testada e intestada · derecho común (CC) y régimen foral balear (separación de bienes supletoria). Herramienta de apoyo al cálculo — no sustituye la verificación jurídica del oficial.</div>
 
-  <div class="card">
+  <div class="card herencia-form-block">
+    <h2 style="margin-top:0">0. Guardar / cargar caso</h2>
+    <div style="font-size:11px;color:var(--ink2);margin-bottom:10px;">Los casos se guardan en este navegador (localStorage), no se envían a ningún servidor. Datos de clientes quedan en este equipo: gestione el acceso al dispositivo.</div>
+    <div class="grid3" style="align-items:end;">
+      <div class="field" style="margin:0;">
+        <label>Nombre del caso</label>
+        <input type="text" id="nombreCaso" placeholder="Ej. Herencia García Fernández">
+      </div>
+      <div class="field" style="margin:0;">
+        <button type="button" class="btn btn-sec btn-sm" onclick="guardarCaso()">Guardar caso actual</button>
+      </div>
+      <div class="field" style="margin:0;"></div>
+    </div>
+    <div class="grid3" style="align-items:end;margin-top:8px;">
+      <div class="field" style="margin:0;">
+        <label>Casos guardados</label>
+        <select id="selectorCasos"></select>
+      </div>
+      <div class="field" style="margin:0;">
+        <button type="button" class="btn btn-sec btn-sm" onclick="cargarCaso()">Cargar caso seleccionado</button>
+      </div>
+      <div class="field" style="margin:0;">
+        <button type="button" class="btn btn-del btn-sm" onclick="borrarCaso()">Borrar caso seleccionado</button>
+      </div>
+    </div>
+    <div id="casoMsg" style="font-size:12px;margin-top:6px;"></div>
+  </div>
+
+  <div class="card herencia-form-block">
     <h2 style="margin-top:0">1. Datos del causante y régimen</h2>
     <div class="grid3">
       <div class="field">
@@ -1790,7 +1843,7 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
     </div>
   </div>
 
-  <div class="card">
+  <div class="card herencia-form-block">
     <h2 style="margin-top:0">2. Cónyuge viudo</h2>
     <div class="field">
       <div class="checkbox-line">
@@ -1803,16 +1856,21 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
         <input type="checkbox" id="conyugeSeparado" onchange="recalcularInline()">
         <label style="margin:0;text-transform:none;font-weight:500;">Separado legalmente o de hecho al fallecimiento (art. 834 CC → pierde derecho de usufructo)</label>
       </div>
+      <div class="field" style="max-width:220px;margin-top:8px;">
+        <label>Edad del cónyuge viudo (años)</label>
+        <input type="number" id="edadConyuge" min="0" max="99" step="1" placeholder="Ej. 68">
+        <div style="font-size:11px;color:var(--ink2);margin-top:4px;">Necesaria solo si el cónyuge tiene derecho de usufructo y se quiere informar del valor de conmutación en metálico (art. 839 CC, fórmula art. 26 LISD).</div>
+      </div>
     </div>
   </div>
 
-  <div class="card">
+  <div class="card herencia-form-block">
     <h2 style="margin-top:0">3. Descendientes (estirpes)</h2>
     <div id="heirsContainer"></div>
     <button type="button" class="btn btn-sec btn-sm" onclick="addHeir()">+ Añadir hijo / estirpe</button>
   </div>
 
-  <div class="card" id="testamentoCard">
+  <div class="card herencia-form-block" id="testamentoCard">
     <h2 style="margin-top:0">4. Disposiciones testamentarias</h2>
     <div id="mejoraBlock">
       <div class="field">
@@ -1848,12 +1906,13 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
     <div id="libreDetalle" class="hidden"></div>
   </div>
 
-  <div class="card">
+  <div class="card herencia-form-block">
     <h2 style="margin-top:0">5. Inventario de bienes privativos del causante</h2>
     <div id="bienesContainer"></div>
     <button type="button" class="btn btn-sec btn-sm" onclick="addBien()">+ Añadir bien</button>
     <div style="font-size:11px;color:var(--ink2);margin-top:8px;">El caudal hereditario (bienes privativos) se calcula automáticamente como la suma de los valores de este inventario. Estos bienes son los que se reparten entre cónyuge/herederos según las reglas de legítima, mejora, libre disposición y usufructo calculadas más abajo.</div>
     <div style="margin-top:8px;font-weight:700;">Total inventario de bienes privativos: <span id="totalInventario">0,00 €</span></div>
+    <div style="margin-top:4px;font-weight:700;display:none;">Total hipotecas pendientes sobre bienes del inventario: <span id="totalHipotecas">0,00 €</span></div>
 
     <div class="grid2" id="inventarioGrid" style="margin-top:16px;">
       <div class="field" id="fieldGananciales">
@@ -1878,7 +1937,7 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
     </div>
   </div>
 
-  <div style="margin:20px 0;">
+  <div class="herencia-form-block" style="margin:20px 0;">
     <button class="btn" onclick="calcular()">Calcular adjudicaciones</button>
   </div>
 
@@ -5742,8 +5801,11 @@ document.addEventListener('keydown', function(e){
 
 
 <script>
+
 // ════════════════════════════════════════════════════════
-//  VISTA "HERENCIAS" — Motor de cálculo de herencias (Fase 1 + B)
+//  VISTA "HERENCIAS" — Motor de cálculo de herencias
+//  (Fase 1 + B.1-B.4 + v1.1 guardar/cargar + v2.0.1 hipoteca +
+//   v2.3 conmutación usufructo art.839 CC + v3.0 impresión/PDF)
 //  Cónyuge + descendientes, testada/intestada, separación de
 //  bienes/gananciales, CC y CDCIB Mallorca/Menorca.
 //  100% cálculo local — sin llamadas al Worker/API.
@@ -6019,6 +6081,11 @@ function addBien(){
       </div>
       <button type="button" class="btn btn-del btn-sm" onclick="removeBien('${id}')">Eliminar</button>
     </div>
+    <div class="field" style="margin:0;margin-top:6px;">
+      <label>Saldo pendiente de hipoteca sobre este bien (€) — opcional</label>
+      <input type="number" class="bien-hipoteca" min="0" step="0.01" value="0" oninput="actualizarTotalInventario()">
+      <div style="font-size:11px;color:var(--ink2);margin-top:4px;">Deuda hipotecaria pendiente del causante sobre este bien concreto. Se descuenta del caudal neto junto con el resto de deudas privativas (art. 659 CC). No se modela la subrogación de los adjudicatarios en la deuda: verifíquela manualmente con la entidad acreedora.</div>
+    </div>
     <div class="asig-block">
       <div style="font-size:11px;color:var(--ink2);margin-bottom:6px;">Asignación del bien (proindiviso: puede repartirse entre varias personas, sumando 100%):</div>
       <div class="asignacionesContainer"></div>
@@ -6045,19 +6112,28 @@ function getBienes(){
   rows.forEach(div=>{
     const descripcion = div.querySelector('.bien-descripcion').value || 'Bien sin descripción';
     const valorCents = eurosToCents(div.querySelector('.bien-valor').value);
+    const hipotecaCents = eurosToCents(div.querySelector('.bien-hipoteca').value);
     const asignaciones = Array.from(div.querySelectorAll('.asig-row')).map(row=>({
       personaId: row.querySelector('.asignacion-persona').value,
       pct: parseFloat(row.querySelector('.asignacion-pct').value) || 0
     }));
-    bienes.push({id: div.dataset.bienId, descripcion, valorCents, asignaciones});
+    bienes.push({id: div.dataset.bienId, descripcion, valorCents, hipotecaCents, asignaciones});
   });
   return bienes;
 }
-// Actualiza el total visible del inventario (suma de bienes privativos).
+// Actualiza el total visible del inventario (suma de bienes privativos) y,
+// si hay hipotecas pendientes, el total de hipotecas pendientes.
 function actualizarTotalInventario(){
-  const totalCents = getBienes().reduce((s,b)=>s+b.valorCents,0);
+  const bienes = getBienes();
+  const totalCents = bienes.reduce((s,b)=>s+b.valorCents,0);
+  const totalHipotecasCents = bienes.reduce((s,b)=>s+(b.hipotecaCents||0),0);
   const el = document.getElementById('totalInventario');
   if(el) el.textContent = fmt(totalCents);
+  const elHip = document.getElementById('totalHipotecas');
+  if(elHip){
+    elHip.textContent = fmt(totalHipotecasCents);
+    elHip.parentElement.style.display = totalHipotecasCents > 0 ? '' : 'none';
+  }
 }
 
 // ---- UI: asignación de cada bien a personas (proindiviso, art. 1062 CC) ----
@@ -6317,6 +6393,291 @@ document.getElementById('tipoSucesion').addEventListener('change', toggleMejoraD
 
 function recalcularInline(){ /* placeholder para futuros recálculos en vivo */ }
 
+// ============================================================
+// GUARDAR / CARGAR CASOS (localStorage)
+// ============================================================
+const ONA_HERENCIA_PREFIX = 'ona_herencia_';
+
+function listarCasos(){
+  const casos = [];
+  for(let i=0;i<localStorage.length;i++){
+    const key = localStorage.key(i);
+    if(key && key.indexOf(ONA_HERENCIA_PREFIX)===0){
+      casos.push(key.substring(ONA_HERENCIA_PREFIX.length));
+    }
+  }
+  return casos.sort((a,b)=>a.localeCompare(b,'es'));
+}
+
+function refrescarSelectorCasos(seleccionar){
+  const sel = document.getElementById('selectorCasos');
+  const casos = listarCasos();
+  sel.innerHTML = casos.length===0
+    ? '<option value="">(sin casos guardados)</option>'
+    : casos.map(n=>`<option value="${n}">${n}</option>`).join('');
+  if(seleccionar && casos.includes(seleccionar)) sel.value = seleccionar;
+}
+
+function mostrarMsgCaso(texto, esError){
+  const el = document.getElementById('casoMsg');
+  el.textContent = texto;
+  el.style.color = esError ? 'var(--red)' : 'var(--green)';
+}
+
+function guardarCaso(){
+  const nombre = (document.getElementById('nombreCaso').value || '').trim();
+  if(!nombre){
+    mostrarMsgCaso('Indique un nombre para el caso.', true);
+    return;
+  }
+  const input = leerInputDesdeFormulario();
+  const datos = {version:1, guardado: new Date().toISOString(), input};
+  try{
+    localStorage.setItem(ONA_HERENCIA_PREFIX+nombre, JSON.stringify(datos));
+  } catch(e){
+    mostrarMsgCaso('Error al guardar (almacenamiento lleno o no disponible): '+e.message, true);
+    return;
+  }
+  refrescarSelectorCasos(nombre);
+  mostrarMsgCaso(`Caso "${nombre}" guardado.`, false);
+}
+
+function borrarCaso(){
+  const sel = document.getElementById('selectorCasos');
+  const nombre = sel.value;
+  if(!nombre){
+    mostrarMsgCaso('No hay caso seleccionado.', true);
+    return;
+  }
+  if(!confirm(`¿Borrar el caso "${nombre}"? Esta acción no se puede deshacer.`)) return;
+  localStorage.removeItem(ONA_HERENCIA_PREFIX+nombre);
+  refrescarSelectorCasos();
+  mostrarMsgCaso(`Caso "${nombre}" borrado.`, false);
+}
+
+function cargarCaso(){
+  const sel = document.getElementById('selectorCasos');
+  const nombre = sel.value;
+  if(!nombre){
+    mostrarMsgCaso('No hay caso seleccionado.', true);
+    return;
+  }
+  const raw = localStorage.getItem(ONA_HERENCIA_PREFIX+nombre);
+  if(!raw){
+    mostrarMsgCaso('No se ha encontrado el caso seleccionado.', true);
+    return;
+  }
+  let datos;
+  try{
+    datos = JSON.parse(raw);
+  } catch(e){
+    mostrarMsgCaso('El caso guardado está corrupto y no se puede leer.', true);
+    return;
+  }
+  try{
+    escribirInputEnFormulario(datos.input);
+  } catch(e){
+    mostrarMsgCaso('Error al cargar el caso: '+e.message, true);
+    return;
+  }
+  document.getElementById('nombreCaso').value = nombre;
+  document.getElementById('resultados').innerHTML = '';
+  mostrarMsgCaso(`Caso "${nombre}" cargado (guardado el ${new Date(datos.guardado).toLocaleString('es-ES')}).`, false);
+}
+
+// Rellena un bloque .modo-campos (euros/porcentaje/fraccion) ya generado por
+// toggleModoCampos, con los valores guardados en m (mismo formato que leerModo).
+function aplicarModoGuardado(scopeEl, selectClass, m){
+  if(!m) return;
+  const modoSel = scopeEl.querySelector('.'+selectClass);
+  if(modoSel && m.modo){
+    modoSel.value = m.modo;
+    toggleModoCampos(modoSel);
+  }
+  const campos = scopeEl.querySelector('.modo-campos');
+  if(!campos) return;
+  if(m.modo === 'euros' && campos.querySelector('.modo-euros')){
+    campos.querySelector('.modo-euros').value = m.euros;
+  } else if(m.modo === 'porcentaje' && campos.querySelector('.modo-pct')){
+    campos.querySelector('.modo-pct').value = m.pct;
+  } else if(m.modo === 'fraccion'){
+    if(campos.querySelector('.modo-num')) campos.querySelector('.modo-num').value = m.num;
+    if(campos.querySelector('.modo-den')) campos.querySelector('.modo-den').value = m.den;
+  }
+}
+
+// Reconstruye TODO el formulario a partir de un objeto "input" con el mismo
+// formato que devuelve leerInputDesdeFormulario(). Vacía primero los
+// contenedores dinámicos (herederos, legados, bienes) y los regenera
+// preservando los IDs originales guardados, para que las referencias
+// cruzadas (asignaciones.personaId, legados.bienId, mejora.items.heirId, etc.)
+// sigan siendo válidas.
+function escribirInputEnFormulario(input){
+  if(!input) throw new Error('Caso vacío o con formato no reconocido.');
+
+  // 1. Datos del causante y régimen
+  document.getElementById('vecindad').value = input.vecindadBalear ? 'balear' : 'comun';
+  document.getElementById('isla').value = input.isla || 'mallorca_menorca';
+  document.getElementById('tipoSucesion').value = input.tipoSucesion || 'intestada';
+  document.getElementById('regimen').value = input.regimen || 'separacion_bienes';
+
+  // 2. Cónyuge
+  document.getElementById('conyugeExiste').checked = !!input.conyugeExiste;
+  document.getElementById('conyugeSeparado').checked = !!input.conyugeSeparado;
+  document.getElementById('edadConyuge').value = (input.edadConyuge !== null && input.edadConyuge !== undefined) ? input.edadConyuge : '';
+
+  // 3. Herederos: vaciar y regenerar con IDs originales
+  const heirsContainer = document.getElementById('heirsContainer');
+  heirsContainer.innerHTML = '';
+  const heirs = input.heirs || [];
+  heirs.forEach(h=>{
+    addHeir(); // crea con un nuevo id autogenerado al final del contenedor
+    const div = heirsContainer.lastElementChild;
+    const oldId = div.id;
+    // reasignar al id original guardado para preservar referencias cruzadas
+    div.id = h.id;
+    div.dataset.heirId = h.id;
+    const premuertoBlock = document.getElementById(oldId+'_premuerto');
+    if(premuertoBlock) premuertoBlock.id = h.id+'_premuerto';
+    div.querySelector('.heir-nombre').value = h.nombre || '';
+    div.querySelector('.heir-estado').value = h.estado || 'vivo';
+    div.querySelector('.heir-donacion').value = (h.donacionCents||0)/100;
+    div.querySelector('.heir-dispensa').checked = !!h.dispensa;
+    if(h.estado === 'premuerto'){
+      div.querySelector('.heir-nrep').value = h.nrep || 1;
+    }
+    togglePremuerto(h.id);
+    // actualizar el onclick del botón eliminar y del select de estado, que
+    // referencian el id por valor literal en el HTML generado
+    div.querySelector('.heir-estado').setAttribute('onchange', `togglePremuerto('${h.id}')`);
+    const btnDel = div.querySelector('.btn-del');
+    if(btnDel) btnDel.setAttribute('onclick', `removeHeir('${h.id}')`);
+  });
+  // ajustar heirCounter para que próximos addHeir() no colisionen con ids restaurados
+  let maxHeirN = 0;
+  heirs.forEach(h=>{
+    const m = /^heir_(\d+)$/.exec(h.id);
+    if(m) maxHeirN = Math.max(maxHeirN, parseInt(m[1],10));
+  });
+  if(typeof heirCounter !== 'undefined' && maxHeirN > heirCounter) heirCounter = maxHeirN;
+
+  toggleConyuge();
+  toggleRegimen();
+  toggleTestamento();
+  sincronizarSelectsHerederos();
+
+  // 4. Inventario de bienes (sin asignaciones todavía)
+  const bienesContainer = document.getElementById('bienesContainer');
+  bienesContainer.innerHTML = '';
+  const bienes = input.bienes || [];
+  bienes.forEach(b=>{
+    addBien();
+    const div = bienesContainer.lastElementChild;
+    const oldId = div.id;
+    div.id = b.id;
+    div.dataset.bienId = b.id;
+    div.querySelector('.bien-descripcion').value = b.descripcion || '';
+    div.querySelector('.bien-valor').value = (b.valorCents||0)/100;
+    div.querySelector('.bien-hipoteca').value = (b.hipotecaCents||0)/100;
+    const btnDel = div.querySelector('.bien-row .btn-del');
+    if(btnDel) btnDel.setAttribute('onclick', `removeBien('${b.id}')`);
+    const btnAsig = div.querySelector('.asig-block .btn-sec');
+    if(btnAsig) btnAsig.setAttribute('onclick', `addAsignacion('${b.id}')`);
+    // limpiar la asignación por defecto creada por addBien(); se rellenan abajo
+    div.querySelector('.asignacionesContainer').innerHTML = '';
+  });
+  let maxBienN = 0;
+  bienes.forEach(b=>{
+    const m = /^bien_(\d+)$/.exec(b.id);
+    if(m) maxBienN = Math.max(maxBienN, parseInt(m[1],10));
+  });
+  if(typeof bienCounter !== 'undefined' && maxBienN > bienCounter) bienCounter = maxBienN;
+
+  actualizarTotalInventario();
+  regenerarPersonasAsignaciones(); // recalcula opciones de persona disponibles (heirs + cónyuge)
+
+  // 5. Asignaciones de cada bien (ahora que las personas ya existen en el DOM)
+  bienes.forEach(b=>{
+    const div = document.getElementById(b.id);
+    const asignaciones = b.asignaciones || [];
+    asignaciones.forEach(a=>{
+      addAsignacion(b.id);
+      const cont = div.querySelector('.asignacionesContainer');
+      const row = cont.lastElementChild;
+      const selPersona = row.querySelector('.asignacion-persona');
+      if(selPersona) selPersona.value = a.personaId;
+      row.querySelector('.asignacion-pct').value = a.pct;
+    });
+    actualizarTotalBien(b.id);
+  });
+
+  // 6. Legados (solo si testada)
+  const legadosContainer = document.getElementById('legadosContainer');
+  legadosContainer.innerHTML = '';
+  const legados = input.legados || [];
+  legados.forEach(l=>{
+    addLegado();
+    const div = legadosContainer.lastElementChild;
+    const oldId = div.id;
+    div.id = l.id;
+    div.dataset.legadoId = l.id;
+    const btnDel = div.querySelector('.btn-del');
+    if(btnDel) btnDel.setAttribute('onclick', `removeLegado('${l.id}')`);
+    div.querySelector('.legado-nombre').value = l.nombre || '';
+    div.querySelector('.legado-tipo').value = l.tipo || 'metalico';
+    if(l.tipo === 'cosa_cierta'){
+      toggleLegadoTipo(div.querySelector('.legado-tipo'));
+      const bienSel = div.querySelector('.legado-bien');
+      if(bienSel && l.bienId) bienSel.value = l.bienId;
+    } else {
+      aplicarModoGuardado(div, 'legado-modo', l);
+    }
+  });
+  let maxLegadoN = 0;
+  legados.forEach(l=>{
+    const m = /^legado_(\d+)$/.exec(l.id);
+    if(m) maxLegadoN = Math.max(maxLegadoN, parseInt(m[1],10));
+  });
+  if(typeof legadoCounter !== 'undefined' && maxLegadoN > legadoCounter) legadoCounter = maxLegadoN;
+
+  // 7. Mejora y libre disposición (solo si testada)
+  if(input.tipoSucesion === 'testada'){
+    const mejora = input.mejora || {tipo:'reparto_igual'};
+    document.getElementById('mejoraTipo').value = mejora.tipo || 'reparto_igual';
+    toggleMejoraDetalle();
+    if(mejora.tipo === 'un_heredero' && mejora.heirId){
+      const sel = document.getElementById('mejoraUnHeredero');
+      if(sel) sel.value = mejora.heirId;
+    } else if(mejora.tipo === 'varios' && Array.isArray(mejora.items)){
+      mejora.items.forEach(item=>{
+        const el = document.querySelector(`.mejora-item[data-heir="${item.heirId}"]`);
+        if(el) aplicarModoGuardado(el, 'mejora-modo', item);
+      });
+    }
+
+    const libre = input.libre || {tipo:'descendientes_igual'};
+    document.getElementById('libreTipo').value = libre.tipo || 'descendientes_igual';
+    toggleLibreDetalle();
+    if(libre.tipo === 'un_heredero' && libre.heirId){
+      const sel = document.getElementById('libreUnHeredero');
+      if(sel) sel.value = libre.heirId;
+    }
+  }
+
+  // 8. Cifras globales
+  document.getElementById('bienesGananciales').value = (input.gananciales||0)/100;
+  document.getElementById('deudasGananciales').value = (input.deudasGananciales||0)/100;
+  document.getElementById('deudasPrivativas').value = (input.deudasPrivativas||0)/100;
+  document.getElementById('donacionesTerceros').value = (input.donacionesTercerosCents||0)/100;
+
+  checkWarnings();
+  toggleMejoraVisibilidadBalear();
+}
+
+// inicializar selector de casos guardados al cargar la página
+refrescarSelectorCasos();
+
+
 // inicial: un heredero por defecto
 addHeir();
 addHeir();
@@ -6443,11 +6804,20 @@ function calcularHerencia(input){
     }
   }
 
-  // --- Paso 2: caudal neto (se descuentan las deudas/gastos privativos del causante) ---
-  const caudalNetoCents = caudalBrutoCents - (input.deudasPrivativas || 0);
+  // --- Paso 2: caudal neto (se descuentan las deudas/gastos privativos del causante,
+  // incluidas las hipotecas pendientes sobre bienes concretos del inventario) ---
+  const caudalNetoCents = caudalBrutoCents - (input.deudasPrivativas || 0) - (input.hipotecasCents || 0);
   if(caudalNetoCents < 0){
-    errores.push('El caudal neto resultante es negativo (las deudas privativas superan el activo hereditario del causante). Revisar el inventario; no procede cálculo de adjudicaciones.');
+    errores.push('El caudal neto resultante es negativo (las deudas privativas y/o hipotecas pendientes superan el activo hereditario del causante). Revisar el inventario; no procede cálculo de adjudicaciones.');
     return {errores, avisos, adjudicaciones:[], caudalNetoCents, liquidacionPrevia};
+  }
+
+  if((input.hipotecasCents || 0) > 0){
+    const detalleHipotecas = (input.bienes||[])
+      .filter(b=>(b.hipotecaCents||0) > 0)
+      .map(b=>`${b.descripcion} (${fmt(b.hipotecaCents)})`)
+      .join(', ');
+    avisos.push(`Se han declarado hipotecas pendientes sobre bienes del inventario por un total de ${fmt(input.hipotecasCents)} [${detalleHipotecas}], que se han descontado del caudal neto como deuda del causante (art. 659 CC). El motor NO calcula la subrogación de los adjudicatarios en dicha deuda ni su distribución proporcional entre los que reciban el bien hipotecado: verifique con la entidad acreedora si procede subrogación, novación o simple asunción de la deuda, y refleje el acuerdo en la escritura.`);
   }
 
   // --- Construir lista de "unidades" de reparto (estirpes -> representantes) ---
@@ -7011,6 +7381,34 @@ function calcularHerencia(input){
     }
   }
 
+  // ============================================================
+  // PASO 7 (v2.3): VALOR DE CONMUTACIÓN DEL USUFRUCTO (art. 839 CC,
+  // fórmula art. 26 LISD) — solo informativo, NO recalcula adjudicaciones.
+  // ============================================================
+  // El usufructo vidual puede sustituirse por un capital en efectivo a
+  // elección de los herederos (art. 839 CC). El importe de referencia se
+  // calcula con la fórmula de la LISD (art. 26): valor = base * (89-edad)/100,
+  // con un mínimo del 10% y un máximo del 70% de la base. La base es el
+  // valor de la fracción del caudal sobre la que recae el usufructo (no el
+  // caudal total).
+  if(usufructoConyuge.aplica){
+    if(input.edadConyuge === null || input.edadConyuge === undefined || isNaN(input.edadConyuge)){
+      avisos.push('No se ha indicado la edad del cónyuge viudo (sección 2): no se calcula el valor de conmutación del usufructo en metálico (art. 839 CC). Indíquela si se desea este dato informativo.');
+    } else if(input.edadConyuge < 0 || input.edadConyuge > 99){
+      avisos.push(`La edad del cónyuge viudo indicada (${input.edadConyuge}) está fuera del rango admitido (0-99 años) para la fórmula del art. 26 LISD. No se calcula el valor de conmutación.`);
+    } else {
+      const baseUsufructoCents = Math.round(caudalNetoCents * usufructoConyuge.fraccion);
+      let pctConmutacion = (89 - input.edadConyuge) / 100;
+      if(pctConmutacion < 0.10) pctConmutacion = 0.10;
+      if(pctConmutacion > 0.70) pctConmutacion = 0.70;
+      const valorConmutacionCents = Math.round(baseUsufructoCents * pctConmutacion);
+      usufructoConyuge.valorConmutacionCents = valorConmutacionCents;
+      usufructoConyuge.pctConmutacion = pctConmutacion;
+      usufructoConyuge.edadConyuge = input.edadConyuge;
+      usufructoConyuge.baseConmutacionCents = baseUsufructoCents;
+    }
+  }
+
   return { caudalNetoCents, liquidacionPrevia, adjudicaciones, usufructoConyuge, avisos, errores, excesosDefectos, legatarioPorBien };
 }
 
@@ -7102,6 +7500,9 @@ function leerInputDesdeFormulario(){
     regimen: document.getElementById('regimen').value,
     conyugeExiste: document.getElementById('conyugeExiste').checked,
     conyugeSeparado: document.getElementById('conyugeExiste').checked && document.getElementById('conyugeSeparado').checked,
+    edadConyuge: document.getElementById('conyugeExiste').checked && document.getElementById('edadConyuge').value !== ''
+      ? parseInt(document.getElementById('edadConyuge').value, 10)
+      : null,
     heirs,
     mejora,
     libre,
@@ -7109,6 +7510,7 @@ function leerInputDesdeFormulario(){
     bienes,
     gananciales: eurosToCents(document.getElementById('bienesGananciales').value),
     privativos: bienes.reduce((s,b)=>s+b.valorCents,0),
+    hipotecasCents: bienes.reduce((s,b)=>s+(b.hipotecaCents||0),0),
     deudasGananciales: eurosToCents(document.getElementById('deudasGananciales').value),
     deudasPrivativas: eurosToCents(document.getElementById('deudasPrivativas').value),
     donacionesTercerosCents: eurosToCents(document.getElementById('donacionesTerceros').value)
@@ -7152,7 +7554,7 @@ function renderResultados(out, input){
     </table>
     ${(input.bienes && input.bienes.length) ? `<div style="margin-top:12px;font-weight:700;">Inventario de bienes privativos considerado:</div>
     <table>
-      <thead><tr><th>Bien</th><th class="num">Valor</th><th>Asignado a</th></tr></thead>
+      <thead><tr><th>Bien</th><th class="num">Valor</th><th class="num">Hipoteca pendiente</th><th>Asignado a</th></tr></thead>
       <tbody>
         ${input.bienes.map(b=>{
           let asigTxt;
@@ -7163,7 +7565,8 @@ function renderResultados(out, input){
           } else {
             asigTxt = '<span style="color:var(--ink2);">sin asignar</span>';
           }
-          return `<tr><td>${b.descripcion}</td><td class="num">${fmt(b.valorCents)}</td><td>${asigTxt}</td></tr>`;
+          const hipTxt = (b.hipotecaCents||0) > 0 ? fmt(b.hipotecaCents) : '<span style="color:var(--ink2);">—</span>';
+          return `<tr><td>${b.descripcion}</td><td class="num">${fmt(b.valorCents)}</td><td class="num">${hipTxt}</td><td>${asigTxt}</td></tr>`;
         }).join('')}
       </tbody>
     </table>` : ''}
@@ -7211,6 +7614,8 @@ function renderResultados(out, input){
         <tr><td>Fracción</td><td class="num">${fmtFrac(out.usufructoConyuge.fraccion)}</td></tr>
         <tr><td>Base legal</td><td>${out.usufructoConyuge.baseLegal}</td></tr>
         <tr><td>Conmutable</td><td>${out.usufructoConyuge.conmutable ? 'Sí — '+out.usufructoConyuge.notaConmutacion : 'No'}</td></tr>
+        ${out.usufructoConyuge.valorConmutacionCents !== undefined ? `<tr><td>Valor conmutable en metálico (art. 839 CC)</td><td class="num"><strong>${fmt(out.usufructoConyuge.valorConmutacionCents)}</strong></td></tr>
+        <tr><td colspan="2" style="font-size:11px;color:var(--ink2);">Calculado según edad del cónyuge (${out.usufructoConyuge.edadConyuge} años) y fórmula del art. 26 LISD sobre el valor de la fracción usufructuada (${fmt(out.usufructoConyuge.baseConmutacionCents)}): ${(out.usufructoConyuge.pctConmutacion*100).toFixed(0)}% de dicha fracción. Dato meramente informativo: si los herederos optan por la conmutación, este importe debe compensarse a cargo de los nudos propietarios — ajuste manual de las adjudicaciones.</td></tr>` : ''}
       </table>
     </div>`;
   } else if(input.conyugeExiste && !input.conyugeSeparado && input.heirs.length>0){
@@ -7222,6 +7627,7 @@ function renderResultados(out, input){
     <div class="clausula-box">${generarClausula(out, input)}</div>
     <div class="toolbar">
       <button class="btn btn-sec btn-sm" onclick="copiarClausula()">Copiar texto</button>
+      <button class="btn btn-sec btn-sm" onclick="imprimirResultados()">Imprimir / Exportar PDF</button>
     </div>
   </div>`;
 
@@ -7247,6 +7653,9 @@ function generarClausula(out, input){
     txt += `\n— Al cónyuge viudo se le atribuye el USUFRUCTO VITALICIO sobre ${fmtFrac(out.usufructoConyuge.fraccion)} del caudal hereditario (${out.usufructoConyuge.baseLegal}).\n`;
     if(out.usufructoConyuge.conmutable){
       txt += `\nADVERTENCIA AL OFICIAL: ${out.usufructoConyuge.notaConmutacion} Si los herederos optan por la conmutación, esta cláusula debe sustituirse en consecuencia.\n`;
+      if(out.usufructoConyuge.valorConmutacionCents !== undefined){
+        txt += `A título meramente informativo, el valor de conmutación en metálico de este usufructo, calculado conforme al art. 26 LISD según la edad del cónyuge (${out.usufructoConyuge.edadConyuge} años), asciende a ${fmt(out.usufructoConyuge.valorConmutacionCents)}. Este importe NO está incorporado a las adjudicaciones anteriores: si se opta por la conmutación, debe compensarse a cargo de los nudos propietarios y recalcularse manualmente la adjudicación.\n`;
+      }
     }
   }
 
@@ -7304,6 +7713,20 @@ function copiarClausula(){
   } else {
     alert('El portapapeles no está disponible en este contexto (p.ej. al abrir el archivo directamente, sin servidor). Seleccione el texto manualmente y copie con Ctrl+C / Cmd+C.');
   }
+}
+
+// v3.0: imprime/exporta a PDF solo el contenido de #resultados (ver @media
+// print). Rellena la fecha de la cabecera de impresión justo antes de
+// invocar el diálogo de impresión del navegador (Ctrl+P / "Guardar como PDF").
+function imprimirResultados(){
+  const cont = document.getElementById('resultados');
+  if(!cont || !cont.innerHTML.trim()){
+    alert('No hay resultados que imprimir. Pulse primero "Calcular adjudicaciones".');
+    return;
+  }
+  const fechaEl = document.getElementById('printHerenciaMeta');
+  if(fechaEl) fechaEl.textContent = 'Cálculo generado el ' + new Date().toLocaleString('es-ES');
+  window.print();
 }
 </script>
 
