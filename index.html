@@ -1870,6 +1870,21 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
     <button type="button" class="btn btn-sec btn-sm" onclick="addHeir()">+ Añadir hijo / estirpe</button>
   </div>
 
+  <div class="card herencia-form-block">
+    <h2 style="margin-top:0">3b. Ascendientes del causante (solo si NO hay descendientes)</h2>
+    <div style="font-size:11px;color:var(--ink2);margin-bottom:10px;">Si hay descendientes (sección 3), esta sección se ignora: el motor aplica las reglas de legítima de descendientes (Fase 1). Si NO hay descendientes, indique aquí si los padres del causante viven, para aplicar las reglas de legítima de ascendientes (art. 809-810, 837-838, 944 CC; arts. 43 y 45 CDCIB en Mallorca/Menorca).</div>
+    <div class="grid2">
+      <div class="checkbox-line">
+        <input type="checkbox" id="padreVivo" onchange="regenerarPersonasAsignaciones()">
+        <label style="margin:0;text-transform:none;font-weight:500;">Padre del causante vivo</label>
+      </div>
+      <div class="checkbox-line">
+        <input type="checkbox" id="madreViva" onchange="regenerarPersonasAsignaciones()">
+        <label style="margin:0;text-transform:none;font-weight:500;">Madre del causante viva</label>
+      </div>
+    </div>
+  </div>
+
   <div class="card herencia-form-block" id="testamentoCard">
     <h2 style="margin-top:0">4. Disposiciones testamentarias</h2>
     <div id="mejoraBlock">
@@ -5805,11 +5820,14 @@ document.addEventListener('keydown', function(e){
 // ════════════════════════════════════════════════════════
 //  VISTA "HERENCIAS" — Motor de cálculo de herencias
 //  (Fase 1 + B.1-B.4 + v1.1 guardar/cargar + v2.0.1 hipoteca +
-//   v2.3 conmutación usufructo art.839 CC + v3.0 impresión/PDF)
-//  Cónyuge + descendientes, testada/intestada, separación de
-//  bienes/gananciales, CC y CDCIB Mallorca/Menorca.
+//   v2.3 conmutación usufructo art.839 CC + v3.0 impresión/PDF +
+//   v2.0a sucesión sin descendientes, derecho común)
+//  Cónyuge + descendientes (Fase 1), o cónyuge/ascendientes sin
+//  descendientes (v2.0a), testada/intestada, separación de
+//  bienes/gananciales, CC y CDCIB Mallorca/Menorca (descendientes).
 //  100% cálculo local — sin llamadas al Worker/API.
 // ════════════════════════════════════════════════════════
+
 /* =========================================================
    MOTOR DE CÁLCULO — FASE 1
    Cónyuge + descendientes, testada/intestada,
@@ -6142,8 +6160,27 @@ function actualizarTotalInventario(){
 // NOTA: los legatarios de "cosa cierta" (sección 4) NO aparecen aquí todavía;
 // vincular legados de cosa cierta a bienes del inventario es una ampliación
 // posterior (Fase B.4), distinta de esta asignación entre legitimarios/cónyuge.
+// Lista de personas que pueden recibir bienes del inventario (sección 5,
+// proindiviso). Si hay descendientes, son los herederos + cónyuge (Fase 1).
+// Si NO hay descendientes (v2.0a), son los ascendientes vivos (padre/madre
+// del causante, según checkboxes de la sección 3b) + cónyuge.
 function getPersonasDisponibles(){
-  const personas = getHeirs().map(h=>({id:h.id, nombre:h.nombre}));
+  const heirs = getHeirs();
+  if(heirs.length > 0){
+    const personas = heirs.map(h=>({id:h.id, nombre:h.nombre}));
+    if(document.getElementById('conyugeExiste').checked){
+      personas.push({id:'CONYUGE', nombre:'Cónyuge viudo'});
+    }
+    return personas;
+  }
+  // Sin descendientes: ascendientes vivos + cónyuge
+  const personas = [];
+  if(document.getElementById('padreVivo').checked){
+    personas.push({id:'ASCENDIENTE_PADRE', nombre:'Padre del causante'});
+  }
+  if(document.getElementById('madreViva').checked){
+    personas.push({id:'ASCENDIENTE_MADRE', nombre:'Madre del causante'});
+  }
   if(document.getElementById('conyugeExiste').checked){
     personas.push({id:'CONYUGE', nombre:'Cónyuge viudo'});
   }
@@ -6561,6 +6598,9 @@ function escribirInputEnFormulario(input){
   });
   if(typeof heirCounter !== 'undefined' && maxHeirN > heirCounter) heirCounter = maxHeirN;
 
+  document.getElementById('padreVivo').checked = !!input.padreVivo;
+  document.getElementById('madreViva').checked = !!input.madreViva;
+
   toggleConyuge();
   toggleRegimen();
   toggleTestamento();
@@ -6746,12 +6786,10 @@ function calcularHerencia(input){
     return {errores, avisos, adjudicaciones:[], caudalNetoCents:0};
   }
 
-  // --- Validaciones de elegibilidad (Fase 1) ---
-  if(input.heirs.length === 0){
-    errores.push('No hay descendientes definidos. Este motor (Fase 1) cubre exclusivamente casos con cónyuge + descendientes. Sin descendientes, deriva a otros órdenes sucesorios (Fase 3, no implementada).');
-    return {errores, avisos, adjudicaciones:[], caudalNetoCents:0};
-  }
-
+  // --- v2.0a: si no hay descendientes, la rama de legítima/usufructo es
+  // distinta (ascendientes/cónyuge solo, arts. 809-810, 837-838, 944 CC;
+  // arts. 43/45 CDCIB en Mallorca/Menorca). Se valida más abajo, tras
+  // calcular el caudal neto (común a ambas ramas).
   // --- Determinación de la rama legal aplicable ---
   // 'cdcib_mallorca_menorca' aplica las reglas de los arts. 42 y 45 CDCIB
   // (legítima 1/3 o 1/2 según nº de hijos, sin tercio de mejora, usufructo
@@ -6759,7 +6797,7 @@ function calcularHerencia(input){
   // Ibiza/Formentera) usa las reglas del Código Civil común, con aviso si
   // corresponde.
   const esCDCIBMallorcaMenorca = input.vecindadBalear && input.isla === 'mallorca_menorca';
-  if(input.vecindadBalear && input.isla === 'ibiza_formentera'){
+  if(input.vecindadBalear && input.isla === 'ibiza_formentera' && input.heirs.length > 0){
     avisos.push('Vecindad civil balear (Ibiza/Formentera): el régimen sucesorio específico de estas islas no está implementado. El cálculo se ha realizado conforme al Código Civil común, lo cual puede no ser correcto en materia de legítimas y usufructo vidual. Verifique manualmente la legítima y el usufructo vidual aplicables según la CDCIB para Ibiza/Formentera.');
   }
 
@@ -6767,7 +6805,7 @@ function calcularHerencia(input){
     avisos.push('Vecindad civil balear con régimen de gananciales: el régimen supletorio balear es separación de bienes. Verificar que existen capitulaciones matrimoniales expresas que establezcan gananciales.');
   }
 
-  if((input.donacionesTercerosCents || 0) > 0){
+  if((input.donacionesTercerosCents || 0) > 0 && input.heirs.length > 0){
     avisos.push(`Se han declarado donaciones del causante a terceros no herederos en vida por importe de ${fmt(input.donacionesTercerosCents)}. A efectos de fijar la legítima de los descendientes (art. 818 CC), la masa de cálculo debe incluir estas donaciones además del relictum; la legítima resultante de este informe puede estar INFRAVALORADA. Si, sumando estas donaciones, la legítima no queda cubierta con el caudal relicto, dichas donaciones a terceros son reducibles ANTES que las hechas a los propios legitimarios, y entre sí por orden cronológico inverso (arts. 654-656 CC). Calcule manualmente la legítima sobre relictum + donaciones a terceros y compárela con lo aquí adjudicado.`);
   }
 
@@ -6818,6 +6856,15 @@ function calcularHerencia(input){
       .map(b=>`${b.descripcion} (${fmt(b.hipotecaCents)})`)
       .join(', ');
     avisos.push(`Se han declarado hipotecas pendientes sobre bienes del inventario por un total de ${fmt(input.hipotecasCents)} [${detalleHipotecas}], que se han descontado del caudal neto como deuda del causante (art. 659 CC). El motor NO calcula la subrogación de los adjudicatarios en dicha deuda ni su distribución proporcional entre los que reciban el bien hipotecado: verifique con la entidad acreedora si procede subrogación, novación o simple asunción de la deuda, y refleje el acuerdo en la escritura.`);
+  }
+
+  // --- v2.0a: SIN DESCENDIENTES — rama de ascendientes/cónyuge solo ---
+  // (arts. 809-810, 837-838, 944 CC; CDCIB Mallorca/Menorca arts. 43/45
+  // pendiente en v2.0b para esta rama). Delegamos en una función propia para
+  // no interferir con la rama de descendientes (Fase 1/B), ya validada con
+  // 169 tests.
+  if(input.heirs.length === 0){
+    return calcularHerenciaSinDescendientes(input, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta);
   }
 
   // --- Construir lista de "unidades" de reparto (estirpes -> representantes) ---
@@ -7308,6 +7355,17 @@ function calcularHerencia(input){
     }
   }
 
+  return finalizarCalculo(input, adjudicaciones, usufructoConyuge, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta, legatarioPorBien);
+}
+
+// ============================================================
+// finalizarCalculo: pasos comunes a AMBAS ramas (con y sin descendientes):
+//  - Paso 5: validación de cuadre (suma adjudicaciones == caudal neto)
+//  - Paso 6 (B.2): comparativa bienes asignados vs. derecho teórico + aviso TPO
+//  - Paso 7 (v2.3): valor de conmutación del usufructo (art. 839 CC / art. 26 LISD)
+// Devuelve el objeto de resultado final de calcularHerencia.
+// ============================================================
+function finalizarCalculo(input, adjudicaciones, usufructoConyuge, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta, legatarioPorBien){
   // --- Paso 5: validación de cuadre ---
   let totalAsignado = 0;
   adjudicaciones.forEach(a=> totalAsignado += a.cuotaCents);
@@ -7318,68 +7376,7 @@ function calcularHerencia(input){
   // ============================================================
   // PASO 6 (Fase B.2): COMPARATIVA BIENES ASIGNADOS vs. DERECHO TEÓRICO
   // ============================================================
-  // Para cada heredero/estirpe y para el cónyuge (si existe), compara el
-  // valor de los bienes del inventario que se le han asignado (sección
-  // "Asignación del bien") con su derecho teórico (suma de sus filas de
-  // adjudicación, plena + nuda propiedad). La diferencia es el exceso o
-  // defecto de adjudicación a efectos del art. 1062 CC.
-  //
-  // NOTA: si el cónyuge tiene usufructo (usufructoConyuge.aplica), ese
-  // derecho NO se incluye aquí en su "derecho teórico": es un derecho de
-  // uso/disfrute, conmutable en metálico (art. 839 CC), no la propiedad de
-  // un bien concreto. Si los herederos optan por conmutar el usufructo en
-  // dinero, ese importe debe descontarse adicionalmente de los nudos
-  // propietarios — no está modelado en esta comparativa (revisar manualmente).
-  const excesosDefectos = [];
-  {
-    const personas = input.heirs.map(h=>({id:h.id, nombre:h.nombre}));
-    if(input.conyugeExiste) personas.push({id:'CONYUGE', nombre:'Cónyuge viudo'});
-
-    personas.forEach(p=>{
-      let idsRelevantes;
-      if(p.id === 'CONYUGE'){
-        idsRelevantes = ['CONYUGE'];
-      } else {
-        const h = input.heirs.find(x=>x.id===p.id);
-        idsRelevantes = h.estado==='premuerto'
-          ? Array.from({length:h.nrep},(_,k)=>h.id+'_rep'+(k+1))
-          : [h.id];
-      }
-      const cuotaTeoricaCents = adjudicaciones
-        .filter(a=>idsRelevantes.includes(a.personaId))
-        .reduce((s,a)=>s+a.cuotaCents,0);
-
-      let bienesAsignadosCents = 0;
-      (input.bienes||[]).forEach(b=>{
-        if(bienIdsLegadoCosaCierta.has(b.id)) return; // B.4: va íntegro al legatario, no a herederos/cónyuge
-        (b.asignaciones||[]).forEach(a=>{
-          if(a.personaId === p.id){
-            bienesAsignadosCents += Math.round(b.valorCents * (a.pct||0) / 100);
-          }
-        });
-      });
-
-      excesosDefectos.push({
-        personaId: p.id,
-        persona: p.nombre,
-        cuotaTeoricaCents,
-        bienesAsignadosCents,
-        diferenciaCents: bienesAsignadosCents - cuotaTeoricaCents
-      });
-    });
-  }
-
-  // Aviso art. 1062 CC: si la asignación de bienes del inventario produce un
-  // exceso de adjudicación para alguna persona, advertir sobre el régimen de
-  // exención de TPO (indivisibilidad + compensación en dinero), que el motor
-  // NO verifica.
-  {
-    const conExceso = excesosDefectos.filter(e=>e.diferenciaCents > 0);
-    if(conExceso.length > 0){
-      const detalle = conExceso.map(e=>`${e.persona} (exceso de ${fmt(e.diferenciaCents)})`).join('; ');
-      avisos.push(`EXCESO DE ADJUDICACIÓN (art. 1062 CC): según la asignación de bienes del inventario, ${detalle} recibe(n) más valor en bienes que su derecho teórico sobre la herencia. Este exceso solo queda exento de Transmisiones Patrimoniales Onerosas (TPO) si concurren AMBAS condiciones: (a) el/los bien(es) adjudicado(s) son indivisibles o de división muy costosa, y (b) el exceso se compensa al perjudicado EN DINERO (no con otro bien ni a costa de su legítima). El motor NO verifica ninguna de las dos condiciones. Si no concurren, el exceso tributa por TPO a cargo de quien lo recibe. Verifique ambas circunstancias antes de incorporar la adjudicación a la escritura.`);
-    }
-  }
+  const excesosDefectos = calcularExcesosYAvisoTPO(input, adjudicaciones, bienIdsLegadoCosaCierta, avisos);
 
   // ============================================================
   // PASO 7 (v2.3): VALOR DE CONMUTACIÓN DEL USUFRUCTO (art. 839 CC,
@@ -7411,6 +7408,327 @@ function calcularHerencia(input){
 
   return { caudalNetoCents, liquidacionPrevia, adjudicaciones, usufructoConyuge, avisos, errores, excesosDefectos, legatarioPorBien };
 }
+
+// ============================================================
+// PASO 6 (Fase B.2) extraído: COMPARATIVA BIENES ASIGNADOS vs. DERECHO
+// TEÓRICO + aviso de exceso de adjudicación (art. 1062 CC).
+// Para cada heredero/estirpe (o ascendiente, v2.0a) y para el cónyuge (si
+// existe), compara el valor de los bienes del inventario que se le han
+// asignado (sección "Asignación del bien") con su derecho teórico (suma de
+// sus filas de adjudicación, plena + nuda propiedad). La diferencia es el
+// exceso o defecto de adjudicación a efectos del art. 1062 CC.
+//
+// NOTA: si el cónyuge tiene usufructo (usufructoConyuge.aplica), ese derecho
+// NO se incluye aquí en su "derecho teórico": es un derecho de uso/disfrute,
+// conmutable en metálico (art. 839 CC), no la propiedad de un bien concreto.
+// ============================================================
+function calcularExcesosYAvisoTPO(input, adjudicaciones, bienIdsLegadoCosaCierta, avisos){
+  const excesosDefectos = [];
+  let personas;
+  if(input.heirs.length > 0){
+    personas = input.heirs.map(h=>({id:h.id, nombre:h.nombre}));
+    if(input.conyugeExiste) personas.push({id:'CONYUGE', nombre:'Cónyuge viudo'});
+  } else {
+    // v2.0a: sin descendientes, las personas relevantes son los
+    // ascendientes vivos + cónyuge (mismos IDs que getPersonasDisponibles).
+    personas = [];
+    if(input.padreVivo) personas.push({id:'ASCENDIENTE_PADRE', nombre:'Padre del causante'});
+    if(input.madreViva) personas.push({id:'ASCENDIENTE_MADRE', nombre:'Madre del causante'});
+    if(input.conyugeExiste) personas.push({id:'CONYUGE', nombre:'Cónyuge viudo'});
+  }
+
+  personas.forEach(p=>{
+    let idsRelevantes;
+    if(p.id === 'CONYUGE' || p.id === 'ASCENDIENTE_PADRE' || p.id === 'ASCENDIENTE_MADRE'){
+      idsRelevantes = [p.id];
+    } else {
+      const h = input.heirs.find(x=>x.id===p.id);
+      idsRelevantes = h.estado==='premuerto'
+        ? Array.from({length:h.nrep},(_,k)=>h.id+'_rep'+(k+1))
+        : [h.id];
+    }
+    const cuotaTeoricaCents = adjudicaciones
+      .filter(a=>idsRelevantes.includes(a.personaId))
+      .reduce((s,a)=>s+a.cuotaCents,0);
+
+    let bienesAsignadosCents = 0;
+    (input.bienes||[]).forEach(b=>{
+      if(bienIdsLegadoCosaCierta.has(b.id)) return; // B.4: va íntegro al legatario, no a herederos/cónyuge
+      (b.asignaciones||[]).forEach(a=>{
+        if(a.personaId === p.id){
+          bienesAsignadosCents += Math.round(b.valorCents * (a.pct||0) / 100);
+        }
+      });
+    });
+
+    excesosDefectos.push({
+      personaId: p.id,
+      persona: p.nombre,
+      cuotaTeoricaCents,
+      bienesAsignadosCents,
+      diferenciaCents: bienesAsignadosCents - cuotaTeoricaCents
+    });
+  });
+
+  // Aviso art. 1062 CC: si la asignación de bienes del inventario produce un
+  // exceso de adjudicación para alguna persona, advertir sobre el régimen de
+  // exención de TPO (indivisibilidad + compensación en dinero), que el motor
+  // NO verifica.
+  const conExceso = excesosDefectos.filter(e=>e.diferenciaCents > 0);
+  if(conExceso.length > 0){
+    const detalle = conExceso.map(e=>`${e.persona} (exceso de ${fmt(e.diferenciaCents)})`).join('; ');
+    avisos.push(`EXCESO DE ADJUDICACIÓN (art. 1062 CC): según la asignación de bienes del inventario, ${detalle} recibe(n) más valor en bienes que su derecho teórico sobre la herencia. Este exceso solo queda exento de Transmisiones Patrimoniales Onerosas (TPO) si concurren AMBAS condiciones: (a) el/los bien(es) adjudicado(s) son indivisibles o de división muy costosa, y (b) el exceso se compensa al perjudicado EN DINERO (no con otro bien ni a costa de su legítima). El motor NO verifica ninguna de las dos condiciones. Si no concurren, el exceso tributa por TPO a cargo de quien lo recibe. Verifique ambas circunstancias antes de incorporar la adjudicación a la escritura.`);
+  }
+
+  return excesosDefectos;
+}
+
+// ============================================================
+// v2.0a — SUCESIÓN SIN DESCENDIENTES (cónyuge solo / ascendientes)
+// ============================================================
+// Cubre, en DERECHO COMÚN (CC), los casos en que el causante no tiene
+// descendientes (input.heirs.length === 0):
+//   - Cónyuge + ascendientes (padre y/o madre vivos)
+//   - Solo cónyuge (sin ascendientes)
+//   - Solo ascendientes (sin cónyuge)
+//   - Ninguno de los anteriores -> error (fuera de alcance: colaterales)
+//
+// Reglas aplicadas (CC común; CDCIB Mallorca/Menorca arts. 43/45 pendiente
+// de v2.0b para esta rama -> error si vecindadBalear):
+//   INTESTADA:
+//     - Cónyuge + ascendientes: ascendientes 1/2 en PLENA PROPIEDAD
+//       (repartido entre los vivos); cónyuge USUFRUCTO de 1/2 (art. 837 CC),
+//       que grava la mitad de los ascendientes (pasan a NUDA PROPIEDAD en
+//       esa porción).
+//     - Solo cónyuge: 100% PLENA PROPIEDAD (art. 944 CC).
+//     - Solo ascendientes: 100% PLENA PROPIEDAD, repartido entre los vivos.
+//   TESTADA:
+//     - Cónyuge + ascendientes: legítima ascendientes = 1/3 del haber neto
+//       en PLENA PROPIEDAD (art. 809 CC, con cónyuge), repartida entre los
+//       vivos; resto (2/3) = libre disposición (pendiente de determinar por
+//       el testador, no asignado por este motor). Cónyuge: USUFRUCTO de 1/2
+//       del haber TOTAL (art. 837 CC), que grava proporcionalmente tanto la
+//       legítima de ascendientes como el tercio libre (ambas masas pasan
+//       parcialmente a NUDA PROPIEDAD).
+//     - Solo cónyuge: USUFRUCTO de 2/3 (art. 838 CC) + resto 1/3 = libre
+//       disposición (pendiente de determinar).
+//     - Solo ascendientes: legítima = 1/2 del haber neto en PLENA PROPIEDAD
+//       (art. 809 CC, sin cónyuge), repartida entre los vivos; resto 1/2 =
+//       libre disposición (pendiente de determinar).
+//
+// El "tercio/resto de libre disposición pendiente de determinar" se incluye
+// como una fila de adjudicación especial (personaId 'LIBRE_DISPOSICION_PENDIENTE')
+// para que el total cuadre con el caudal neto, y se avisa de que el motor no
+// determina su destinatario (depende del testamento concreto).
+// ============================================================
+function calcularHerenciaSinDescendientes(input, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta){
+  const legatarioPorBien = {};
+
+  // Legados/mejora/libre definidos por el usuario no se procesan en esta
+  // rama (alcance v2.0a): avisar si el usuario rellenó algo de eso.
+  if((input.legados||[]).length > 0){
+    avisos.push('Se han definido legados a terceros (sección 4), pero sin descendientes este motor (v2.0a) no procesa legados: se han ignorado. Si el causante otorgó legados a terceros no legitimarios, deben imputarse manualmente al tercio de libre disposición (art. 819 CC) e indicarse en la escritura.');
+  }
+
+  // v2.0b (Baleares, sin descendientes) todavía no implementado: error claro
+  // en lugar de aplicar silenciosamente reglas de derecho común que pueden
+  // ser incorrectas para Mallorca/Menorca (arts. 43/45 CDCIB) o
+  // Ibiza/Formentera (arts. 79/84 CDCIB).
+  if(input.vecindadBalear){
+    errores.push('Vecindad civil balear sin descendientes: el régimen específico de legítima de ascendientes y usufructo vidual en la Compilación de Derecho Civil de las Islas Baleares (arts. 43 y 45 CDCIB para Mallorca/Menorca; arts. 79 y 84 CDCIB para Ibiza/Formentera) no está implementado todavía en este motor (pendiente v2.0b). No se realiza el cálculo para evitar aplicar por error las reglas del Código Civil común, que difieren de las baleares en este escenario. Calcule manualmente.');
+    return {errores, avisos, adjudicaciones:[], caudalNetoCents, liquidacionPrevia, usufructoConyuge:{aplica:false, tipo:null, fraccion:0, baseLegal:'', conmutable:false, notaConmutacion:''}, excesosDefectos:[], legatarioPorBien};
+  }
+
+  const conyugeActivo = input.conyugeExiste && !input.conyugeSeparado;
+
+  // Ascendientes vivos (padre/madre del causante)
+  const ascendientes = [];
+  if(input.padreVivo) ascendientes.push({id:'ASCENDIENTE_PADRE', nombre:'Padre del causante'});
+  if(input.madreViva) ascendientes.push({id:'ASCENDIENTE_MADRE', nombre:'Madre del causante'});
+
+  let adjudicaciones = [];
+  let usufructoConyuge = { aplica:false, tipo:null, fraccion:0, baseLegal:'', conmutable:false, notaConmutacion:'' };
+  const NOTA_CONMUTACION = 'Art. 839 CC: los herederos pueden satisfacer al cónyuge su derecho de usufructo asignándole una renta vitalicia, los productos de determinados bienes, o un capital en efectivo, a elección de los herederos.';
+
+  // Reparte un importe en plena propiedad entre los ascendientes vivos
+  // (a partes iguales si son dos; íntegro al superviviente si es uno),
+  // empujando filas de adjudicación. baseLegal es un array de citas.
+  function repartirEntreAscendientes(importeCents, baseLegal, gravadoUsufructo){
+    if(ascendientes.length === 0) return;
+    const cuotas = repartirEntero(importeCents, ascendientes.length);
+    ascendientes.forEach((asc,i)=>{
+      if(cuotas[i] <= 0) return;
+      adjudicaciones.push({
+        personaId: asc.id,
+        persona: asc.nombre,
+        derecho: gravadoUsufructo ? 'nuda_propiedad' : 'plena_propiedad',
+        cuotaCents: cuotas[i],
+        baseLegal: baseLegal.slice()
+      });
+    });
+  }
+
+  // ---------------------------------------------------------------
+  // CASO: SIN CÓNYUGE ACTIVO
+  // ---------------------------------------------------------------
+  if(!conyugeActivo){
+    if(input.conyugeExiste && input.conyugeSeparado){
+      avisos.push('Cónyuge viudo separado legalmente o de hecho al fallecimiento: no es legitimario y no tiene derecho de usufructo (art. 834 CC). Se excluye de los cálculos.');
+    }
+
+    if(ascendientes.length === 0){
+      errores.push('No hay descendientes, cónyuge ni ascendientes (padre/madre) definidos. Este motor cubre cónyuge + descendientes (Fase 1) y cónyuge/ascendientes sin descendientes (v2.0a). Sin ninguno de estos legitimarios, la sucesión corresponde a colaterales (hermanos, etc.), no implementado. Calcule manualmente (arts. 943 y ss. CC para intestada; arts. 913 y ss. CC para testada sin legitimarios).');
+      return {errores, avisos, adjudicaciones:[], caudalNetoCents, liquidacionPrevia, usufructoConyuge, excesosDefectos:[], legatarioPorBien};
+    }
+
+    if(input.tipoSucesion === 'intestada'){
+      // Solo ascendientes, intestada: 100% PP repartido (arts. 935-942 CC)
+      repartirEntreAscendientes(caudalNetoCents, ['arts. 935-942 CC (sucesión intestada en línea recta ascendente, sin descendientes ni cónyuge)'], false);
+    } else {
+      // Solo ascendientes, testada: legítima 1/2 PP (art. 809 CC, sin cónyuge)
+      // + resto 1/2 = libre disposición (pendiente).
+      const legitimaCents = Math.round(caudalNetoCents / 2);
+      const libreCents = caudalNetoCents - legitimaCents;
+      repartirEntreAscendientes(legitimaCents, ['art. 809 CC (legítima de los padres/ascendientes = 1/2 del haber hereditario, sin concurrencia de cónyuge)'], false);
+      if(libreCents > 0){
+        adjudicaciones.push({
+          personaId: 'LIBRE_DISPOSICION_PENDIENTE',
+          persona: 'Tercio de libre disposición (pendiente de determinar según testamento)',
+          derecho: 'plena_propiedad',
+          cuotaCents: libreCents,
+          baseLegal: ['art. 809 CC (resto de libre disposición, 1/2 del haber)']
+        });
+        avisos.push(`El motor ha calculado la legítima de los ascendientes (${fmt(legitimaCents)}, mitad del haber neto, art. 809 CC) pero NO determina el destino de la otra mitad (${fmt(libreCents)}), de libre disposición: depende de lo dispuesto en el testamento concreto (institución de heredero, legados, sustituciones). Verifique el testamento y adjudique manualmente esa porción.`);
+      }
+    }
+
+    return finalizarCalculo(input, adjudicaciones, usufructoConyuge, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta, legatarioPorBien);
+  }
+
+  // ---------------------------------------------------------------
+  // CASO: CÓNYUGE ACTIVO, SIN ASCENDIENTES
+  // ---------------------------------------------------------------
+  if(ascendientes.length === 0){
+    if(input.tipoSucesion === 'intestada'){
+      // Solo cónyuge, intestada: 100% PP (art. 944 CC)
+      adjudicaciones.push({
+        personaId: 'CONYUGE',
+        persona: 'Cónyuge viudo',
+        derecho: 'plena_propiedad',
+        cuotaCents: caudalNetoCents,
+        baseLegal: ['art. 944 CC (a falta de descendientes y ascendientes, el cónyuge viudo sucede en la totalidad de la herencia)']
+      });
+    } else {
+      // Solo cónyuge, testada: usufructo 2/3 (art. 838 CC) + resto 1/3 libre
+      // disposición (pendiente).
+      usufructoConyuge = {
+        aplica: true,
+        tipo: 'solo_conyuge_sin_ascendientes',
+        fraccion: 2/3,
+        baseLegal: 'Usufructo de dos tercios del caudal hereditario a favor del cónyuge viudo, al no concurrir descendientes ni ascendientes del causante (art. 838 CC).',
+        conmutable: true,
+        notaConmutacion: NOTA_CONMUTACION
+      };
+      const tercioLibreCents = Math.round(caudalNetoCents / 3);
+      const tercioGravadoCents = caudalNetoCents - tercioLibreCents;
+      adjudicaciones.push({
+        personaId: 'LIBRE_DISPOSICION_PENDIENTE',
+        persona: 'Tercio de libre disposición, libre de usufructo (pendiente de determinar según testamento)',
+        derecho: 'plena_propiedad',
+        cuotaCents: tercioLibreCents,
+        baseLegal: ['art. 838 CC (tercio no gravado por el usufructo del cónyuge)']
+      });
+      if(tercioGravadoCents > 0){
+        adjudicaciones.push({
+          personaId: 'LIBRE_DISPOSICION_PENDIENTE',
+          persona: 'Resto del caudal, gravado por el usufructo del cónyuge (pendiente de determinar según testamento)',
+          derecho: 'nuda_propiedad',
+          cuotaCents: tercioGravadoCents,
+          baseLegal: ['art. 838 CC (dos tercios gravados por el usufructo universal de dos tercios del cónyuge viudo)']
+        });
+      }
+      avisos.push(`Sin descendientes ni ascendientes, el cónyuge viudo tiene legítima en usufructo de dos tercios del caudal (${fmt(Math.round(caudalNetoCents*2/3))}, art. 838 CC). El motor NO determina el destino de la nuda/plena propiedad (${fmt(caudalNetoCents)} en total): depende de lo dispuesto en el testamento (institución de heredero — puede ser el propio cónyuge en plena propiedad si el testador así lo dispuso, u otra persona). Verifique el testamento y adjudique manualmente.`);
+    }
+    return finalizarCalculo(input, adjudicaciones, usufructoConyuge, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta, legatarioPorBien);
+  }
+
+  // ---------------------------------------------------------------
+  // CASO: CÓNYUGE ACTIVO + ASCENDIENTES
+  // ---------------------------------------------------------------
+  if(input.tipoSucesion === 'intestada'){
+    // Ascendientes 1/2 PP (repartido), cónyuge usufructo 1/2 (art. 837 CC),
+    // que grava esa misma mitad de los ascendientes (pasan a NUDA PROPIEDAD).
+    const mitadCents = Math.round(caudalNetoCents / 2);
+    const otraMitadCents = caudalNetoCents - mitadCents;
+    repartirEntreAscendientes(mitadCents, ['arts. 935-945 CC (sucesión intestada, ascendientes en concurrencia con cónyuge)'], true);
+    // La segunda mitad (gravada por el usufructo) también corresponde a los
+    // ascendientes en NUDA PROPIEDAD, ya que no hay otros legitimarios.
+    repartirEntreAscendientes(otraMitadCents, ['arts. 935-945 CC (sucesión intestada, ascendientes en concurrencia con cónyuge)'], true);
+    usufructoConyuge = {
+      aplica: true,
+      tipo: 'ascendientes_intestada',
+      fraccion: 1/2,
+      baseLegal: 'Usufructo de la mitad del caudal hereditario a favor del cónyuge viudo, al concurrir con ascendientes del causante y no existir descendientes (art. 837 CC, aplicado en sucesión intestada). Los ascendientes reciben la totalidad de la herencia en nuda propiedad, gravada por este usufructo.',
+      conmutable: true,
+      notaConmutacion: NOTA_CONMUTACION
+    };
+  } else {
+    // Testada: legítima ascendientes = 1/3 PP (art. 809 CC con cónyuge);
+    // resto 2/3 = libre disposición (pendiente). Cónyuge: usufructo 1/2 del
+    // TOTAL (art. 837 CC), que grava proporcionalmente ambas masas.
+    const legitimaCents = Math.round(caudalNetoCents / 3);
+    const libreCents = caudalNetoCents - legitimaCents;
+
+    // El usufructo de 1/2 del total grava proporcionalmente legítima y
+    // libre disposición: de cada masa, la mitad queda en nuda propiedad.
+    const legitimaNudaCents = Math.round(legitimaCents / 2);
+    const legitimaPlenaCents = legitimaCents - legitimaNudaCents;
+    const libreNudaCents = Math.round(libreCents / 2);
+    const librePlenaCents = libreCents - libreNudaCents;
+
+    if(legitimaPlenaCents > 0){
+      repartirEntreAscendientes(legitimaPlenaCents, ['art. 809 CC (legítima de los padres/ascendientes = 1/3 del haber hereditario, en concurrencia con cónyuge)'], false);
+    }
+    if(legitimaNudaCents > 0){
+      repartirEntreAscendientes(legitimaNudaCents, ['art. 809 CC (legítima de los padres/ascendientes = 1/3 del haber hereditario, en concurrencia con cónyuge)', 'art. 837 CC (usufructo vidual sobre esta porción)'], true);
+    }
+    if(librePlenaCents > 0){
+      adjudicaciones.push({
+        personaId: 'LIBRE_DISPOSICION_PENDIENTE',
+        persona: 'Tercio de libre disposición, en plena propiedad (pendiente de determinar según testamento)',
+        derecho: 'plena_propiedad',
+        cuotaCents: librePlenaCents,
+        baseLegal: ['art. 809 CC (resto de libre disposición, 2/3 del haber)']
+      });
+    }
+    if(libreNudaCents > 0){
+      adjudicaciones.push({
+        personaId: 'LIBRE_DISPOSICION_PENDIENTE',
+        persona: 'Tercio de libre disposición, en nuda propiedad por el usufructo del cónyuge (pendiente de determinar según testamento)',
+        derecho: 'nuda_propiedad',
+        cuotaCents: libreNudaCents,
+        baseLegal: ['art. 809 CC (resto de libre disposición, 2/3 del haber)', 'art. 837 CC (usufructo vidual sobre esta porción)']
+      });
+    }
+
+    usufructoConyuge = {
+      aplica: true,
+      tipo: 'ascendientes_testada',
+      fraccion: 1/2,
+      baseLegal: 'Usufructo de la mitad del caudal hereditario a favor del cónyuge viudo, al concurrir con ascendientes del causante y no existir descendientes (art. 837 CC). Este usufructo grava proporcionalmente tanto la legítima de los ascendientes (1/3, art. 809 CC) como el tercio de libre disposición.',
+      conmutable: true,
+      notaConmutacion: NOTA_CONMUTACION
+    };
+
+    if(libreCents > 0){
+      avisos.push(`El motor ha calculado la legítima de los ascendientes (${fmt(legitimaCents)}, 1/3 del haber neto, art. 809 CC) y el usufructo del cónyuge sobre la mitad del total (${fmt(Math.round(caudalNetoCents/2))}, art. 837 CC), pero NO determina el destino en plena/nuda propiedad del tercio de libre disposición (${fmt(libreCents)}) más allá del gravamen del usufructo: depende de lo dispuesto en el testamento concreto. Verifique el testamento y adjudique manualmente esa porción.`);
+    }
+  }
+
+  return finalizarCalculo(input, adjudicaciones, usufructoConyuge, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta, legatarioPorBien);
+}
+
+
 
 // Reparte la cuota de una estirpe entre sus representantes (si premuerto)
 // y empuja las filas de adjudicación correspondientes.
@@ -7504,6 +7822,8 @@ function leerInputDesdeFormulario(){
       ? parseInt(document.getElementById('edadConyuge').value, 10)
       : null,
     heirs,
+    padreVivo: document.getElementById('padreVivo').checked,
+    madreViva: document.getElementById('madreViva').checked,
     mejora,
     libre,
     legados,
@@ -7530,6 +7850,8 @@ function calcular(){
 // a un nombre legible para mostrar en el inventario.
 function nombrePersonaAsignacion(personaId, input){
   if(personaId === 'CONYUGE') return 'Cónyuge viudo';
+  if(personaId === 'ASCENDIENTE_PADRE') return 'Padre del causante';
+  if(personaId === 'ASCENDIENTE_MADRE') return 'Madre del causante';
   const heir = (input.heirs||[]).find(h=>h.id===personaId);
   return heir ? heir.nombre : `(persona no encontrada: ${personaId})`;
 }
