@@ -5821,10 +5821,13 @@ document.addEventListener('keydown', function(e){
 //  VISTA "HERENCIAS" — Motor de cálculo de herencias
 //  (Fase 1 + B.1-B.4 + v1.1 guardar/cargar + v2.0.1 hipoteca +
 //   v2.3 conmutación usufructo art.839 CC + v3.0 impresión/PDF +
-//   v2.0a sucesión sin descendientes, derecho común)
-//  Cónyuge + descendientes (Fase 1), o cónyuge/ascendientes sin
-//  descendientes (v2.0a), testada/intestada, separación de
-//  bienes/gananciales, CC y CDCIB Mallorca/Menorca (descendientes).
+//   v2.0a sucesión sin descendientes (derecho común) +
+//   v2.0b sucesión sin descendientes, vecindad balear CDCIB
+//   Mallorca/Menorca arts.43/45 e Ibiza/Formentera arts.79/84)
+//  Cónyuge + descendientes (Fase 1, CC y CDCIB Mallorca/Menorca), o
+//  cónyuge/ascendientes (padres) sin descendientes (v2.0a derecho
+//  común, v2.0b CDCIB balear), testada/intestada, separación de
+//  bienes/gananciales.
 //  100% cálculo local — sin llamadas al Worker/API.
 // ════════════════════════════════════════════════════════
 
@@ -7530,14 +7533,11 @@ function calcularHerenciaSinDescendientes(input, avisos, errores, caudalNetoCent
     avisos.push('Se han definido legados a terceros (sección 4), pero sin descendientes este motor (v2.0a) no procesa legados: se han ignorado. Si el causante otorgó legados a terceros no legitimarios, deben imputarse manualmente al tercio de libre disposición (art. 819 CC) e indicarse en la escritura.');
   }
 
-  // v2.0b (Baleares, sin descendientes) todavía no implementado: error claro
-  // en lugar de aplicar silenciosamente reglas de derecho común que pueden
-  // ser incorrectas para Mallorca/Menorca (arts. 43/45 CDCIB) o
-  // Ibiza/Formentera (arts. 79/84 CDCIB).
-  if(input.vecindadBalear){
-    errores.push('Vecindad civil balear sin descendientes: el régimen específico de legítima de ascendientes y usufructo vidual en la Compilación de Derecho Civil de las Islas Baleares (arts. 43 y 45 CDCIB para Mallorca/Menorca; arts. 79 y 84 CDCIB para Ibiza/Formentera) no está implementado todavía en este motor (pendiente v2.0b). No se realiza el cálculo para evitar aplicar por error las reglas del Código Civil común, que difieren de las baleares en este escenario. Calcule manualmente.');
-    return {errores, avisos, adjudicaciones:[], caudalNetoCents, liquidacionPrevia, usufructoConyuge:{aplica:false, tipo:null, fraccion:0, baseLegal:'', conmutable:false, notaConmutacion:''}, excesosDefectos:[], legatarioPorBien};
-  }
+  // v2.0b: Baleares (sin descendientes) — CDCIB Mallorca/Menorca (arts. 41,
+  // 43, 45) o Ibiza/Formentera (arts. 79, 84). La ramificación se hace más
+  // abajo, una vez calculados ascendientes/cónyugeActivo y definidos los
+  // helpers comunes (repartirEntreAscendientes, NOTA_CONMUTACION), que
+  // calcularHerenciaBalear reutiliza.
 
   const conyugeActivo = input.conyugeExiste && !input.conyugeSeparado;
 
@@ -7566,6 +7566,11 @@ function calcularHerenciaSinDescendientes(input, avisos, errores, caudalNetoCent
         baseLegal: baseLegal.slice()
       });
     });
+  }
+
+  // v2.0b: ramificación a CDCIB (Mallorca/Menorca o Ibiza/Formentera).
+  if(input.vecindadBalear){
+    return calcularHerenciaBalear(input, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta, legatarioPorBien, conyugeActivo, ascendientes, adjudicaciones, usufructoConyuge, repartirEntreAscendientes, NOTA_CONMUTACION);
   }
 
   // ---------------------------------------------------------------
@@ -7730,9 +7735,297 @@ function calcularHerenciaSinDescendientes(input, avisos, errores, caudalNetoCent
 
 
 
+// ============================================================
+// v2.0b — SUCESIÓN SIN DESCENDIENTES, VECINDAD CIVIL BALEAR (CDCIB)
+// ============================================================
+// Recibe los mismos helpers/estado que calcularHerenciaSinDescendientes ya
+// tiene calculados (ascendientes, conyugeActivo, adjudicaciones,
+// usufructoConyuge, repartirEntreAscendientes, NOTA_CONMUTACION) para no
+// duplicar esa lógica. Cubre dos regímenes:
+//
+// MALLORCA/MENORCA (arts. 41, 43, 45 CDCIB — texto literal verificado):
+//   - Legitimarios sin descendientes: padres (art. 41) + cónyuge.
+//   - Legítima de padres (art. 43): 1/4 del haber, repartido por mitad si
+//     ambos viven, o íntegro al superviviente.
+//   - Usufructo cónyuge (art. 45): 2/3 si concurre con padres; usufructo
+//     UNIVERSAL "en los demás supuestos" (sin padres, sin descendientes).
+//   - Intestada (art. 53): se rige por el CC salvo el usufructo del art. 45.
+//     -> cónyuge+padres intestada: padres 100% PP (repartido), de los
+//        cuales 2/3 gravados por el usufructo del cónyuge (en vez de 1/2
+//        como en CC común, v2.0a).
+//
+// IBIZA/FORMENTERA (arts. 79, 84 CDCIB — texto literal verificado):
+//   - Legitimarios: hijos/descendientes y padres. El CÓNYUGE NO ES
+//     LEGITIMARIO (art. 79) -> en testada, sin legítima ni usufructo legal
+//     para el cónyuge.
+//   - Legítima de padres (art. 79, remite a arts. 809/810.1 CC): sin
+//     legítima de cónyuge, = 1/2 del haber (art. 809 CC "sin cónyuge").
+//   - Derecho de usufructo INTESTADO específico del cónyuge (art. 84,
+//     texto literal): "el cónyuge viudo adquirirá... el usufructo de...
+//     dos terceras partes de la herencia en concurrencia con ascendientes."
+//     Es un derecho ab intestato, NO legítima -> solo aplica en intestada.
+//   - Art. 84 es una ADICIÓN al CC, no sustitución total (STSJ Baleares
+//     4/2012, 24-oct-2012: "en defecto de descendientes y ascendientes...
+//     aplica el art. 944 CC al cónyuge sobreviviente" -> solo cónyuge sin
+//     padres, intestada = 100% PP, art. 944 CC, igual que en CC común).
+// ============================================================
+function calcularHerenciaBalear(input, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta, legatarioPorBien, conyugeActivo, ascendientes, adjudicaciones, usufructoConyuge, repartirEntreAscendientes, NOTA_CONMUTACION){
+  const esMallorcaMenorca = input.isla === 'mallorca_menorca';
+
+  if(input.conyugeExiste && input.conyugeSeparado){
+    avisos.push('Cónyuge viudo separado legalmente o de hecho al fallecimiento: no es legitimario y no tiene derecho de usufructo (art. 834 CC, aplicable también en derecho balear). Se excluye de los cálculos.');
+  }
+
+  // --- CASO: NINGUNO (sin cónyuge activo ni padres) ---
+  if(!conyugeActivo && ascendientes.length === 0){
+    errores.push('No hay descendientes, cónyuge ni padres definidos. Este motor cubre cónyuge + descendientes (Fase 1) y cónyuge/ascendientes sin descendientes (v2.0a/v2.0b). Sin ninguno de estos legitimarios, la sucesión corresponde a colaterales (hermanos, etc.), no implementado. Calcule manualmente.');
+    return {errores, avisos, adjudicaciones:[], caudalNetoCents, liquidacionPrevia, usufructoConyuge, excesosDefectos:[], legatarioPorBien};
+  }
+
+  // ============================================================
+  // MALLORCA / MENORCA (arts. 41, 43, 45 CDCIB)
+  // ============================================================
+  if(esMallorcaMenorca){
+    // --- Solo padres (sin cónyuge activo) ---
+    if(!conyugeActivo){
+      if(input.tipoSucesion === 'intestada'){
+        // CC puro: 100% PP repartido (sin especialidad CDCIB sin cónyuge)
+        repartirEntreAscendientes(caudalNetoCents, ['arts. 935-942 CC (sucesión intestada en línea recta ascendente, sin descendientes ni cónyuge; sin especialidad CDCIB en ausencia de cónyuge)'], false);
+      } else {
+        // Legítima 1/4 PP (art. 43 CDCIB) + resto 3/4 libre disposición (pendiente)
+        const legitimaCents = Math.round(caudalNetoCents / 4);
+        const libreCents = caudalNetoCents - legitimaCents;
+        repartirEntreAscendientes(legitimaCents, ['art. 43 CDCIB (legítima de los padres = 1/4 del haber hereditario, Mallorca/Menorca)'], false);
+        if(libreCents > 0){
+          adjudicaciones.push({
+            personaId: 'LIBRE_DISPOSICION_PENDIENTE',
+            persona: 'Resto de libre disposición (3/4 del haber, pendiente de determinar según testamento)',
+            derecho: 'plena_propiedad',
+            cuotaCents: libreCents,
+            baseLegal: ['art. 43 CDCIB (resto de libre disposición, 3/4 del haber)']
+          });
+          avisos.push(`El motor ha calculado la legítima de los padres (${fmt(legitimaCents)}, 1/4 del haber neto, art. 43 CDCIB) pero NO determina el destino del resto (${fmt(libreCents)}), de libre disposición: depende de lo dispuesto en el testamento concreto. Verifique el testamento y adjudique manualmente esa porción.`);
+        }
+      }
+      return finalizarCalculo(input, adjudicaciones, usufructoConyuge, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta, legatarioPorBien);
+    }
+
+    // --- Solo cónyuge (sin padres) ---
+    if(ascendientes.length === 0){
+      if(input.tipoSucesion === 'intestada'){
+        // CC: 100% PP (art. 944 CC). El usufructo universal del art. 45
+        // CDCIB ("en los demás supuestos") no añade nada aquí: si el
+        // cónyuge ya recibe el 100% en plena propiedad por el art. 944 CC,
+        // no hay nuda propiedad de otros legitimarios que gravar.
+        adjudicaciones.push({
+          personaId: 'CONYUGE',
+          persona: 'Cónyuge viudo',
+          derecho: 'plena_propiedad',
+          cuotaCents: caudalNetoCents,
+          baseLegal: ['art. 944 CC (a falta de descendientes y ascendientes, el cónyuge viudo sucede en la totalidad de la herencia)', 'art. 53 CDCIB (la sucesión intestada se rige por el Código Civil)']
+        });
+      } else {
+        // Testada: usufructo UNIVERSAL (art. 45 CDCIB, "en los demás
+        // supuestos") + nuda propiedad pendiente (testamento).
+        usufructoConyuge = {
+          aplica: true,
+          tipo: 'balear_mallorca_solo_conyuge',
+          fraccion: 1,
+          baseLegal: 'Usufructo universal (totalidad del caudal hereditario) a favor del cónyuge viudo, al no concurrir descendientes ni ascendientes (padres) del causante (art. 45 CDCIB, Mallorca/Menorca: "en los demás supuestos, el usufructo universal").',
+          conmutable: true,
+          notaConmutacion: NOTA_CONMUTACION
+        };
+        adjudicaciones.push({
+          personaId: 'LIBRE_DISPOSICION_PENDIENTE',
+          persona: 'Totalidad del caudal, en nuda propiedad por el usufructo universal del cónyuge (pendiente de determinar según testamento)',
+          derecho: 'nuda_propiedad',
+          cuotaCents: caudalNetoCents,
+          baseLegal: ['art. 45 CDCIB (usufructo universal del cónyuge viudo)']
+        });
+        avisos.push(`Sin descendientes ni padres, el cónyuge viudo tiene legítima en usufructo universal (la totalidad del caudal, ${fmt(caudalNetoCents)}, art. 45 CDCIB). El motor NO determina el destino de la nuda propiedad: depende de lo dispuesto en el testamento (institución de heredero). Verifique el testamento y adjudique manualmente.`);
+      }
+      return finalizarCalculo(input, adjudicaciones, usufructoConyuge, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta, legatarioPorBien);
+    }
+
+    // --- Cónyuge + padres ---
+    if(input.tipoSucesion === 'intestada'){
+      // Padres 100% PP (repartido), de los cuales 2/3 gravados por el
+      // usufructo del cónyuge (art. 45 CDCIB: "concurriendo con padres, el
+      // usufructo de dos tercios"), 1/3 libres de gravamen.
+      const gravadoCents = Math.round(caudalNetoCents * 2/3);
+      const libreGravamenCents = caudalNetoCents - gravadoCents;
+      repartirEntreAscendientes(libreGravamenCents, ['arts. 935-945 CC (sucesión intestada, padres en concurrencia con cónyuge)', 'art. 53 CDCIB (la sucesión intestada se rige por el Código Civil, sin perjuicio del usufructo del art. 45)'], false);
+      repartirEntreAscendientes(gravadoCents, ['arts. 935-945 CC (sucesión intestada, padres en concurrencia con cónyuge)', 'art. 45 CDCIB (usufructo de dos tercios del cónyuge viudo en concurrencia con padres)'], true);
+      usufructoConyuge = {
+        aplica: true,
+        tipo: 'balear_mallorca_padres_intestada',
+        fraccion: 2/3,
+        baseLegal: 'Usufructo de dos tercios del caudal hereditario a favor del cónyuge viudo, al concurrir con los padres del causante y no existir descendientes (art. 45 CDCIB, Mallorca/Menorca; art. 53 CDCIB: la sucesión intestada se rige por el Código Civil sin perjuicio de este derecho). Los padres reciben la totalidad de la herencia en plena/nuda propiedad según lo indicado.',
+        conmutable: true,
+        notaConmutacion: NOTA_CONMUTACION
+      };
+    } else {
+      // Testada: legítima padres = 1/4 PP (art. 43 CDCIB); resto 3/4 = libre
+      // disposición (pendiente). Cónyuge: usufructo 2/3 del TOTAL (art. 45
+      // CDCIB), que grava proporcionalmente ambas masas.
+      const legitimaCents = Math.round(caudalNetoCents / 4);
+      const libreCents = caudalNetoCents - legitimaCents;
+
+      // El usufructo de 2/3 del total grava proporcionalmente legítima y
+      // libre disposición: de cada masa, 2/3 quedan en nuda propiedad y 1/3
+      // en plena propiedad.
+      const legitimaNudaCents = Math.round(legitimaCents * 2/3);
+      const legitimaPlenaCents = legitimaCents - legitimaNudaCents;
+      const libreNudaCents = Math.round(libreCents * 2/3);
+      const librePlenaCents = libreCents - libreNudaCents;
+
+      if(legitimaPlenaCents > 0){
+        repartirEntreAscendientes(legitimaPlenaCents, ['art. 43 CDCIB (legítima de los padres = 1/4 del haber hereditario, Mallorca/Menorca)'], false);
+      }
+      if(legitimaNudaCents > 0){
+        repartirEntreAscendientes(legitimaNudaCents, ['art. 43 CDCIB (legítima de los padres = 1/4 del haber hereditario, Mallorca/Menorca)', 'art. 45 CDCIB (usufructo de dos tercios del cónyuge viudo sobre esta porción)'], true);
+      }
+      if(librePlenaCents > 0){
+        adjudicaciones.push({
+          personaId: 'LIBRE_DISPOSICION_PENDIENTE',
+          persona: 'Resto de libre disposición, en plena propiedad (pendiente de determinar según testamento)',
+          derecho: 'plena_propiedad',
+          cuotaCents: librePlenaCents,
+          baseLegal: ['art. 43 CDCIB (resto de libre disposición, 3/4 del haber)']
+        });
+      }
+      if(libreNudaCents > 0){
+        adjudicaciones.push({
+          personaId: 'LIBRE_DISPOSICION_PENDIENTE',
+          persona: 'Resto de libre disposición, en nuda propiedad por el usufructo del cónyuge (pendiente de determinar según testamento)',
+          derecho: 'nuda_propiedad',
+          cuotaCents: libreNudaCents,
+          baseLegal: ['art. 43 CDCIB (resto de libre disposición, 3/4 del haber)', 'art. 45 CDCIB (usufructo de dos tercios del cónyuge viudo sobre esta porción)']
+        });
+      }
+
+      usufructoConyuge = {
+        aplica: true,
+        tipo: 'balear_mallorca_padres_testada',
+        fraccion: 2/3,
+        baseLegal: 'Usufructo de dos tercios del caudal hereditario a favor del cónyuge viudo, al concurrir con los padres del causante y no existir descendientes (art. 45 CDCIB, Mallorca/Menorca). Este usufructo grava proporcionalmente tanto la legítima de los padres (1/4, art. 43 CDCIB) como el resto de libre disposición.',
+        conmutable: true,
+        notaConmutacion: NOTA_CONMUTACION
+      };
+
+      if(libreCents > 0){
+        avisos.push(`El motor ha calculado la legítima de los padres (${fmt(legitimaCents)}, 1/4 del haber neto, art. 43 CDCIB) y el usufructo del cónyuge sobre dos tercios del total (${fmt(Math.round(caudalNetoCents*2/3))}, art. 45 CDCIB), pero NO determina el destino en plena/nuda propiedad del resto de libre disposición (${fmt(libreCents)}) más allá del gravamen del usufructo: depende de lo dispuesto en el testamento concreto. Verifique el testamento y adjudique manualmente esa porción.`);
+      }
+    }
+    return finalizarCalculo(input, adjudicaciones, usufructoConyuge, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta, legatarioPorBien);
+  }
+
+  // ============================================================
+  // IBIZA / FORMENTERA (arts. 79, 84 CDCIB)
+  // ============================================================
+  // --- Solo padres (sin cónyuge activo) ---
+  if(!conyugeActivo){
+    if(input.tipoSucesion === 'intestada'){
+      // CC puro: 100% PP repartido
+      repartirEntreAscendientes(caudalNetoCents, ['arts. 935-942 CC (sucesión intestada en línea recta ascendente, sin descendientes ni cónyuge)'], false);
+    } else {
+      // Legítima 1/2 PP (art. 79 CDCIB, remite a art. 809/810.1 CC "sin
+      // cónyuge", ya que en Ibiza/Formentera el cónyuge nunca es
+      // legitimario) + resto 1/2 libre disposición (pendiente).
+      const legitimaCents = Math.round(caudalNetoCents / 2);
+      const libreCents = caudalNetoCents - legitimaCents;
+      repartirEntreAscendientes(legitimaCents, ['art. 79 CDCIB (legítima de los padres, Ibiza/Formentera, remite a arts. 809 y 810.1 CC) y art. 809 CC (legítima de los padres = 1/2 del haber hereditario, sin concurrencia de cónyuge legitimario)'], false);
+      if(libreCents > 0){
+        adjudicaciones.push({
+          personaId: 'LIBRE_DISPOSICION_PENDIENTE',
+          persona: 'Resto de libre disposición (1/2 del haber, pendiente de determinar según testamento)',
+          derecho: 'plena_propiedad',
+          cuotaCents: libreCents,
+          baseLegal: ['art. 79 CDCIB / art. 809 CC (resto de libre disposición, 1/2 del haber)']
+        });
+        avisos.push(`El motor ha calculado la legítima de los padres (${fmt(legitimaCents)}, 1/2 del haber neto, art. 79 CDCIB que remite al art. 809 CC) pero NO determina el destino del resto (${fmt(libreCents)}), de libre disposición: depende de lo dispuesto en el testamento concreto. Verifique el testamento y adjudique manualmente esa porción.`);
+      }
+    }
+    return finalizarCalculo(input, adjudicaciones, usufructoConyuge, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta, legatarioPorBien);
+  }
+
+  // --- Solo cónyuge (sin padres) ---
+  if(ascendientes.length === 0){
+    if(input.tipoSucesion === 'intestada'){
+      // El art. 84 CDCIB solo regula la concurrencia con descendientes o
+      // ascendientes; fuera de esos supuestos, es una ADICIÓN al CC, no una
+      // sustitución (STSJ Baleares 4/2012, 24-oct-2012): se aplica el CC
+      // puro -> art. 944 CC, 100% PP al cónyuge.
+      adjudicaciones.push({
+        personaId: 'CONYUGE',
+        persona: 'Cónyuge viudo',
+        derecho: 'plena_propiedad',
+        cuotaCents: caudalNetoCents,
+        baseLegal: ['art. 944 CC (a falta de descendientes y ascendientes, el cónyuge viudo sucede en la totalidad de la herencia)', 'art. 84 CDCIB y STSJ Baleares 4/2012, de 24 de octubre de 2012 (la remisión del art. 84 al Código Civil en sucesión intestada es una adición, no una sustitución total: fuera de los supuestos de concurrencia con descendientes o ascendientes que regula el art. 84, se aplica el Código Civil común, incluido el art. 944)']
+      });
+    } else {
+      // Testada: el cónyuge NO es legitimario en Ibiza/Formentera (art. 79
+      // CDCIB) y el derecho del art. 84 es exclusivamente para la sucesión
+      // intestada. Sin legítima ni usufructo legal del cónyuge: todo el
+      // caudal queda pendiente de lo dispuesto en testamento.
+      adjudicaciones.push({
+        personaId: 'LIBRE_DISPOSICION_PENDIENTE',
+        persona: 'Totalidad del caudal (pendiente de determinar según testamento)',
+        derecho: 'plena_propiedad',
+        cuotaCents: caudalNetoCents,
+        baseLegal: ['art. 79 CDCIB (en Ibiza/Formentera el cónyuge viudo no es legitimario; sin descendientes ni padres no hay legitimarios y todo el caudal es de libre disposición)']
+      });
+      avisos.push(`En Ibiza/Formentera, el cónyuge viudo NO es legitimario (art. 79 CDCIB) y el derecho de usufructo del art. 84 CDCIB es exclusivo de la sucesión intestada. Sin descendientes ni padres del causante, NO hay legitimarios y la totalidad del caudal (${fmt(caudalNetoCents)}) es de libre disposición según el testamento. El motor NO determina su destinatario. Verifique el testamento y adjudique manualmente; si el testamento no instituye a nadie o resulta ineficaz, podría abrirse la sucesión intestada (art. 912 CC) y aplicarse en su lugar las reglas de la intestada de este mismo escenario.`);
+    }
+    return finalizarCalculo(input, adjudicaciones, usufructoConyuge, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta, legatarioPorBien);
+  }
+
+  // --- Cónyuge + padres ---
+  if(input.tipoSucesion === 'intestada'){
+    // Padres 100% PP (CC, arts. 935-945), de los cuales 2/3 gravados por el
+    // usufructo INTESTADO específico del cónyuge (art. 84 CDCIB, texto
+    // literal: "...de dos terceras partes de la herencia en concurrencia
+    // con ascendientes"), 1/3 libres de gravamen.
+    const gravadoCents = Math.round(caudalNetoCents * 2/3);
+    const libreGravamenCents = caudalNetoCents - gravadoCents;
+    repartirEntreAscendientes(libreGravamenCents, ['arts. 935-945 CC (sucesión intestada, padres en concurrencia con cónyuge)', 'art. 84 CDCIB (la sucesión intestada se rige por el Código Civil, sin perjuicio del usufructo de este artículo)'], false);
+    repartirEntreAscendientes(gravadoCents, ['arts. 935-945 CC (sucesión intestada, padres en concurrencia con cónyuge)', 'art. 84 CDCIB (usufructo de dos terceras partes de la herencia a favor del cónyuge viudo, en concurrencia con ascendientes)'], true);
+    usufructoConyuge = {
+      aplica: true,
+      tipo: 'balear_ibiza_padres_intestada',
+      fraccion: 2/3,
+      baseLegal: 'Usufructo de dos terceras partes del caudal hereditario a favor del cónyuge viudo, al concurrir con los padres (ascendientes) del causante en sucesión intestada y no existir descendientes (art. 84 CDCIB, Ibiza/Formentera, texto literal). Este es un derecho ab intestato específico, distinto de la legítima (en Ibiza/Formentera el cónyuge no es legitimario, art. 79 CDCIB). Los padres reciben la totalidad de la herencia en plena/nuda propiedad según lo indicado.',
+      conmutable: true,
+      notaConmutacion: NOTA_CONMUTACION
+    };
+  } else {
+    // Testada: el cónyuge no es legitimario (art. 79 CDCIB) y el art. 84 es
+    // exclusivo de la intestada -> sin usufructo legal del cónyuge.
+    // Legítima de los padres = 1/2 PP (art. 79 CDCIB, remite a art. 809 CC
+    // "sin cónyuge"); resto 1/2 = libre disposición (pendiente).
+    const legitimaCents = Math.round(caudalNetoCents / 2);
+    const libreCents = caudalNetoCents - legitimaCents;
+    repartirEntreAscendientes(legitimaCents, ['art. 79 CDCIB (legítima de los padres, Ibiza/Formentera, remite a arts. 809 y 810.1 CC) y art. 809 CC (legítima de los padres = 1/2 del haber hereditario, sin concurrencia de cónyuge legitimario)'], false);
+    if(libreCents > 0){
+      adjudicaciones.push({
+        personaId: 'LIBRE_DISPOSICION_PENDIENTE',
+        persona: 'Resto de libre disposición (1/2 del haber, pendiente de determinar según testamento)',
+        derecho: 'plena_propiedad',
+        cuotaCents: libreCents,
+        baseLegal: ['art. 79 CDCIB / art. 809 CC (resto de libre disposición, 1/2 del haber)']
+      });
+    }
+    avisos.push(`En Ibiza/Formentera, el cónyuge viudo NO es legitimario (art. 79 CDCIB) ni tiene usufructo legal en sucesión TESTADA (el derecho del art. 84 CDCIB es exclusivo de la sucesión intestada). El motor ha calculado la legítima de los padres (${fmt(legitimaCents)}, 1/2 del haber neto, art. 79 CDCIB que remite al art. 809 CC) pero NO determina el destino del resto (${fmt(libreCents)}), de libre disposición, ni atribuye ningún derecho al cónyuge: ambos dependen de lo dispuesto en el testamento concreto. Verifique el testamento y adjudique manualmente.`);
+  }
+  return finalizarCalculo(input, adjudicaciones, usufructoConyuge, avisos, errores, caudalNetoCents, liquidacionPrevia, bienIdsLegadoCosaCierta, legatarioPorBien);
+}
+
+
+
 // Reparte la cuota de una estirpe entre sus representantes (si premuerto)
 // y empuja las filas de adjudicación correspondientes.
 function asignarCuotaEstirpe(heir, cuotaEstirpeCents, gravadoUsufructo, adjudicaciones, baseLegal){
+
   if(heir.estado === 'vivo'){
     pushOrMerge(adjudicaciones, {
       personaId: heir.id,
