@@ -1856,6 +1856,10 @@ body{background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink);m
         <input type="checkbox" id="conyugeSeparado" onchange="recalcularInline(); actualizarVisibilidadColaterales();">
         <label style="margin:0;text-transform:none;font-weight:500;">Separado legalmente o de hecho al fallecimiento (art. 834 CC → pierde derecho de usufructo)</label>
       </div>
+      <div class="checkbox-line" id="usufructoExcluidoLine" style="margin-top:6px;">
+        <input type="checkbox" id="usufructoExcluido">
+        <label style="margin:0;text-transform:none;font-weight:500;">Usufructo viudal excluido expresamente por testamento (art. 45.3 CDCIB) — solo Mallorca/Menorca, sucesión testada</label>
+      </div>
       <div class="field" style="max-width:220px;margin-top:8px;">
         <label>Edad del cónyuge viudo (años)</label>
         <input type="number" id="edadConyuge" min="0" max="99" step="1" placeholder="Ej. 68">
@@ -6668,6 +6672,7 @@ function escribirInputEnFormulario(input){
   // 2. Cónyuge
   document.getElementById('conyugeExiste').checked = !!input.conyugeExiste;
   document.getElementById('conyugeSeparado').checked = !!input.conyugeSeparado;
+  document.getElementById('usufructoExcluido').checked = !!input.usufructoExcluidoPorTestamento;
   document.getElementById('edadConyuge').value = (input.edadConyuge !== null && input.edadConyuge !== undefined) ? input.edadConyuge : '';
 
   // 3. Herederos: vaciar y regenerar con IDs originales
@@ -7189,7 +7194,7 @@ function calcularHerencia(input){
     //    de mejora, esta mitad grava proporcionalmente toda la herencia
     //    (igual mecánica que en intestada): la legítima y el resto de libre
     //    disposición se dividen cada uno en mitad libre / mitad gravada.
-    if(conyugeActivo && esCDCIBMallorcaMenorca){
+    if(conyugeActivo && esCDCIBMallorcaMenorca && !input.usufructoExcluidoPorTestamento){
       // Reconstruir las cuotas YA asignadas a los descendientes (legítima +
       // resto de libre, que se calculará más abajo) en dos tramos: mitad
       // libre y mitad gravada. Como el resto de libre disposición todavía
@@ -7253,6 +7258,10 @@ function calcularHerencia(input){
         };
         avisos.push(`CDCIB testada — el resto de libre disposición se atribuye ${input.libre.tipo==='conyuge'?'al propio cónyuge':'a un tercero'}, no a los descendientes. El art. 45.3 CDCIB fija el usufructo vidual en la mitad del HABER HEREDITARIO total; este cálculo solo grava la mitad de la LEGÍTIMA (${fmtFrac(fraccionReal)} del haber), por ser la única porción atribuida a descendientes susceptible de gravamen en este modelo. Existe duda doctrinal sobre si, en este supuesto, el usufructo vidual debe además satisfacerse con cargo a la porción de libre disposición no atribuida a descendientes. VERIFIQUE manualmente el alcance del usufructo antes de redactar la cláusula definitiva (art. 45.3 CDCIB).`);
       }
+    } else if(conyugeActivo && esCDCIBMallorcaMenorca && input.usufructoExcluidoPorTestamento){
+      // Usufructo excluido expresamente por testamento: las hijas reciben
+      // su legítima en plena propiedad pura, sin nuda propiedad ni usufructo.
+      avisos.push('Usufructo viudal del art. 45.3 CDCIB excluido expresamente por testamento: las descendientes reciben su legítima en PLENA PROPIEDAD, sin gravamen de usufructo. Verifique que el testamento contiene una cláusula expresa de exclusión o que la institución de heredero universal al cónyuge se interpreta como sustitución del usufructo viudal (art. 45.3 CDCIB). En caso de duda interpretativa, consulte con el notario autorizante.');
     } else if(conyugeActivo && mejoraCents > 0){
       usufructoConyuge = {
         aplica:true,
@@ -7343,6 +7352,7 @@ function calcularHerencia(input){
       // (no tiene sentido gravar con usufructo al propio cónyuge, y lo
       // atribuido a un tercero no es masa de legitimarios).
       const gravarConUsufructoCDCIB = esCDCIBMallorcaMenorca && conyugeActivo
+        && !input.usufructoExcluidoPorTestamento
         && (input.libre.tipo === 'descendientes_igual' || input.libre.tipo === 'un_heredero');
 
       const baseLegalLibreDescendientes = esCDCIBMallorcaMenorca
@@ -8412,6 +8422,7 @@ function leerInputDesdeFormulario(){
     regimen: document.getElementById('regimen').value,
     conyugeExiste: document.getElementById('conyugeExiste').checked,
     conyugeSeparado: document.getElementById('conyugeExiste').checked && document.getElementById('conyugeSeparado').checked,
+    usufructoExcluidoPorTestamento: document.getElementById('conyugeExiste').checked && document.getElementById('usufructoExcluido').checked,
     edadConyuge: document.getElementById('conyugeExiste').checked && document.getElementById('edadConyuge').value !== ''
       ? parseInt(document.getElementById('edadConyuge').value, 10)
       : null,
